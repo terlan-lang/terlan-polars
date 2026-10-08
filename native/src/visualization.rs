@@ -222,10 +222,13 @@ fn grouped_line_plot(
     x: &str,
     y: &str,
     group: &str,
+    facet: Option<&str>,
+    config: Option<&plotlars_core::components::FacetConfig>,
     options: &PlotOptions,
 ) -> Result<OwnedPlot, TerlanPolarsError> {
     use plotlars_core::{components::Rgb, ir::trace::TraceIR};
     use polars::prelude::{col, lit, DataType, IntoLazy};
+    use std::collections::HashSet;
 
     const MAX_GROUPS: usize = 64;
     const COLORS: [Rgb; 10] = [
@@ -256,8 +259,8 @@ fn grouped_line_plot(
         &dataframe.inner,
         x,
         y,
-        None,
-        None,
+        facet,
+        config,
         None,
         &options.title,
         Some(group),
@@ -265,52 +268,87 @@ fn grouped_line_plot(
     )?;
     result.traces.clear();
 
-    for (index, group_name) in groups.iter().enumerate() {
-        let filtered = dataframe
-            .inner
-            .clone()
-            .lazy()
-            .filter(
-                col(group)
-                    .cast(DataType::String)
-                    .eq(lit(group_name.as_str())),
-            )
-            .collect()
-            .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?;
-        let line = basic_line_plot(
-            &filtered,
-            x,
-            y,
-            None,
-            None,
-            Some(COLORS[index % COLORS.len()]),
-            "",
-            None,
-            options,
-        )?;
-        let mut trace =
-            line.traces.first().cloned().ok_or_else(|| {
+    let facet_values = facet
+        .map(|column| plotlars_core::data::get_unique_groups(&dataframe.inner, column, None))
+        .unwrap_or_else(|| vec![String::new()]);
+    let mut shown_groups = HashSet::new();
+    for (facet_index, facet_value) in facet_values.iter().enumerate() {
+        let facet_data = if let Some(facet) = facet {
+            dataframe
+                .inner
+                .clone()
+                .lazy()
+                .filter(
+                    col(facet)
+                        .cast(DataType::String)
+                        .eq(lit(facet_value.as_str())),
+                )
+                .collect()
+                .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?
+        } else {
+            dataframe.inner.clone()
+        };
+        for (group_index, group_name) in groups.iter().enumerate() {
+            let filtered = facet_data
+                .clone()
+                .lazy()
+                .filter(
+                    col(group)
+                        .cast(DataType::String)
+                        .eq(lit(group_name.as_str())),
+                )
+                .collect()
+                .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?;
+            if filtered.height() == 0 {
+                continue;
+            }
+            let line = basic_line_plot(
+                &filtered,
+                x,
+                y,
+                None,
+                None,
+                Some(COLORS[group_index % COLORS.len()]),
+                "",
+                None,
+                options,
+            )?;
+            let mut trace = line.traces.first().cloned().ok_or_else(|| {
                 TerlanPolarsError::new("plot_error", "line group produced no trace")
             })?;
-        match &mut trace {
-            TraceIR::LinePlot(line) => {
-                line.name = Some(group_name.clone());
-                line.legend_group = Some(group_name.clone());
-                line.show_legend = Some(true);
+            let show_legend = shown_groups.insert(group_name.clone());
+            let subplot_ref = facet.map(|_| {
+                if facet_index == 0 {
+                    "xy".to_string()
+                } else {
+                    format!("x{}y{}", facet_index + 1, facet_index + 1)
+                }
+            });
+            match &mut trace {
+                TraceIR::LinePlot(line) => {
+                    line.name = Some(group_name.clone());
+                    line.legend_group = Some(group_name.clone());
+                    line.show_legend = Some(show_legend);
+                    line.subplot_ref = subplot_ref;
+                }
+                TraceIR::TimeSeriesPlot(line) => {
+                    line.name = Some(group_name.clone());
+                    line.legend_group = Some(group_name.clone());
+                    line.show_legend = Some(show_legend);
+                    if facet.is_some() {
+                        line.y_axis_ref = None;
+                    }
+                    line.subplot_ref = subplot_ref;
+                }
+                _ => {
+                    return Err(TerlanPolarsError::new(
+                        "plot_error",
+                        "line group produced an unexpected trace",
+                    ));
+                }
             }
-            TraceIR::TimeSeriesPlot(line) => {
-                line.name = Some(group_name.clone());
-                line.legend_group = Some(group_name.clone());
-                line.show_legend = Some(true);
-            }
-            _ => {
-                return Err(TerlanPolarsError::new(
-                    "plot_error",
-                    "line group produced an unexpected trace",
-                ));
-            }
+            result.traces.push(trace);
         }
-        result.traces.push(trace);
     }
     Ok(result)
 }
@@ -375,14 +413,8 @@ fn build_plot(
                 OwnedPlot::from_plot(&plot, &options)
             }
             "line" => {
-                if color.is_some() && facet.is_some() {
-                    return Err(TerlanPolarsError::new(
-                        "plot_error",
-                        "line plots cannot combine categorical color and faceting",
-                    ));
-                }
                 if let Some(group) = color {
-                    grouped_line_plot(dataframe, x, y, group, &options)?
+                    grouped_line_plot(dataframe, x, y, group, facet, config_ref, &options)?
                 } else {
                     basic_line_plot(
                         &dataframe.inner,
@@ -1342,6 +1374,19 @@ mod tests {
             .iter()
             .all(|trace| matches!(trace, plotlars_core::ir::trace::TraceIR::TimeSeriesPlot(_))));
 
+        let faceted_line_options = crate::with_plot_facet(&line_options, "facet", 2).unwrap();
+        let faceted_line = build_plot(&df, "line", "date", "y", &faceted_line_options).unwrap();
+        assert_eq!(faceted_line.traces.len(), 4);
+        let grid = faceted_line.layout.grid.as_ref().unwrap();
+        assert_eq!((grid.cols, grid.rows, grid.n_facets), (2, 1, 2));
+        assert!(is_svg(plot_with_svg(
+            &df,
+            "line",
+            "date",
+            "y",
+            &faceted_line_options
+        )));
+
         let bar_options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
         let bar_options = crate::with_plot_facet(&bar_options, "facet", 2).unwrap();
         let bar = build_plot(&df, "bar", "label", "y", &bar_options).unwrap();
@@ -1372,11 +1417,14 @@ mod tests {
         }
 
         let options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
+        let options = crate::with_plot_facet(&options, "facet", 2).unwrap();
         let options = crate::with_plot_dimensions(&options, 960, 540).unwrap();
         let html =
-            String::from_utf8(plot_with_html(&df, "line", "x", "y", &options).unwrap()).unwrap();
+            String::from_utf8(plot_with_html(&df, "line", "date", "y", &options).unwrap()).unwrap();
         assert!(html.contains("one"));
         assert!(html.contains("two"));
+        assert!(html.contains("first"));
+        assert!(html.contains("second"));
         assert!(html.contains("\"width\":960"));
         assert!(html.contains("\"height\":540"));
     }
@@ -1400,5 +1448,10 @@ mod tests {
         assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"));
         assert_eq!(u32::from_be_bytes(png[16..20].try_into().unwrap()), 720);
         assert_eq!(u32::from_be_bytes(png[20..24].try_into().unwrap()), 480);
+
+        let line_options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
+        let line_options = crate::with_plot_facet(&line_options, "facet", 2).unwrap();
+        let png = plot_with_png(&df, "line", "date", "y", &line_options).unwrap();
+        assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"));
     }
 }

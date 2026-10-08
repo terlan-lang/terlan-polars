@@ -109,7 +109,8 @@ pub typed_plot_options_cover_line_color_and_bar_facets(): Bool ->
             let {
                 Ok(line_color) <- with_plot_color(plot_options(), "city");
                 Ok(line_title) <- with_plot_title(line_color, "Age by city");
-                Ok(line_options) <- with_plot_dimensions(line_title, 720, 480);
+                Ok(line_size) <- with_plot_dimensions(line_title, 720, 480);
+                Ok(line_options) <- with_plot_column(line_size, "name", 2);
                 Ok(_line) <- plot_line_svg_with_options(df, "age", "age", line_options);
                 Ok(bar_options) <- with_plot_column(plot_options(), "city", 2);
                 Ok(_bar) <- plot_bar_svg_with_options(df, "city", "age", bar_options)

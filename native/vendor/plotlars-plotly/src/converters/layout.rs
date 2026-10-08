@@ -227,6 +227,18 @@ fn convert_faceted_layout_ir(
         layout = layout.box_gap(gap);
     }
 
+    if let Some(dims) = ir.dimensions.as_ref() {
+        if let Some(width) = dims.width {
+            layout = layout.width(width);
+        }
+        if let Some(height) = dims.height {
+            layout = layout.height(height);
+        }
+        if let Some(auto_size) = dims.auto_size {
+            layout = layout.auto_size(auto_size);
+        }
+    }
+
     (layout, json_overrides)
 }
 

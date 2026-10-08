@@ -339,7 +339,8 @@ proof for every explicit alias:
   Polars 2 spelling and `plot_scatter_*` remains its alias. Interactive Plotly
   HTML and PNG rendering are optional Cargo features. Immutable `PlotOptions`
   add categorical color grouping, bounded facets, titles, and fixed dimensions
-  consistently across all three backends. These typed plot calls cover the
+  consistently across all three backends, including combined line color and
+  column faceting. These typed plot calls cover the
   package's graphing contract; arbitrary Altair marks, encoding objects, and
   chained chart configuration stay in the external visualization layer.
   Declarative table styling escapes data and headers and enforces bounded HTML

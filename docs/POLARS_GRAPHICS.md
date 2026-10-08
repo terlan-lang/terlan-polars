@@ -7,7 +7,7 @@ while using Rust renderers instead of returning Python Altair objects.
 | Chart | Default static API | Interactive API | Raster API | Color grouping | Faceting |
 | --- | --- | --- | --- | --- | --- |
 | Point/scatter | `plot_point_svg` / `plot_scatter_svg` | `plot_point_html` / `plot_scatter_html` | `plot_point_png` / `plot_scatter_png` | Yes | Yes |
-| Line | `plot_line_svg` | `plot_line_html` | `plot_line_png` | Yes | Yes, without color grouping |
+| Line | `plot_line_svg` | `plot_line_html` | `plot_line_png` | Yes | Yes |
 | Bar | `plot_bar_svg` | `plot_bar_html` | `plot_bar_png` | Yes | Yes |
 | Histogram | `plot_histogram_svg` | `plot_histogram_html` | `plot_histogram_png` | Yes | Yes |
 | Box | `plot_box_svg` | `plot_box_html` | `plot_box_png` | Yes | Yes |
@@ -40,8 +40,8 @@ arbitrary marks, encoding channels, facets, and chained configuration to
 Altair. Those open-ended Python chart objects are outside the native package
 boundary. Terlan directly covers the five chart families in the table,
 including `df.plot.line(x="date", y="price", color="stock")` style categorical
-line grouping and `df.plot.bar(..., column="region")` style facets. Combining
-line color grouping and line faceting in one chart remains unsupported.
+line grouping and `df.plot.bar(..., column="region")` style facets. Categorical
+line color and column faceting can be combined in one chart.
 
 The executable coverage consists of Terlan point/scatter, line, bar,
 histogram, box, typed options, and validation tests; Rust tests for grouped
