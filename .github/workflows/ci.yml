@@ -27,12 +27,12 @@ jobs:
 
     steps:
       - name: Checkout package
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Checkout pinned Terlan compiler
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: terlan-lang/terlan
           ref: 6c00b3d1bfaa1ca10ddb07533f5823e827029274
@@ -60,7 +60,7 @@ jobs:
         run: |
           cargo build --locked --quiet \
             --manifest-path _build/terlan/Cargo.toml \
-            -p terlan --bin terlc
+            -p terlan --bin terlc --bin terlan-vm
 
       - name: Prefetch locked Polars dependencies
         run: cargo fetch --locked --manifest-path native/Cargo.toml
