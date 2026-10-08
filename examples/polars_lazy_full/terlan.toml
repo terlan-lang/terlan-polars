@@ -1,0 +1,11 @@
+[package]
+name = "polars-lazy-full"
+version = "0.1.0"
+namespace = "polars_lazy_full"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

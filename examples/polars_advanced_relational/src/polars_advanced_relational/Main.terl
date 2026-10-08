@@ -1,0 +1,68 @@
+module polars_advanced_relational.Main.
+
+import polars.DataFrame.{alias, asof_join, col, collect, dispose, dynamic_group_agg, height, lazy, lazy_asof_join, pivot, read_csv, release, rolling_group_agg, sum, width}.
+import type polars.DataFrame.{DataFrame, Expr}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import type std.core.Error.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub strings(value: String): List[String] -> let values = List.new(); values.push(value); values.
+pub no_strings(): List[String] -> List.new().
+pub expressions(value: Expr): List[Expr] -> let values = List.new(); values.push(value); values.
+pub no_expressions(): List[Expr] -> List.new().
+
+pub matches(result: Result[DataFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) -> let valid = height(df) == expected_height and width(df) == expected_width; dispose(df); valid
+    }.
+
+pub asof_works(left: DataFrame, right: DataFrame): Bool ->
+    let eager = matches(asof_join(left, right, "time", "time", no_strings(), no_strings(), "backward", "", "_right", true), 3, 3);
+    let left_plan = lazy(left);
+    let right_plan = lazy(right);
+    let deferred = case lazy_asof_join(left_plan, right_plan, "time", "time", no_strings(), no_strings(), "nearest", "3i", "_right", true) {
+        Err(_error) -> false;
+        Ok(joined) -> let valid = matches(collect(joined), 3, 3); release(joined); valid
+    };
+    release(left_plan);
+    release(right_plan);
+    eager and deferred.
+
+pub windows_work(df: DataFrame): Bool ->
+    let plan = lazy(df);
+    let aggregations = expressions(alias(sum(col("value")), "total"));
+    let dynamic = case dynamic_group_agg(plan, "index", no_expressions(), aggregations, "2i", "2i", "0i", "left", "data_point", false) {
+        Err(_error) -> false;
+        Ok(grouped) -> let valid = matches(collect(grouped), 2, 2); release(grouped); valid
+    };
+    let rolling = case rolling_group_agg(plan, "index", no_expressions(), aggregations, "2i", "-2i", "right") {
+        Err(_error) -> false;
+        Ok(grouped) -> let valid = matches(collect(grouped), 4, 2); release(grouped); valid
+    };
+    release(plan);
+    dynamic and rolling.
+
+pub require_true(value: Bool): Unit -> case value { true -> Unit }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_advanced_relational/data/asof_left.csv") {
+        Err(_error) -> require_true(false);
+        Ok(left) -> case read_csv("examples/polars_advanced_relational/data/asof_right.csv") {
+            Err(_error) -> require_true(false);
+            Ok(right) -> let valid = asof_works(left, right); dispose(right); dispose(left); require_true(valid)
+        }
+    };
+    case read_csv("examples/polars_advanced_relational/data/long.csv") {
+        Err(_error) -> require_true(false);
+        Ok(long) -> let valid = matches(pivot(long, strings("quarter"), strings("name"), strings("value"), "sum", "_"), 2, 3); dispose(long); require_true(valid)
+    };
+    case read_csv("examples/polars_advanced_relational/data/windows.csv") {
+        Err(_error) -> require_true(false);
+        Ok(windowed) -> let valid = windows_work(windowed); dispose(windowed); require_true(valid)
+    };
+    println("Advanced Polars joins, pivot, and time windows passed.").

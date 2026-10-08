@@ -1,0 +1,4 @@
+id,place,date,sales,has_people,logged_at,index
+9,Mars,2022-01-01,33.4,false,2022-01-01T00:00:00,0
+4,Earth,2022-01-02,2142134.1,true,2022-01-01T00:00:01,1
+2,Saturn,2022-01-03,44.7,false,2022-01-01T00:00:02,2

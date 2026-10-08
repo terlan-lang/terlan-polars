@@ -1,0 +1,629 @@
+module polars_expression_namespaces.Main.
+
+import polars.DataFrame.{BinaryType, Float32, Float64, Int64, UInt8, Utf8, alias, all, any, any_horizontal, arccos, arccosh, arcsin, arcsinh, arctan, arctan2, arctanh, array_agg, array_arg_max, array_arg_min, array_contains, array_contains_with, array_count_matches, array_eval, array_explode, array_get, array_get_with, array_head, array_join, array_len, array_max, array_mean, array_median, array_min, array_shift, array_slice, array_sort, array_sort_with, array_std, array_sum, array_tail, array_to_list, array_to_struct, array_type, array_var, as_struct, between_closed, binary_base64_decode, binary_base64_encode, binary_contains, binary_ends_with, binary_get, binary_head, binary_hex_decode, binary_hex_encode, binary_reinterpret, binary_size_bytes, binary_slice, binary_starts_with, binary_tail, bitwise_and, bitwise_count_ones, bitwise_count_zeros, bitwise_leading_ones, bitwise_leading_zeros, bitwise_or, bitwise_trailing_ones, bitwise_trailing_zeros, bitwise_xor, calendar_date, cast_nested, cast_to, categorical_categories, categorical_ends_with, categorical_len_bytes, categorical_len_chars, categorical_slice, categorical_slice_to_end, categorical_starts_with, categorical_type, century, col, cos, cosh, cot, cum_count, cum_max, cum_min, cum_product, cum_sum, day, days_in_month, degrees, dispose, dispose_series, divide, dtype_cols_typed, element, equal_missing, group_agg, has_nulls, height, histogram_auto, histogram_bins, histogram_count, hour, is_close, is_duplicated, is_empty, is_finite, is_first_distinct, is_in, is_infinite, is_last_distinct, is_leap_year, is_nan, is_not_nan, is_not_null, is_null, is_unique, iso_year, keep_name, list_agg, list_arg_max, list_arg_min, list_contains, list_contains_with, list_count_matches, list_diff_drop, list_diff_ignore, list_drop_nulls, list_eval, list_first, list_gather, list_gather_every, list_get, list_get_with, list_head, list_join, list_last, list_len, list_max, list_mean, list_median, list_min, list_sample_fraction, list_sample_fraction_seeded, list_sample_n, list_sample_n_seeded, list_set_difference, list_set_intersection, list_set_symmetric_difference, list_set_union, list_shift, list_slice, list_sort, list_sort_with, list_std, list_sum, list_tail, list_to_array, list_to_struct, list_type, list_var, lit, local_datetime, logical_and, logical_or, lowercase_names, max_by, median, meta_format_tree, meta_has_multiple_outputs, meta_is_column, meta_is_column_selection, meta_is_literal, meta_is_regex_projection, meta_is_simple_projection, meta_output_name, meta_root_names, microsecond, millisecond, millennium, min, min_by, minute, month, month_end, month_start, multiply, nan_max, nan_min, nanosecond, not_equal_missing, not_expr, ordinal_day, parse_datetime, prefix, prefix_field_names, quarter, radians, read_csv, replace_name, rolling_kurtosis, rolling_max, rolling_max_by, rolling_mean, rolling_mean_by, rolling_median, rolling_median_by, rolling_min, rolling_min_by, rolling_quantile, rolling_quantile_by, rolling_rank, rolling_rank_by, rolling_skew, rolling_std, rolling_std_by, rolling_sum, rolling_sum_by, rolling_var, rolling_var_by, sample_fraction, sample_fraction_seeded, sample_n, sample_n_seeded, second, select_exprs, series_from_floats, series_to_expr, shuffle, shuffle_seeded, sin, sinh, std, string_split, struct_field, struct_field_at, struct_fields, struct_json_encode, struct_rename_fields, struct_with_fields, subtract, suffix, suffix_field_names, sum, tan, tanh, temporal_offset_by, temporal_round, temporal_truncate, time_of_day, timestamp_microseconds, timestamp_milliseconds, timestamp_nanoseconds, total_days, total_hours, total_microseconds, total_milliseconds, total_minutes, total_nanoseconds, total_seconds, uppercase_names, var, week, weekday, width, year, abs, ceil, clip, clip_max, clip_min, entropy, exp, floor, kurtosis, log, log1p, lower_bound, pi, product, round_sig_figs, round_to, round_with_mode, skew, truncate, upper_bound, arg_max, arg_min, arg_unique, count, dot, drop_nans, drop_nulls, first_non_null, implode, item, last_non_null, len_values, mode, quantile, unique, append_expression, arg_sort, diff, extend_constant, gather, gather_every, get_expression, head_expression, index_of, pct_change, rechunk, repeat_by, reverse, search_sorted, shift, shift_and_fill, slice_expression, sort_with, tail_expression, bottom_k, bottom_k_by, rank, rank_random, top_k, top_k_by, cut, cut_labeled, interpolate_by, peak_max, peak_min, qcut, qcut_equal_frequency, qcut_equal_frequency_labeled, qcut_labeled, replace, replace_or_default, replace_strict, reshape_expression, rle, rle_id}.
+import polars.DataFrame.{all_columns}.
+import type polars.DataFrame.{DataFrame, DataType, Expr}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import type std.core.Error.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub expressions(): List[Expr] -> List.new().
+pub append(values: List[Expr], value: Expr): List[Expr] -> values.push(value); values.
+pub one(value: Expr): List[Expr] -> append(expressions(), value).
+pub data_types(value: DataType): List[DataType] -> let values = List.new(); values.push(value); values.
+pub two_strings(first: String, second: String): List[String] -> let values = List.new(); values.push(first); values.push(second); values.
+pub three_strings(first: String, second: String, third: String): List[String] -> let values = List.new(); values.push(first); values.push(second); values.push(third); values.
+pub histogram_breakpoints(): List[Float] -> let values = List.new(); values.push(1.0); values.push(2.5); values.push(4.0); values.
+pub cut_breakpoints(): List[Float] -> let values = List.new(); values.push(1.5); values.push(3.5); values.
+pub median_probability(): List[Float] -> let values = List.new(); values.push(0.5); values.
+pub reshape_dimensions(): List[Int] -> let values = List.new(); values.push(2); values.push(2); values.
+pub booleans(value: Bool): List[Bool] -> let values = List.new(); values.push(value); values.
+
+pub matches(result: Result[DataFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) -> let valid = height(df) == expected_height and width(df) == expected_width; dispose(df); valid
+    }.
+
+pub temporal_works(df: DataFrame): Bool ->
+    let stamp = parse_datetime(col("stamp"));
+    let selected = append(append(append(append(append(append(one(alias(year(stamp), "year")), alias(month(stamp), "month")), alias(day(stamp), "day")), alias(weekday(stamp), "weekday")), alias(hour(stamp), "hour")), alias(minute(stamp), "minute")), alias(second(stamp), "second"));
+    let selected = append(selected, alias(millennium(stamp), "millennium"));
+    let selected = append(selected, alias(century(stamp), "century"));
+    let selected = append(selected, alias(is_leap_year(stamp), "is_leap_year"));
+    let selected = append(selected, alias(iso_year(stamp), "iso_year"));
+    let selected = append(selected, alias(days_in_month(stamp), "days_in_month"));
+    let selected = append(selected, alias(quarter(stamp), "quarter"));
+    let selected = append(selected, alias(week(stamp), "week"));
+    let selected = append(selected, alias(ordinal_day(stamp), "ordinal_day"));
+    let selected = append(selected, alias(time_of_day(stamp), "time_of_day"));
+    let selected = append(selected, alias(calendar_date(stamp), "calendar_date"));
+    let selected = append(selected, alias(local_datetime(stamp), "local_datetime"));
+    let selected = append(selected, alias(millisecond(stamp), "millisecond"));
+    let selected = append(selected, alias(microsecond(stamp), "microsecond"));
+    let selected = append(selected, alias(nanosecond(stamp), "nanosecond"));
+    let selected = append(selected, alias(month_start(stamp), "month_start"));
+    let selected = append(selected, alias(month_end(stamp), "month_end"));
+    let selected = append(selected, alias(timestamp_milliseconds(stamp), "timestamp_ms"));
+    let selected = append(selected, alias(timestamp_microseconds(stamp), "timestamp_us"));
+    let selected = append(selected, alias(timestamp_nanoseconds(stamp), "timestamp_ns"));
+    let selected = append(selected, alias(temporal_truncate(stamp, lit("1d")), "truncated"));
+    let selected = append(selected, alias(temporal_round(stamp, lit("1d")), "rounded"));
+    let selected = append(selected, alias(temporal_offset_by(stamp, lit("1mo")), "next_month"));
+    matches(select_exprs(df, selected), 4, 29).
+
+pub duration_totals_work(df: DataFrame): Bool ->
+    let stamp = parse_datetime(col("stamp"));
+    let previous = temporal_offset_by(stamp, lit("-1d"));
+    let duration = subtract(stamp, previous);
+    let selected = one(alias(total_days(duration, true), "days"));
+    let selected = append(selected, alias(total_hours(duration, false), "hours"));
+    let selected = append(selected, alias(total_minutes(duration, true), "minutes"));
+    let selected = append(selected, alias(total_seconds(duration, false), "seconds"));
+    let selected = append(selected, alias(total_milliseconds(duration, true), "milliseconds"));
+    let selected = append(selected, alias(total_microseconds(duration, false), "microseconds"));
+    let selected = append(selected, alias(total_nanoseconds(duration, true), "nanoseconds"));
+    matches(select_exprs(df, selected), 4, 7).
+
+pub string_lists_work(df: DataFrame): Bool ->
+    let tags = string_split(col("tags"), "|");
+    let selected = append(append(append(one(alias(list_len(tags), "tag_count")), alias(list_get(tags, lit(0)), "first_tag")), alias(list_contains(tags, lit("blue")), "has_blue")), alias(list_sort(tags), "sorted_tags"));
+    let selected = append(selected, alias(list_join(tags, lit("-"), true), "joined"));
+    let selected = append(selected, alias(list_first(tags), "first"));
+    let selected = append(selected, alias(list_last(tags), "last"));
+    let selected = append(selected, alias(list_sort_with(tags, true, true, true), "descending"));
+    let selected = append(selected, alias(list_get_with(tags, lit(0), false), "strict_first"));
+    let selected = append(selected, alias(list_contains_with(tags, lit("blue"), false), "contains_blue_null_aware"));
+    let selected = append(selected, alias(list_slice(tags, lit(0), lit(1)), "slice"));
+    let selected = append(selected, alias(list_head(tags, lit(1)), "head"));
+    let selected = append(selected, alias(list_tail(tags, lit(1)), "tail"));
+    let selected = append(selected, alias(list_shift(tags, lit(1)), "shifted"));
+    let selected = append(selected, alias(list_to_array(tags, 2), "as_array"));
+    matches(select_exprs(df, selected), 4, 15).
+
+pub advanced_string_lists_work(df: DataFrame): Bool ->
+    let tags = string_split(col("tags"), "|");
+    let one_item = lit(1);
+    let half = lit(0.5);
+    let indices = cast_nested(string_split(lit("0|1"), "|"), list_type(Int64));
+    let other = string_split(lit("blue|yellow"), "|");
+    let selected = one(alias(list_drop_nulls(tags), "without_nulls"));
+    let selected = append(selected, alias(list_sample_n(tags, one_item, false, false), "sample_n"));
+    let selected = append(selected, alias(list_sample_n_seeded(tags, one_item, false, true, 42), "sample_n_seeded"));
+    let selected = append(selected, alias(list_sample_fraction(tags, half, false, false), "sample_fraction"));
+    let selected = append(selected, alias(list_sample_fraction_seeded(tags, half, false, true, 42), "sample_fraction_seeded"));
+    let selected = append(selected, alias(list_gather(tags, indices, false), "gathered"));
+    let selected = append(selected, alias(list_gather_every(tags, one_item, lit(0)), "gathered_every"));
+    let selected = append(selected, alias(list_to_struct(tags, two_strings("first", "second")), "as_struct"));
+    let selected = append(selected, alias(list_count_matches(tags, lit("blue")), "blue_count"));
+    let selected = append(selected, alias(list_set_union(tags, other), "union"));
+    let selected = append(selected, alias(list_set_difference(tags, other), "difference"));
+    let selected = append(selected, alias(list_set_intersection(tags, other), "intersection"));
+    let selected = append(selected, alias(list_set_symmetric_difference(tags, other), "symmetric_difference"));
+    matches(select_exprs(df, selected), 4, 13).
+
+pub numeric_lists_work(df: DataFrame): Bool ->
+    case group_agg(df, one(col("group")), one(alias(col("value"), "values"))) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let values = col("values");
+            let selected = append(append(append(append(append(one(col("group")), alias(list_len(values), "count")), alias(list_sum(values), "sum")), alias(list_mean(values), "mean")), alias(list_min(values), "min")), alias(list_max(values), "max"));
+            let selected = append(selected, alias(list_std(values, 1), "std"));
+            let selected = append(selected, alias(list_var(values, 1), "variance"));
+            let selected = append(selected, alias(list_median(values), "median"));
+            let selected = append(selected, alias(list_arg_min(values), "arg_min"));
+            let selected = append(selected, alias(list_arg_max(values), "arg_max"));
+            let item = element();
+            let selected = append(selected, alias(list_eval(values, multiply(item, lit(2))), "doubled"));
+            let selected = append(selected, alias(list_agg(values, sum(item)), "element_sum"));
+            let selected = append(selected, alias(list_diff_drop(values, 1), "diff_drop"));
+            let selected = append(selected, alias(list_diff_ignore(values, 1), "diff_ignore"));
+            let valid = matches(select_exprs(grouped, selected), 2, 15);
+            let _disposed_at_928 = dispose(grouped);
+            valid
+    }.
+
+pub numeric_arrays_work(df: DataFrame): Bool ->
+    case group_agg(df, one(col("group")), one(alias(col("value"), "values"))) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let values = cast_nested(col("values"), array_type(Int64, 2));
+            let selected = append(append(append(append(append(append(append(append(append(one(col("group")), alias(array_len(values), "length")), alias(array_sum(values), "sum")), alias(array_mean(values), "mean")), alias(array_min(values), "min")), alias(array_max(values), "max")), alias(array_get(values, lit(1)), "second")), alias(array_contains(values, lit(2)), "contains_two")), alias(array_sort(values), "sorted")), alias(array_to_list(values), "as_list"));
+            let selected = append(selected, alias(array_std(values, 1), "std"));
+            let selected = append(selected, alias(array_var(values, 1), "variance"));
+            let selected = append(selected, alias(array_median(values), "median"));
+            let selected = append(selected, alias(array_arg_min(values), "arg_min"));
+            let selected = append(selected, alias(array_arg_max(values), "arg_max"));
+            let selected = append(selected, alias(array_count_matches(values, lit(2)), "twos"));
+            let selected = append(selected, alias(struct_field_at(array_to_struct(values), 0), "struct_first"));
+            let selected = append(selected, alias(array_slice(values, lit(0), lit(1), false), "slice"));
+            let selected = append(selected, alias(array_head(values, lit(1), true), "head"));
+            let selected = append(selected, alias(array_tail(values, lit(1), false), "tail"));
+            let selected = append(selected, alias(array_shift(values, lit(1)), "shifted"));
+            let item = element();
+            let selected = append(selected, alias(array_eval(values, multiply(item, lit(2)), false), "doubled"));
+            let selected = append(selected, alias(array_agg(values, sum(item)), "element_sum"));
+            let selected = append(selected, alias(array_sort_with(values, true, true, true), "descending"));
+            let selected = append(selected, alias(array_get_with(values, lit(1), false), "strict_second"));
+            let selected = append(selected, alias(array_contains_with(values, lit(2), false), "contains_two_null_aware"));
+            let selected_valid = matches(select_exprs(grouped, selected), 2, 26);
+            let explode_valid = matches(select_exprs(grouped, one(array_explode(values, false, false))), 4, 1);
+            let valid = selected_valid and explode_valid;
+            let _disposed_at_958 = dispose(grouped);
+            valid
+    }.
+
+pub string_arrays_work(df: DataFrame): Bool ->
+    let values = cast_nested(string_split(col("tags"), "|"), array_type(Utf8, 2));
+    matches(select_exprs(df, one(alias(array_join(values, lit("-"), true), "joined"))), 4, 1).
+
+pub random_bitwise_work(df: DataFrame): Bool ->
+    let value = col("value");
+    let shuffled = append(one(alias(shuffle(value), "shuffle")), alias(shuffle_seeded(value, 42), "seeded_shuffle"));
+    let shuffle_valid = matches(select_exprs(df, shuffled), 4, 2);
+    let sampled = one(alias(sample_n(value, lit(2), false, false), "sample_n"));
+    let sampled = append(sampled, alias(sample_n_seeded(value, lit(2), false, true, 42), "sample_n_seeded"));
+    let sampled = append(sampled, alias(sample_fraction(value, lit(0.5), false, false), "sample_fraction"));
+    let sampled = append(sampled, alias(sample_fraction_seeded(value, lit(0.5), false, true, 42), "sample_fraction_seeded"));
+    let sample_valid = matches(select_exprs(df, sampled), 2, 4);
+    let counted = one(alias(bitwise_count_ones(value), "count_ones"));
+    let counted = append(counted, alias(bitwise_count_zeros(value), "count_zeros"));
+    let counted = append(counted, alias(bitwise_leading_ones(value), "leading_ones"));
+    let counted = append(counted, alias(bitwise_leading_zeros(value), "leading_zeros"));
+    let counted = append(counted, alias(bitwise_trailing_ones(value), "trailing_ones"));
+    let counted = append(counted, alias(bitwise_trailing_zeros(value), "trailing_zeros"));
+    let count_valid = matches(select_exprs(df, counted), 4, 6);
+    let reduced = one(alias(bitwise_and(value), "and"));
+    let reduced = append(reduced, alias(bitwise_or(value), "or"));
+    let reduced = append(reduced, alias(bitwise_xor(value), "xor"));
+    let reduction_valid = matches(select_exprs(df, reduced), 1, 3);
+    shuffle_valid and sample_valid and count_valid and reduction_valid.
+
+pub statistics_work(df: DataFrame): Bool ->
+    let value = col("value");
+    let selected = one(alias(std(value, 1), "std"));
+    let selected = append(selected, alias(var(value, 1), "variance"));
+    let selected = append(selected, alias(min(value), "minimum"));
+    let selected = append(selected, alias(median(value), "median"));
+    let selected = append(selected, alias(min_by(col("group"), value), "minimum_group"));
+    let selected = append(selected, alias(max_by(col("group"), value), "maximum_group"));
+    let selected = append(selected, alias(nan_min(value), "nan_minimum"));
+    let selected = append(selected, alias(nan_max(value), "nan_maximum"));
+    let statistics_valid = matches(select_exprs(df, selected), 1, 8);
+    let automatic_valid = matches(select_exprs(df, one(alias(histogram_auto(value, false, false), "automatic"))), 10, 1);
+    let counted_valid = matches(select_exprs(df, one(alias(histogram_count(value, 2, true, true), "counted"))), 2, 1);
+    case series_from_floats("bins", histogram_breakpoints()) {
+        Err(_error) -> false;
+        Ok(bins) ->
+            let bins_expression = series_to_expr(bins);
+            let explicit_valid = matches(select_exprs(df, one(alias(histogram_bins(value, bins_expression, true, true), "explicit"))), 2, 1);
+            dispose_series(bins);
+            statistics_valid and automatic_valid and counted_valid and explicit_valid
+    }.
+
+pub trigonometry_work(df: DataFrame): Bool ->
+    let radians_value = divide(col("value"), lit(10));
+    let unit_value = divide(col("value"), lit(10));
+    let selected = one(alias(cos(radians_value), "cosine"));
+    let selected = append(selected, alias(cot(radians_value), "cotangent"));
+    let selected = append(selected, alias(sin(radians_value), "sine"));
+    let selected = append(selected, alias(tan(radians_value), "tangent"));
+    let selected = append(selected, alias(arccos(unit_value), "inverse_cosine"));
+    let selected = append(selected, alias(arcsin(unit_value), "inverse_sine"));
+    let selected = append(selected, alias(arctan(radians_value), "inverse_tangent"));
+    let selected = append(selected, alias(arctan2(col("value"), lit(1)), "quadrant_tangent"));
+    let selected = append(selected, alias(cosh(radians_value), "hyperbolic_cosine"));
+    let selected = append(selected, alias(sinh(radians_value), "hyperbolic_sine"));
+    let selected = append(selected, alias(tanh(radians_value), "hyperbolic_tangent"));
+    let selected = append(selected, alias(arccosh(col("value")), "inverse_hyperbolic_cosine"));
+    let selected = append(selected, alias(arcsinh(radians_value), "inverse_hyperbolic_sine"));
+    let selected = append(selected, alias(arctanh(unit_value), "inverse_hyperbolic_tangent"));
+    let selected = append(selected, alias(degrees(radians_value), "degrees"));
+    let selected = append(selected, alias(radians(col("value")), "radians"));
+    matches(select_exprs(df, selected), 4, 16).
+
+pub boolean_namespace_work(df: DataFrame): Bool ->
+    let value = col("value");
+    let floating = cast_to(value, Float64);
+    let lower = lit(1);
+    let upper = lit(3);
+    let left = between_closed(value, lower, upper, "both");
+    let right = is_not_null(value);
+    let selected = one(alias(is_null(value), "is_null"));
+    let selected = append(selected, alias(is_not_null(value), "is_not_null"));
+    let selected = append(selected, alias(is_finite(floating), "is_finite"));
+    let selected = append(selected, alias(is_infinite(floating), "is_infinite"));
+    let selected = append(selected, alias(is_nan(floating), "is_nan"));
+    let selected = append(selected, alias(is_not_nan(floating), "is_not_nan"));
+    let selected = append(selected, alias(is_first_distinct(value), "is_first_distinct"));
+    let selected = append(selected, alias(is_last_distinct(value), "is_last_distinct"));
+    let selected = append(selected, alias(is_unique(value), "is_unique"));
+    let selected = append(selected, alias(is_duplicated(value), "is_duplicated"));
+    let selected = append(selected, alias(equal_missing(value, value), "equal_missing"));
+    let selected = append(selected, alias(not_equal_missing(value, lower), "not_equal_missing"));
+    let selected = append(selected, alias(logical_and(left, right), "logical_and"));
+    let selected = append(selected, alias(logical_or(left, not_expr(right)), "logical_or"));
+    let selected = append(selected, alias(between_closed(value, lower, upper, "left"), "between_left"));
+    let selected = append(selected, alias(is_close(floating, floating, 0.000001, 0.000001, true), "is_close"));
+    let selected = append(selected, alias(any_horizontal(append(one(left), right)), "any_horizontal"));
+    let selected = append(selected, alias(is_in(lit("blue"), string_split(col("tags"), "|"), true), "membership"));
+    let rowwise_valid = matches(select_exprs(df, selected), 4, 18);
+    let reductions = one(alias(any(left, true), "any"));
+    let reductions = append(reductions, alias(all(left, true), "all"));
+    let reductions = append(reductions, alias(is_empty(left, true), "is_empty"));
+    let reductions = append(reductions, alias(has_nulls(value), "has_nulls"));
+    let reductions_valid = matches(select_exprs(df, reductions), 1, 4);
+    rowwise_valid and reductions_valid.
+
+pub cumulative_namespace_work(df: DataFrame): Bool ->
+    let value = col("value");
+    let selected = one(alias(cum_count(value, false), "count_forward"));
+    let selected = append(selected, alias(cum_count(value, true), "count_reverse"));
+    let selected = append(selected, alias(cum_sum(value, false), "sum_forward"));
+    let selected = append(selected, alias(cum_sum(value, true), "sum_reverse"));
+    let selected = append(selected, alias(cum_product(value, false), "product_forward"));
+    let selected = append(selected, alias(cum_product(value, true), "product_reverse"));
+    let selected = append(selected, alias(cum_min(value, false), "min_forward"));
+    let selected = append(selected, alias(cum_min(value, true), "min_reverse"));
+    let selected = append(selected, alias(cum_max(value, false), "max_forward"));
+    let selected = append(selected, alias(cum_max(value, true), "max_reverse"));
+    matches(select_exprs(df, selected), 4, 10).
+
+pub fixed_rolling_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let selected = one(alias(rolling_min(value, 3, 2, false), "rolling_min"));
+    let selected = append(selected, alias(rolling_max(value, 3, 2, false), "rolling_max"));
+    let selected = append(selected, alias(rolling_mean(value, 3, 2, false), "rolling_mean"));
+    let selected = append(selected, alias(rolling_sum(value, 3, 2, false), "rolling_sum"));
+    let selected = append(selected, alias(rolling_median(value, 3, 2, false), "rolling_median"));
+    let selected = append(selected, alias(rolling_var(value, 3, 2, false), "rolling_var"));
+    let selected = append(selected, alias(rolling_std(value, 3, 2, false), "rolling_std"));
+    let selected = append(selected, alias(rolling_sum(value, 3, 3, true), "rolling_centered"));
+    let selected = append(selected, alias(rolling_quantile(value, 3, 3, false, 0.25, "linear"), "rolling_quantile"));
+    let selected = append(selected, alias(rolling_rank(value, 3, 3, false, "average", 42), "rolling_rank"));
+    let selected = append(selected, alias(rolling_skew(value, 3, 3, false, true), "rolling_skew"));
+    let selected = append(selected, alias(rolling_kurtosis(value, 4, 4, false, true, true), "rolling_kurtosis"));
+    matches(select_exprs(df, selected), 4, 12).
+
+pub rolling_by_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let by = col("value");
+    let selected = one(alias(rolling_min_by(value, by, "2i", 1, "right"), "rolling_min_by"));
+    let selected = append(selected, alias(rolling_max_by(value, by, "2i", 1, "right"), "rolling_max_by"));
+    let selected = append(selected, alias(rolling_mean_by(value, by, "2i", 1, "right"), "rolling_mean_by"));
+    let selected = append(selected, alias(rolling_sum_by(value, by, "2i", 1, "right"), "rolling_sum_by"));
+    let selected = append(selected, alias(rolling_median_by(value, by, "2i", 1, "right"), "rolling_median_by"));
+    let selected = append(selected, alias(rolling_var_by(value, by, "2i", 1, "right"), "rolling_var_by"));
+    let selected = append(selected, alias(rolling_std_by(value, by, "2i", 1, "right"), "rolling_std_by"));
+    let selected = append(selected, alias(rolling_quantile_by(value, by, "2i", 1, "right", 0.25, "linear"), "rolling_quantile_by"));
+    let selected = append(selected, alias(rolling_rank_by(value, by, "2i", 1, "right", "average", 42), "rolling_rank_by"));
+    matches(select_exprs(df, selected), 4, 9).
+
+pub expression_names_work(df: DataFrame): Bool ->
+    let root_names = one(keep_name(alias(col("value"), "temporary")));
+    let root_names = append(root_names, replace_name(col("group"), "group", "category", true));
+    let root_names = append(root_names, lowercase_names(alias(col("tags"), "Tags Mixed")));
+    let root_names = append(root_names, uppercase_names(alias(col("stamp"), "Stamp Mixed")));
+    let root_names = append(root_names, prefix(col("group"), "pre_"));
+    let root_names = append(root_names, suffix(col("tags"), "_post"));
+    let roots_valid = matches(select_exprs(df, root_names), 4, 6);
+    let fields = append(one(alias(col("group"), "Group")), alias(col("value"), "Value"));
+    let record = as_struct(fields);
+    let structs = one(alias(prefix_field_names(record, "pre_"), "prefixed_fields"));
+    let structs = append(structs, alias(suffix_field_names(record, "_post"), "suffixed_fields"));
+    roots_valid and matches(select_exprs(df, structs), 4, 2).
+
+pub numeric_transforms_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let selected = one(alias(round_to(value, 1), "rounded"));
+    let selected = append(selected, alias(round_with_mode(value, 0, "half_away_from_zero"), "rounded_mode"));
+    let selected = append(selected, alias(round_sig_figs(value, 3), "significant"));
+    let selected = append(selected, alias(truncate(value, 1), "truncated"));
+    let selected = append(selected, alias(floor(value), "floor"));
+    let selected = append(selected, alias(ceil(value), "ceil"));
+    let selected = append(selected, alias(abs(value), "absolute"));
+    let selected = append(selected, alias(clip(value, lit(2.0), lit(3.0)), "clipped"));
+    let selected = append(selected, alias(clip_min(value, lit(2.0)), "clipped_min"));
+    let selected = append(selected, alias(clip_max(value, lit(3.0)), "clipped_max"));
+    let selected = append(selected, alias(log(value, lit(2.0)), "log_base_two"));
+    let selected = append(selected, alias(log1p(value), "log_one_plus"));
+    let selected = append(selected, alias(exp(value), "exponential"));
+    let selected = append(selected, alias(pi(), "pi"));
+    let selected = append(selected, alias(product(value), "product"));
+    let selected = append(selected, alias(entropy(value, 2.0, true), "entropy"));
+    let selected = append(selected, alias(skew(value, true), "skew"));
+    let selected = append(selected, alias(kurtosis(value, true, true), "kurtosis"));
+    let selected = append(selected, alias(upper_bound(col("value")), "upper_bound"));
+    let selected = append(selected, alias(lower_bound(col("value")), "lower_bound"));
+    matches(select_exprs(df, selected), 4, 20).
+
+pub scalar_aggregations_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let selected = one(alias(drop_nulls(value), "without_nulls"));
+    let selected = append(selected, alias(drop_nans(value), "without_nans"));
+    let selected = append(selected, alias(count(value), "count"));
+    let selected = append(selected, alias(len_values(value), "length"));
+    let selected = append(selected, alias(first_non_null(value), "first_non_null"));
+    let selected = append(selected, alias(last_non_null(value), "last_non_null"));
+    let selected = append(selected, alias(item(lit(7), false), "item"));
+    let selected = append(selected, alias(implode(value, true), "imploded"));
+    let selected = append(selected, alias(quantile(value, lit(0.25), "linear"), "quantile"));
+    let selected = append(selected, alias(mode(value, true), "mode"));
+    let selected = append(selected, alias(unique(value), "unique"));
+    let selected = append(selected, alias(arg_unique(value), "arg_unique"));
+    let selected = append(selected, alias(arg_min(value), "arg_min"));
+    let selected = append(selected, alias(arg_max(value), "arg_max"));
+    let selected = append(selected, alias(dot(value, value), "dot"));
+    matches(select_exprs(df, selected), 4, 15).
+
+pub generic_sequences_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let one_value = lit(1);
+    let selected = one(alias(rechunk(value), "rechunked"));
+    let selected = append(selected, alias(arg_sort(value, false, false), "arg_sort"));
+    let selected = append(selected, alias(sort_with(value, true, false), "sorted"));
+    let selected = append(selected, alias(reverse(value), "reversed"));
+    let selected = append(selected, alias(shift(value, one_value), "shifted"));
+    let selected = append(selected, alias(shift_and_fill(value, one_value, lit(0.0)), "shifted_filled"));
+    let selected = append(selected, alias(repeat_by(value, col("value")), "repeated"));
+    let selected = append(selected, alias(diff(value, one_value, "ignore"), "difference"));
+    let selected = append(selected, alias(pct_change(value, one_value), "percentage_change"));
+    let row_preserving = matches(select_exprs(df, selected), 4, 9);
+    let scalars = one(alias(index_of(value, lit(2.0)), "index"));
+    let scalars = append(scalars, alias(search_sorted(value, lit(2.0), "left", false), "insertion"));
+    let scalars = append(scalars, alias(get_expression(value, lit(2), false), "item"));
+    let scalar_valid = matches(select_exprs(df, scalars), 1, 3);
+    let sliced = matches(select_exprs(df, one(alias(slice_expression(value, lit(1), lit(2)), "slice"))), 2, 1);
+    let appended = matches(select_exprs(df, one(alias(append_expression(value, value, false), "appended"))), 8, 1);
+    let gathered = matches(select_exprs(df, one(alias(gather(value, lit(2), false), "gathered"))), 1, 1);
+    let dropped_diff = matches(select_exprs(df, one(alias(diff(value, one_value, "drop"), "difference_drop"))), 3, 1);
+    let every = matches(select_exprs(df, one(alias(gather_every(value, 2, 1), "every"))), 2, 1);
+    let extended = matches(select_exprs(df, one(alias(extend_constant(value, lit(9.0), lit(2)), "extended"))), 6, 1);
+    let headed = matches(select_exprs(df, one(alias(head_expression(value, 2), "head"))), 2, 1);
+    let tailed = matches(select_exprs(df, one(alias(tail_expression(value, 2), "tail"))), 2, 1);
+    row_preserving and scalar_valid and sliced and appended and gathered and dropped_diff and every and extended and headed and tailed.
+
+pub ranking_selection_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let ranks = one(alias(rank(value, "average", false), "average_rank"));
+    let ranks = append(ranks, alias(rank_random(value, false, 42), "random_rank"));
+    let ranks_valid = matches(select_exprs(df, ranks), 4, 2);
+    let selected = one(alias(top_k(value, lit(2)), "top"));
+    let selected = append(selected, alias(bottom_k(value, lit(2)), "bottom"));
+    let selected = append(selected, alias(top_k_by(value, lit(2), one(value), booleans(false)), "top_by"));
+    let selected = append(selected, alias(bottom_k_by(value, lit(2), one(value), booleans(false)), "bottom_by"));
+    ranks_valid and matches(select_exprs(df, selected), 2, 4).
+
+pub replacement_binning_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let labels = three_strings("low", "mid", "high");
+    let binary_labels = two_strings("low", "high");
+    let selected = one(alias(replace(value, lit(2.0), lit(20.0)), "replaced"));
+    let selected = append(selected, alias(replace_strict(value, value, lit(20.0)), "strict"));
+    let selected = append(selected, alias(replace_or_default(value, lit(2.0), lit(20.0), lit(-1.0)), "defaulted"));
+    let selected = append(selected, alias(cut(value, cut_breakpoints(), false, false), "cut"));
+    let selected = append(selected, alias(cut_labeled(value, cut_breakpoints(), labels, false, false), "cut_labeled"));
+    let selected = append(selected, alias(qcut(value, median_probability(), false, false, false), "qcut"));
+    let selected = append(selected, alias(qcut_labeled(value, median_probability(), binary_labels, false, false, false), "qcut_labeled"));
+    let selected = append(selected, alias(qcut_equal_frequency(value, 2, false, false, false), "qcut_equal_frequency"));
+    let selected = append(selected, alias(qcut_equal_frequency_labeled(value, 2, binary_labels, false, false, false), "qcut_equal_frequency_labeled"));
+    matches(select_exprs(df, selected), 4, 9).
+
+pub interpolation_peak_run_reshape_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let selected = one(alias(interpolate_by(value, value), "interpolated"));
+    let selected = append(selected, alias(peak_min(value), "peak_min"));
+    let selected = append(selected, alias(peak_max(value), "peak_max"));
+    let selected = append(selected, alias(rle_id(value), "run_id"));
+    let row_preserving = matches(select_exprs(df, selected), 4, 4);
+    let runs = matches(select_exprs(df, one(alias(rle(value), "runs"))), 4, 1);
+    let reshaped = matches(select_exprs(df, one(alias(reshape_expression(value, reshape_dimensions()), "reshaped"))), 2, 1);
+    row_preserving and runs and reshaped.
+
+pub exponentially_weighted_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let time = col("value");
+    let selected = one(alias(polars.DataFrame.ewm_mean(value, 0.5, false, 1, true), "ewm_mean"));
+    let selected = append(selected, alias(polars.DataFrame.ewm_std(value, 0.5, false, true, 1, true), "ewm_std"));
+    let selected = append(selected, alias(polars.DataFrame.ewm_var(value, 0.5, false, true, 1, true), "ewm_var"));
+    let selected = append(selected, alias(polars.DataFrame.ewm_mean_by(value, time, "1i"), "ewm_mean_by"));
+    matches(select_exprs(df, selected), 4, 4).
+
+pub advanced_aggregation_window_work(df: DataFrame): Bool ->
+    let value = cast_to(col("value"), Float64);
+    let group = col("group");
+    let selected = one(alias(polars.DataFrame.cumulative_eval(value, sum(element()), 1), "cumulative"));
+    let selected = append(selected, alias(polars.DataFrame.over_join(value, one(group)), "group_values"));
+    let selected = append(selected, alias(polars.DataFrame.over_ordered(first_non_null(value), one(group), one(value), true, false, "groups_to_rows"), "ordered_first"));
+    let row_preserving = matches(select_exprs(df, selected), 4, 3);
+    let grouped = matches(group_agg(df, one(group), one(alias(polars.DataFrame.agg_groups(value), "group_indices"))), 2, 2);
+    row_preserving and grouped.
+
+pub advanced_strings_work(df: DataFrame): Bool ->
+    let text = col("tags");
+    let pipe = lit("|");
+    let length = lit(12);
+    let selected = one(alias(polars.DataFrame.string_contains_literal(text, pipe), "contains_pipe"));
+    let selected = append(selected, alias(polars.DataFrame.string_find_literal(text, pipe), "find_pipe"));
+    let selected = append(selected, alias(polars.DataFrame.string_find(text, lit("[|]"), true), "find_regex"));
+    let selected = append(selected, alias(polars.DataFrame.string_count_matches(text, pipe, true), "pipe_count"));
+    let selected = append(selected, alias(polars.DataFrame.string_pad_start(text, length, "*"), "padded_start"));
+    let selected = append(selected, alias(polars.DataFrame.string_pad_end(text, length, "*"), "padded_end"));
+    let selected = append(selected, alias(polars.DataFrame.string_zfill(text, length), "zero_filled"));
+    let selected = append(selected, alias(polars.DataFrame.string_hex_encode(text), "hex"));
+    let selected = append(selected, alias(polars.DataFrame.string_base64_encode(text), "base64"));
+    let selected = append(selected, alias(polars.DataFrame.string_hex_decode(lit("636166c3a9"), true), "hex_decoded"));
+    let selected = append(selected, alias(polars.DataFrame.string_base64_decode(lit("Y2Fmw6k="), true), "base64_decoded"));
+    let selected = append(selected, alias(polars.DataFrame.string_normalize(text, "nfc"), "normalized"));
+    let selected = append(selected, alias(polars.DataFrame.string_reverse(text), "reversed"));
+    let selected = append(selected, alias(polars.DataFrame.string_escape_regex(text), "regex_escaped"));
+    matches(select_exprs(df, selected), 4, 14).
+
+pub typed_data_types_work(df: DataFrame): Bool ->
+    let selected = append(one(alias(cast_to(col("value"), Float32), "float_value")), dtype_cols_typed(data_types(Int64)));
+    matches(select_exprs(df, selected), 4, 2).
+
+pub categorical_binary_work(df: DataFrame): Bool ->
+    let category = cast_nested(col("group"), categorical_type());
+    let categories = matches(select_exprs(df, one(alias(categorical_categories(category), "categories"))), 2, 1);
+    let binary = cast_to(col("tags"), BinaryType);
+    let blue = cast_to(lit("blue"), BinaryType);
+    let red = cast_to(lit("red"), BinaryType);
+    let selected = one(alias(categorical_len_bytes(category), "category_bytes"));
+    let selected = append(selected, alias(categorical_len_chars(category), "category_chars"));
+    let selected = append(selected, alias(categorical_starts_with(category, "a"), "category_starts_a"));
+    let selected = append(selected, alias(categorical_ends_with(category, "a"), "category_ends_a"));
+    let selected = append(selected, alias(binary_contains(binary, blue), "contains_blue"));
+    let selected = append(selected, alias(binary_starts_with(binary, red), "starts_red"));
+    let selected = append(selected, alias(binary_ends_with(binary, blue), "ends_blue"));
+    let selected = append(selected, alias(binary_size_bytes(binary), "byte_count"));
+    let selected = append(selected, alias(binary_get(binary, lit(0)), "first_byte"));
+    let selected = append(selected, alias(binary_head(binary, lit(3)), "first_three"));
+    let selected = append(selected, alias(binary_tail(binary, lit(4)), "last_four"));
+    categories and matches(select_exprs(df, selected), 4, 11).
+
+pub categorical_slicing_work(df: DataFrame): Bool ->
+    let category = cast_nested(col("group"), categorical_type());
+    let selected = append(one(alias(categorical_slice(category, 1, 1), "category_middle")), alias(categorical_slice_to_end(category, 1), "category_tail"));
+    matches(select_exprs(df, selected), 4, 2).
+
+pub binary_slicing_codecs_work(df: DataFrame): Bool ->
+    let binary = cast_to(col("tags"), BinaryType);
+    let hex = binary_hex_encode(binary);
+    let base64 = binary_base64_encode(binary);
+    let selected = one(alias(binary_slice(binary, lit(1), lit(3)), "middle_three"));
+    let selected = append(selected, alias(hex, "hex"));
+    let selected = append(selected, alias(binary_hex_decode(cast_to(hex, BinaryType), true), "hex_round_trip"));
+    let selected = append(selected, alias(base64, "base64"));
+    let selected = append(selected, alias(binary_base64_decode(cast_to(base64, BinaryType), true), "base64_round_trip"));
+    let selected = append(selected, alias(binary_reinterpret(binary_head(binary, lit(1)), UInt8, true), "first_byte_typed"));
+    matches(select_exprs(df, selected), 4, 6).
+
+pub struct_namespace_work(df: DataFrame): Bool ->
+    let fields = append(one(alias(col("group"), "kind")), alias(col("tags"), "labels"));
+    let record = as_struct(fields);
+    let renamed = struct_rename_fields(record, two_strings("category", "payload"));
+    let marker = one(alias(lit(1), "marker"));
+    let extended = struct_with_fields(record, marker);
+    let selected = one(alias(struct_field_at(record, 0), "first"));
+    let selected = append(selected, alias(struct_field(renamed, "category"), "renamed"));
+    let selected = append(selected, alias(struct_json_encode(record), "json"));
+    let selected = append(selected, alias(struct_field(extended, "marker"), "marker"));
+    let ordinary = matches(select_exprs(df, selected), 4, 4);
+    let expanded = matches(select_exprs(df, one(struct_fields(record, two_strings("kind", "labels")))), 4, 2);
+    ordinary and expanded.
+
+pub expression_metadata_work(): Bool ->
+    let value = col("value");
+    let combined = alias(sum(value), "value_sum");
+    let renamed = alias(value, "renamed_value");
+    let literal = alias(lit(1), "one");
+    meta_root_names(combined).length() == 1 and
+        meta_output_name(combined) == "value_sum" and
+        meta_has_multiple_outputs(all_columns()) and
+        meta_is_column(value) and
+        meta_is_simple_projection(value) and
+        meta_is_column_selection(renamed, true) and
+        meta_is_literal(literal, true) and
+        meta_is_literal(literal, false) == false and
+        meta_is_regex_projection(value) == false and
+        meta_format_tree(combined, false) != "".
+
+pub require_true(value: Bool): Unit -> case value { true -> Unit }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_expression_namespaces/data/values.csv") {
+        Err(_error) -> require_true(false);
+        Ok(df) ->
+            let temporal = temporal_works(df);
+            require_true(temporal);
+            let duration_totals = duration_totals_work(df);
+            require_true(duration_totals);
+            println("Temporal namespace passed.");
+            let string_lists = string_lists_work(df);
+            require_true(string_lists);
+            let advanced_string_lists = advanced_string_lists_work(df);
+            require_true(advanced_string_lists);
+            println("String/list namespace passed.");
+            let numeric_lists = numeric_lists_work(df);
+            require_true(numeric_lists);
+            let numeric_arrays = numeric_arrays_work(df);
+            require_true(numeric_arrays);
+            let string_arrays = string_arrays_work(df);
+            require_true(string_arrays);
+            println("Array namespace passed.");
+            let categorical_binary = categorical_binary_work(df);
+            require_true(categorical_binary);
+            println("Categorical/binary namespaces passed.");
+            let categorical_slicing = categorical_slicing_work(df);
+            require_true(categorical_slicing);
+            println("Categorical slicing passed.");
+            let binary_slicing_codecs = binary_slicing_codecs_work(df);
+            require_true(binary_slicing_codecs);
+            println("Binary slicing/codecs/reinterpretation passed.");
+            let structs = struct_namespace_work(df);
+            require_true(structs);
+            println("Struct namespace passed.");
+            let expression_metadata = expression_metadata_work();
+            require_true(expression_metadata);
+            println("Expression metadata passed.");
+            let random_bitwise = random_bitwise_work(df);
+            require_true(random_bitwise);
+            println("Random and bitwise namespaces passed.");
+            let statistics = statistics_work(df);
+            require_true(statistics);
+            println("Statistics namespace passed.");
+            let trigonometry = trigonometry_work(df);
+            require_true(trigonometry);
+            println("Trigonometry namespace passed.");
+            let boolean_namespace = boolean_namespace_work(df);
+            require_true(boolean_namespace);
+            println("Boolean namespace passed.");
+            let cumulative_namespace = cumulative_namespace_work(df);
+            require_true(cumulative_namespace);
+            println("Cumulative namespace passed.");
+            let fixed_rolling = fixed_rolling_work(df);
+            require_true(fixed_rolling);
+            println("Fixed rolling expressions passed.");
+            let rolling_by = rolling_by_work(df);
+            require_true(rolling_by);
+            println("Rolling-by expressions passed.");
+            let expression_names = expression_names_work(df);
+            require_true(expression_names);
+            println("Expression-name namespace passed.");
+            let numeric_transforms = numeric_transforms_work(df);
+            require_true(numeric_transforms);
+            println("Numeric transforms passed.");
+            let scalar_aggregations = scalar_aggregations_work(df);
+            require_true(scalar_aggregations);
+            println("Scalar aggregations passed.");
+            let generic_sequences = generic_sequences_work(df);
+            require_true(generic_sequences);
+            println("Generic sequence expressions passed.");
+            let ranking_selection = ranking_selection_work(df);
+            require_true(ranking_selection);
+            println("Ranking and top/bottom-k expressions passed.");
+            let replacement_binning = replacement_binning_work(df);
+            require_true(replacement_binning);
+            println("Replacement and numeric-binning expressions passed.");
+            let interpolation_peak_run_reshape = interpolation_peak_run_reshape_work(df);
+            require_true(interpolation_peak_run_reshape);
+            println("Interpolation, peak, run-length, and reshape expressions passed.");
+            let exponentially_weighted = exponentially_weighted_work(df);
+            require_true(exponentially_weighted);
+            println("Exponentially weighted expressions passed.");
+            let advanced_aggregation_window = advanced_aggregation_window_work(df);
+            require_true(advanced_aggregation_window);
+            println("Advanced aggregation and window expressions passed.");
+            let advanced_strings = advanced_strings_work(df);
+            require_true(advanced_strings);
+            println("Advanced String expressions passed.");
+            let typed_data_types = typed_data_types_work(df);
+            require_true(typed_data_types);
+            dispose(df)
+    };
+    println("Polars temporal, list, array, categorical, binary, struct, expression-metadata, random, bitwise, statistics, trigonometry, Boolean, cumulative, rolling, expression-name, numeric-transform, scalar-aggregation, generic-sequence, ranking-selection, replacement, numeric-binning, interpolation, peak, run-length, reshape, exponentially weighted, advanced aggregation/window, and advanced String namespaces passed.").

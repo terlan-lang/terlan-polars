@@ -1,0 +1,24 @@
+module polars_expressions.Main.
+
+import polars_expressions.{Aggregation, Casting, ColumnSelections, ExpressionExpansion, Folds, MissingData, Operations, Strings, Structs, UserDefinedFunctions, Window}.
+import std.core.Unit.
+import std.io.Console.{println}.
+
+pub require_true(value: Bool): Unit ->
+    case value {
+        true -> Unit
+    }.
+
+pub main(): Unit ->
+    require_true(Operations.run());
+    require_true(ColumnSelections.run());
+    require_true(ExpressionExpansion.run());
+    require_true(Casting.run());
+    require_true(Strings.run());
+    require_true(MissingData.run());
+    require_true(Folds.run());
+    require_true(UserDefinedFunctions.run());
+    require_true(Window.run());
+    require_true(Aggregation.run());
+    require_true(Structs.run());
+    println("Polars Rust expression examples passed.").

@@ -1,0 +1,41 @@
+module interop.IrisDirectTest.
+
+import polars.DataFrame.{dispose as dispose_frame, read_csv, to_pytorch_packet}.
+import pytorch.Tensor.{amax, dispose as dispose_tensor, from_packet, item_float, shape}.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.system.Environment.get.
+
+import type polars.DataFrame.
+
+iris_csv(): String ->
+    case get("TERLAN_POLARS_IRIS_CSV") {
+        Some(path) -> path;
+        None -> ""
+    }.
+
+@test
+pub iris_packet_flows_directly_from_polars_to_pytorch(): Bool ->
+    case read_csv(iris_csv()) {
+        Err(_error) -> false;
+        Ok(frame) -> verify_frame(frame)
+    }.
+
+verify_frame(frame: DataFrame): Bool ->
+    let packet =
+        to_pytorch_packet(
+            frame,
+            ["sepal_length_cm", "sepal_width_cm", "petal_length_cm", "petal_width_cm"],
+            "Float64",
+            "error",
+        );
+    let tensor = from_packet(packet);
+    let column_maxima = amax(tensor, [0], false);
+    let maximum = amax(column_maxima, [0], false);
+    let tensor_shape = shape(tensor);
+    let valid = tensor_shape == [150, 4] and item_float(maximum) == 7.9;
+    let _disposed_maximum = dispose_tensor(maximum);
+    let _disposed_column_maxima = dispose_tensor(column_maxima);
+    let _disposed_tensor = dispose_tensor(tensor);
+    let _disposed_frame = dispose_frame(frame);
+    valid.

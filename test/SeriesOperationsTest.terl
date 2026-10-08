@@ -1,0 +1,169 @@
+module polars.SeriesOperationsTest.
+
+import polars.DataFrame.{Int64, bin_intervals, bin_intervals_count, bin_intervals_ints, bin_quantiles, bin_quantiles_count, bin_ranks, bin_ranks_count, dispose_series, series_add, series_append, series_boolean_values, series_cast_with_options, series_chunk_count, series_deserialize, series_equal_values, series_estimated_size, series_extend_int, series_from_bools, series_from_ints, series_full_null, series_integer_values, series_len, series_name, series_null_count, series_rename, series_sample_fraction, series_select_chunk, series_serialize, series_set_sorted_flag, series_sort, series_sorted_flag, series_sum, series_to_float, series_values, series_zip_with}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub series_name_and_shape_execute(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
+        Ok(renamed) <- series_rename(input, "renamed");
+        Ok(size_kb) <- series_estimated_size(input, "kb")
+    } else {
+        _ -> false
+    };
+    (let valid =
+    series_name(renamed) == "renamed"
+        and series_len(renamed) == 4
+        and series_chunk_count(renamed) == 1
+        and size_kb > 0.0;
+let _disposed_renamed = dispose_series(renamed);
+valid).
+
+@test
+pub series_stable_sort_executes(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
+        Ok(sorted) <- series_sort(input, false, false, true)
+    } else {
+        _ -> false
+    };
+    series_values(sorted, 10) == ["1", "1", "2", "3"].
+
+@test
+pub series_dtype_preserving_sum_executes(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
+        Ok(sum) <- series_sum(input)
+    } else {
+        _ -> false
+    };
+    series_values(sum, 1) == ["7"].
+
+@test
+pub series_invalid_fraction_is_rejected(): Bool ->
+    case series_from_ints("value", [1, 2]) {
+        Err(_error) -> false;
+        Ok(input) ->
+            case series_sample_fraction(input, -0.5, false, false) {
+                Err(_error) -> true;
+                Ok(unexpected) ->
+                    let _disposed_unexpected = dispose_series(unexpected);
+                    let _disposed_input = dispose_series(input);
+                    false
+            }
+    }.
+
+@test
+pub series_value_wise_arithmetic_executes(): Bool ->
+    let {
+        Ok(left) <- series_from_ints("left", [1, 2, 3]);
+        Ok(right) <- series_from_ints("right", [4, 5, 6]);
+        Ok(sum) <- series_add(left, right)
+    } else {
+        _ -> false
+    };
+    series_values(sum, 3) == ["5", "7", "9"].
+
+@test
+pub series_value_wise_comparison_executes(): Bool ->
+    let {
+        Ok(left) <- series_from_ints("left", [1, 2, 3]);
+        Ok(right) <- series_from_ints("right", [1, 0, 3]);
+        Ok(equal) <- series_equal_values(left, right)
+    } else {
+        _ -> false
+    };
+    series_values(equal, 3) == ["true", "false", "true"].
+
+@test
+pub series_null_and_constant_operations_execute(): Bool ->
+    let {
+        Ok(nulls) <- series_full_null("missing", 2, Int64);
+        Ok(values) <- series_from_ints("value", [1, 2]);
+        Ok(extended) <- series_extend_int(values, 9, 2)
+    } else {
+        _ -> false
+    };
+    series_null_count(nulls) == 2 and series_values(extended, 4) == ["1", "2", "9", "9"].
+
+@test
+pub series_metadata_and_zip_execute(): Bool ->
+    let {
+        Ok(left) <- series_from_ints("left", [1, 2, 3]);
+        Ok(right) <- series_from_ints("right", [10, 20, 30]);
+        Ok(mask) <- series_from_bools("mask", [true, false, true]);
+        Ok(selected) <- series_zip_with(left, mask, right);
+        Ok(sorted) <- series_set_sorted_flag(selected, "ascending")
+    } else {
+        _ -> false
+    };
+    series_values(sorted, 3) == ["1", "20", "3"] and series_sorted_flag(sorted) == "ascending".
+
+@test
+pub series_serialization_round_trip_executes(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [1, 2, 3]);
+        Ok(bytes) <- series_serialize(input);
+        Ok(restored) <- series_deserialize(bytes)
+    } else {
+        _ -> false
+    };
+    series_values(restored, 3) == ["1", "2", "3"] and series_name(restored) == "value".
+
+@test
+pub typed_series_values_round_trip_without_text_rendering(): Bool ->
+    let {
+        Ok(integers) <- series_from_ints("integers", [-2, 0, 7]);
+        Ok(integer_values) <- series_integer_values(integers);
+        Ok(booleans) <- series_from_bools("booleans", [true, false]);
+        Ok(boolean_values) <- series_boolean_values(booleans)
+    } else {
+        _ -> false
+    };
+    integer_values == [-2, 0, 7] and boolean_values == [true, false].
+
+@test
+pub series_chunk_selection_and_float_conversion_execute(): Bool ->
+    let {
+        Ok(left) <- series_from_ints("value", [1, 2]);
+        Ok(right) <- series_from_ints("value", [3, 4]);
+        Ok(appended) <- series_append(left, right);
+        Ok(chunk) <- series_select_chunk(appended, 1);
+        Ok(floats) <- series_to_float(chunk)
+    } else {
+        _ -> false
+    };
+    series_values(floats, 2) == ["3.0", "4.0"].
+
+@test
+pub series_cast_options_preserve_overflow_mode(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [1, 300]);
+        Ok(casted) <- series_cast_with_options(input, "UInt8", "overflowing")
+    } else {
+        _ -> false
+    };
+    series_values(casted, 2) == ["1", "44"].
+
+@test
+pub polars_2_eager_series_binning_executes(): Bool ->
+    let {
+        Ok(input) <- series_from_ints("value", [-2, -1, 0, 1, 2]);
+        Ok(intervals) <- bin_intervals(input, [-1.0, 1.0], false, false);
+        Ok(integer_intervals) <- bin_intervals_ints(input, [-1, 1], false, false);
+        Ok(uniform_intervals) <- bin_intervals_count(input, 3, false, false);
+        Ok(quantiles) <- bin_quantiles(input, [0.5], false, false);
+        Ok(uniform_quantiles) <- bin_quantiles_count(input, 2, false, false);
+        Ok(ranks) <- bin_ranks(input, [0.5], false);
+        Ok(uniform_ranks) <- bin_ranks_count(input, 2, false)
+    } else {
+        _ -> false
+    };
+    series_values(intervals, 5) == ["0", "1", "1", "2", "2"]
+        and series_values(integer_intervals, 5) == ["0", "1", "1", "2", "2"]
+        and series_len(uniform_intervals) == 5
+        and series_len(quantiles) == 5
+        and series_len(uniform_quantiles) == 5
+        and series_len(ranks) == 5
+        and series_len(uniform_ranks) == 5.

@@ -1,0 +1,249 @@
+module polars_series.Main.
+
+import polars.DataFrame.{BinaryType, DateType, DatetimeMicroseconds, DurationMicroseconds, Float16, Float32, Int32, Int64, Int128, UInt128, Utf8, alias, array_type, categorical_type, column_series, data_type_field, datetime_type, decimal_type, dispose, dispose_series, enum_type, height, list_type, select_exprs, series_cast, series_cast_to, series_data_type, series_empty_typed, series_from_bools, series_from_datetimes, series_from_floats, series_from_ints, series_from_nullable_datetimes, series_from_nullable_dates, series_from_nullable_ints, series_from_strings, series_len, series_name, series_null_count, series_to_expr, series_to_frame, series_values, struct_type, width}.
+import polars.DataFrame.{frames_equal, frames_equal_missing, series_equal, series_equal_missing}.
+import polars.DataFrame.{row_hashes, row_hashes_seeded, row_is_duplicated, row_is_unique}.
+import type polars.DataFrame.{DataFrame, DataTypeField, Expr, Series}.
+import std.collections.List.
+import type std.core.Error.
+import std.core.Option.{None, Some}.
+import type std.core.Option.{Option}.
+import std.core.Result.{Err, Ok}.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub values(): List[String] ->
+    let result = List.new();
+    result.push("1");
+    result.push("2");
+    result.push("3");
+    result.
+
+pub ints(): List[Int] -> let values = List.new(); values.push(1); values.push(2); values.push(3); values.
+pub duplicate_ints(): List[Int] -> let values = List.new(); values.push(1); values.push(1); values.push(2); values.
+pub floats(): List[Float] -> let values = List.new(); values.push(1.5); values.push(2.25); values.
+pub bools(): List[Bool] -> let values = List.new(); values.push(true); values.push(false); values.
+pub expressions(value: Expr): List[Expr] -> let values = List.new(); values.push(value); values.
+pub nullable_ints(): List[Option[Int]] -> let values = List.new(); values.push(Some(1)); values.push(None); values.push(Some(3)); values.
+pub all_null_ints(): List[Option[Int]] -> let values = List.new(); values.push(None); values.push(None); values.
+pub nullable_dates(): List[Option[String]] -> let values = List.new(); values.push(Some("2024-01-02")); values.push(None); values.
+pub datetimes(): List[String] -> let values = List.new(); values.push("2024-01-02T03:04:05"); values.push("2024-02-03T04:05:06.123456"); values.
+pub nullable_datetimes(): List[Option[String]] -> let values = List.new(); values.push(Some("2024-01-02T03:04:05")); values.push(None); values.
+pub data_type_fields(): List[DataTypeField] -> let values = List.new(); values.push(data_type_field("id", Int64)); values.push(data_type_field("tags", list_type(Utf8))); values.
+pub size_categories(): List[String] -> let values = List.new(); values.push("small"); values.push("medium"); values.push("large"); values.
+
+pub require_true(value: Bool): Unit ->
+    case value {
+        true -> Unit
+    }.
+
+pub inspect_frame(df: DataFrame): Bool ->
+    let shape = height(df) == 3 and width(df) == 1;
+    case column_series(df, "numbers") {
+        Err(_error) -> false;
+        Ok(extracted) ->
+            let valid = shape and series_name(extracted) == "numbers" and
+                series_values(extracted, 3) == ["1", "2", "3"];
+            dispose_series(extracted);
+            valid
+    }.
+
+pub inspect_numbers(numbers: Series): Bool ->
+    let typed = series_data_type(numbers) == "Int64" and
+        series_values(numbers, 3) == ["1", "2", "3"];
+    case series_to_frame(numbers) {
+        Err(_error) -> false;
+        Ok(df) ->
+            let literal = alias(series_to_expr(numbers), "literal_numbers");
+            let expression_valid = case select_exprs(df, expressions(literal)) {
+                Err(_error) -> false;
+                Ok(selected) ->
+                    let valid = case column_series(selected, "literal_numbers") {
+                        Err(_error) -> false;
+                        Ok(values) -> let observed = series_values(values, 3) == ["1", "2", "3"]; dispose_series(values); observed
+                    };
+                    let _disposed_at_373 = dispose(selected);
+                    valid
+            };
+            let valid = typed and expression_valid and inspect_frame(df);
+            let _disposed_at_377 = dispose(df);
+            valid
+    }.
+
+pub inspect_strings(strings: Series): Bool ->
+    let observed = series_name(strings) == "numbers" and series_len(strings) == 3 and
+        series_null_count(strings) == 0 and series_data_type(strings) == "String" and
+        series_values(strings, 2) == ["1", "2"];
+    case series_cast(strings, "Int64") {
+        Err(_error) -> false;
+        Ok(numbers) ->
+            let valid = observed and inspect_numbers(numbers);
+            dispose_series(numbers);
+            valid
+    }.
+
+pub typed_constructors_work(): Bool ->
+    case series_from_ints("ints", ints()) {
+        Err(_error) -> false;
+        Ok(int_series) ->
+            let int_valid = series_data_type(int_series) == "Int64" and series_values(int_series, 3) == ["1", "2", "3"];
+            case series_cast_to(int_series, Int32) {
+                Err(_error) -> false;
+                Ok(int32_series) ->
+                    let int32_valid = series_data_type(int32_series) == "Int32";
+                    dispose_series(int32_series);
+                    dispose_series(int_series);
+                    case series_from_floats("floats", floats()) {
+                        Err(_error) -> false;
+                        Ok(float_series) ->
+                            let float_valid = series_data_type(float_series) == "Float64" and series_values(float_series, 2) == ["1.5", "2.25"];
+                            dispose_series(float_series);
+                            case series_from_bools("flags", bools()) {
+                                Err(_error) -> false;
+                                Ok(bool_series) ->
+                                    let bool_valid = series_data_type(bool_series) == "Boolean" and series_values(bool_series, 2) == ["true", "false"];
+                                    dispose_series(bool_series);
+                                    case series_empty_typed("dates", DateType) {
+                                        Err(_error) -> false;
+                                        Ok(empty) -> let empty_valid = series_len(empty) == 0 and series_data_type(empty) == "Date"; dispose_series(empty); int_valid and int32_valid and float_valid and bool_valid and empty_valid
+                                    }
+                            }
+                    }
+            }
+    }.
+
+pub inspect_constructed(result: Result[Series, Error], data_type: String, length: Int, null_count: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(series) ->
+            let valid = series_data_type(series) == data_type and series_len(series) == length and series_null_count(series) == null_count;
+            dispose_series(series);
+            valid
+    }.
+
+pub nullable_and_temporal_constructors_work(): Bool ->
+    inspect_constructed(series_from_nullable_ints("nullable", nullable_ints()), "Int64", 3, 1) and
+    inspect_constructed(series_from_nullable_ints("missing", all_null_ints()), "Int64", 2, 2) and
+    inspect_constructed(series_from_nullable_dates("dates", nullable_dates()), "Date", 2, 1) and
+    inspect_constructed(series_from_datetimes("datetimes", datetimes()), "Datetime('μs')", 2, 0) and
+    inspect_constructed(series_from_nullable_datetimes("nullable_datetimes", nullable_datetimes()), "Datetime('μs')", 2, 1) and
+    inspect_constructed(series_empty_typed("binary", BinaryType), "Binary", 0, 0) and
+    inspect_constructed(series_empty_typed("duration", DurationMicroseconds), "Duration('μs')", 0, 0).
+
+pub inspect_empty(result: Result[Series, Error]): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(series) -> let valid = series_len(series) == 0; dispose_series(series); valid
+    }.
+
+pub report_failure(message: String): Bool -> let _ignored = println(message); false.
+
+pub nested_data_types_work(): Bool ->
+    inspect_empty(series_empty_typed("nested", list_type(list_type(Int64)))) and
+    inspect_empty(series_empty_typed("array", array_type(Float32, 3))) and
+    inspect_empty(series_empty_typed("decimal", decimal_type(12, 2))) and
+    inspect_empty(series_empty_typed("record", struct_type(data_type_fields()))) and
+    inspect_empty(series_empty_typed("category", categorical_type())) and
+    inspect_empty(series_empty_typed("size", enum_type(size_categories()))) and
+    inspect_empty(series_empty_typed("observed_at", datetime_type(DatetimeMicroseconds, "Europe/Riga"))).
+
+pub extended_numeric_types_work(): Bool ->
+    let signed = inspect_constructed(series_empty_typed("wide_signed", Int128), "Int128", 0, 0);
+    case signed {
+        false -> report_failure("Int128 Series check failed");
+        true ->
+            let unsigned = inspect_constructed(series_empty_typed("wide_unsigned", UInt128), "UInt128", 0, 0);
+            case unsigned {
+                false -> report_failure("UInt128 Series check failed");
+                true ->
+                    let half = inspect_constructed(series_empty_typed("half", Float16), "Float16", 0, 0);
+                    case half {
+                        false -> report_failure("Float16 Series check failed");
+                        true -> true
+                    }
+            }
+    }.
+
+pub dispose_series_false(series: Series): Bool -> dispose_series(series); false.
+
+pub equality_semantics_work(): Bool ->
+    case series_from_nullable_ints("value", nullable_ints()) {
+        Err(_error) -> false;
+        Ok(left) ->
+            case series_from_nullable_ints("value", nullable_ints()) {
+                Err(_error) -> dispose_series_false(left);
+                Ok(right) ->
+                    let series_valid = series_equal(left, right) == false and series_equal_missing(left, right);
+                    let frame_valid = case series_to_frame(left) {
+                        Err(_error) -> false;
+                        Ok(left_frame) ->
+                            let valid = case series_to_frame(right) {
+                                Err(_error) -> false;
+                                Ok(right_frame) ->
+                                    let equal = frames_equal(left_frame, right_frame) == false and frames_equal_missing(left_frame, right_frame);
+                                    let _disposed_at_492 = dispose(right_frame);
+                                    equal
+                            };
+                            let _disposed_at_495 = dispose(left_frame);
+                            valid
+                    };
+                    dispose_series(right);
+                    dispose_series(left);
+                    series_valid and frame_valid
+            }
+    }.
+
+pub row_identity_work(): Bool ->
+    case series_from_ints("value", duplicate_ints()) {
+        Err(_error) -> false;
+        Ok(values) ->
+            let valid = case series_to_frame(values) {
+                Err(_error) -> false;
+                Ok(df) ->
+                    let unique_valid = case row_is_unique(df) {
+                        Err(_error) -> false;
+                        Ok(unique) ->
+                            let observed = series_data_type(unique) == "Boolean" and
+                                series_values(unique, 3) == ["false", "false", "true"];
+                            dispose_series(unique);
+                            observed
+                    };
+                    let duplicated_valid = case row_is_duplicated(df) {
+                        Err(_error) -> false;
+                        Ok(duplicated) ->
+                            let observed = series_data_type(duplicated) == "Boolean" and
+                                series_values(duplicated, 3) == ["true", "true", "false"];
+                            dispose_series(duplicated);
+                            observed
+                    };
+                    let default_hash_valid = case row_hashes(df) {
+                        Err(_error) -> false;
+                        Ok(hashes) ->
+                            let observed = series_data_type(hashes) == "UInt64" and series_len(hashes) == 3;
+                            dispose_series(hashes);
+                            observed
+                    };
+                    let seeded_hash_valid = case row_hashes_seeded(df, 42) {
+                        Err(_error) -> false;
+                        Ok(hashes) ->
+                            let observed = series_data_type(hashes) == "UInt64" and series_len(hashes) == 3;
+                            dispose_series(hashes);
+                            observed
+                    };
+                    let _disposed_at_541 = dispose(df);
+                    unique_valid and duplicated_valid and default_hash_valid and seeded_hash_valid
+            };
+            dispose_series(values);
+            valid
+    }.
+
+pub main(): Unit ->
+    case series_from_strings("numbers", values()) {
+        Err(_error) -> require_true(false);
+        Ok(strings) ->
+            let valid = inspect_strings(strings) and typed_constructors_work() and nullable_and_temporal_constructors_work() and nested_data_types_work() and extended_numeric_types_work() and equality_semantics_work() and row_identity_work();
+            dispose_series(strings);
+            require_true(valid)
+    };
+    println("Polars Series resource passed.").

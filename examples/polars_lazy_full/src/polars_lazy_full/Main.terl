@@ -1,0 +1,170 @@
+module polars_lazy_full.Main.
+
+import polars.DataFrame.{alias, col, collect, collect_streaming, describe_plan, describe_plan_tree, dispose, gt, height, lazy_filter, lazy_group_agg, lazy_left_join, lazy_limit, lazy_remove_where, lazy_select_exprs, lazy_select_exprs_sequential, lazy_set_optimization, lazy_sort, lazy_with_columns, lazy_with_columns_sequential, lazy_without_optimizations, len_expr, lit, mean, multiply, profile_plan, read_csv, release, remove_where, scan_csv, scan_ipc, scan_ndjson, scan_parquet, select_exprs_sequential, width, with_columns_sequential, write_ipc, write_ndjson, write_parquet}.
+import type polars.DataFrame.{DataFrame, Expr, LazyFrame}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import type std.core.Error.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub expressions(): List[Expr] -> List.new().
+pub append(values: List[Expr], value: Expr): List[Expr] -> values.push(value); values.
+pub one(value: Expr): List[Expr] -> append(expressions(), value).
+pub strings(value: String): List[String] -> let values = List.new(); values.push(value); values.
+
+pub validate_scan(result: Result[LazyFrame, Error]): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(plan) ->
+            let valid = case collect(plan) {
+                Err(_error) -> false;
+                Ok(df) -> let matches = height(df) == 4 and width(df) == 4; dispose(df); matches
+            };
+            release(plan);
+            valid
+    }.
+
+pub validate_derived(plan: LazyFrame): Bool ->
+    let valid = case collect(plan) {
+        Err(_error) -> false;
+        Ok(df) -> let matches = height(df) == 4 and width(df) == 4; dispose(df); matches
+    };
+    release(plan);
+    valid.
+
+pub frame_matches(result: Result[DataFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) -> let valid = height(df) == expected_height and width(df) == expected_width; dispose(df); valid
+    }.
+
+pub lazy_result_matches(result: Result[LazyFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(plan) ->
+            let valid = frame_matches(collect(plan), expected_height, expected_width);
+            release(plan);
+            valid
+    }.
+
+pub file_scans(source: DataFrame): Bool ->
+    case write_parquet(source, "target/lazy-people.parquet") {
+        Err(_error) -> false;
+        Ok(Unit) ->
+            case write_ndjson(source, "target/lazy-people.ndjson") {
+                Err(_error) -> false;
+                Ok(Unit) ->
+                    case write_ipc(source, "target/lazy-people.arrow") {
+                        Err(_error) -> false;
+                        Ok(Unit) ->
+                            validate_scan(scan_parquet("target/lazy-people.parquet")) and
+                                validate_scan(scan_ndjson("target/lazy-people.ndjson")) and
+                                validate_scan(scan_ipc("target/lazy-people.arrow"))
+                    }
+            }
+    }.
+
+pub pipeline(base: LazyFrame): Bool ->
+    case lazy_with_columns(base, one(alias(multiply(col("score"), lit(2)), "double_score"))) {
+        Err(_error) -> false;
+        Ok(enriched) ->
+            case lazy_filter(enriched, gt(col("age"), lit(36))) {
+                Err(_error) -> false;
+                Ok(filtered) ->
+                    let selected_exprs = append(append(one(col("name")), col("age")), col("double_score"));
+                    case lazy_select_exprs(filtered, selected_exprs) {
+                        Err(_error) -> false;
+                        Ok(selected) ->
+                            let sorted = lazy_sort(selected, "age", true);
+                            let limited = lazy_limit(sorted, 2);
+                            let described = describe_plan(limited, true) != "";
+                            let tree_described = describe_plan_tree(limited, true) != "";
+                            let profiled = case profile_plan(limited) {
+                                Err(_error) -> false;
+                                Ok(profile) -> let matches = height(profile) > 0 and width(profile) == 3; dispose(profile); matches
+                            };
+                            let valid = case collect_streaming(limited) {
+                                Err(_error) -> false;
+                                Ok(df) -> let matches = described and tree_described and profiled and height(df) == 2 and width(df) == 3; dispose(df); matches
+                            };
+                            release(limited);
+                            release(sorted);
+                            release(selected);
+                            release(filtered);
+                            release(enriched);
+                            valid
+                    }
+            }
+    }.
+
+pub grouped(base: LazyFrame): Bool ->
+    let aggregations = append(one(alias(mean(col("score")), "mean_score")), alias(len_expr(), "count"));
+    case lazy_group_agg(base, one(col("city")), aggregations) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let valid = case collect(grouped) {
+                Err(_error) -> false;
+                Ok(df) -> let matches = height(df) == 3 and width(df) == 3; dispose(df); matches
+            };
+            release(grouped);
+            valid
+    }.
+
+pub joined(base: LazyFrame): Bool ->
+    case scan_csv("examples/polars_lazy_full/data/cities.csv", false) {
+        Err(_error) -> false;
+        Ok(cities) ->
+            case lazy_left_join(base, cities, strings("city")) {
+                Err(_error) -> false;
+                Ok(joined) ->
+                    let valid = case collect(joined) {
+                        Err(_error) -> false;
+                        Ok(df) -> let matches = height(df) == 4 and width(df) == 5; dispose(df); matches
+                    };
+                    release(joined);
+                    release(cities);
+                    valid
+            }
+    }.
+
+pub optimizer_controls(base: LazyFrame): Bool ->
+    let baseline = validate_derived(lazy_without_optimizations(base));
+    let configured = case lazy_set_optimization(base, "predicate_pushdown", false) {
+        Err(_error) -> false;
+        Ok(plan) -> validate_derived(plan)
+    };
+    baseline and configured.
+
+pub sequential_pipelines(source: DataFrame, base: LazyFrame): Bool ->
+    let projection = append(one(col("name")), col("score"));
+    let calculated = one(alias(multiply(col("score"), lit(2)), "double_score"));
+    frame_matches(select_exprs_sequential(source, projection), 4, 2) and
+        frame_matches(with_columns_sequential(source, calculated), 4, 5) and
+        lazy_result_matches(lazy_select_exprs_sequential(base, projection), 4, 2) and
+        lazy_result_matches(lazy_with_columns_sequential(base, calculated), 4, 5).
+
+pub inverse_filters(source: DataFrame, base: LazyFrame): Bool ->
+    let predicate = gt(col("age"), lit(36));
+    frame_matches(remove_where(source, predicate), 1, 4) and
+        lazy_result_matches(lazy_remove_where(base, predicate), 1, 4).
+
+pub require_true(value: Bool): Unit -> case value { true -> Unit }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_lazy_full/data/people.csv") {
+        Err(_error) -> require_true(false);
+        Ok(source) ->
+            let scans = file_scans(source);
+            case scan_csv("examples/polars_lazy_full/data/people.csv", false) {
+                Err(_error) -> require_true(false);
+                Ok(base) ->
+                    let valid = scans and pipeline(base) and grouped(base) and joined(base) and optimizer_controls(base) and sequential_pipelines(source, base) and inverse_filters(source, base);
+                    release(base);
+                    let _disposed_at_1597 = dispose(source);
+                    require_true(valid)
+            }
+    };
+    println("Composable Polars LazyFrame passed.").

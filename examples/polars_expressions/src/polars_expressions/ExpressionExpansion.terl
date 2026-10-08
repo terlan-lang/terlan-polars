@@ -1,0 +1,235 @@
+module polars_expressions.ExpressionExpansion.
+
+import polars.DataFrame.{add, alias, all_columns, col, cols, columns, dispose, divide, dtype_cols, exclude, height, lit, prefix, read_csv, round_to, rows, select_exprs, subtract, suffix, uppercase_names, width, with_columns}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub strings(first: String): List[String] ->
+    let values = List.new();
+    values.push(first);
+    values.
+
+pub strings2(first: String, second: String): List[String] ->
+    let values = strings(first);
+    values.push(second);
+    values.
+
+pub five_prices(): List[String] ->
+    let values = strings2("price", "day_high");
+    values.push("day_low");
+    values.push("year_high");
+    values.push("year_low");
+    values.
+
+pub expanded_prices(rate: Float): Expr ->
+    round_to(divide(cols(five_prices()), lit(rate)), 2).
+
+pub explicit_prices(rate: Float): List[Expr] ->
+    let values = expressions();
+    let values = append(values, round_to(divide(col("price"), lit(rate)), 2));
+    let values = append(values, round_to(divide(col("day_high"), lit(rate)), 2));
+    let values = append(values, round_to(divide(col("day_low"), lit(rate)), 2));
+    let values = append(values, round_to(divide(col("year_high"), lit(rate)), 2));
+    append(values, round_to(divide(col("year_low"), lit(rate)), 2)).
+
+pub with_named_columns(df: DataFrame): Bool ->
+    case with_columns(df, append(expressions(), expanded_prices(1.09))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                width(result) == 7
+                    and case rows(result, 1) {
+    Ok([["AAPL", "Apple", "210.92", _day_high, _day_low, _year_high, _year_low]]) -> true;
+    _ -> false
+};
+            let _disposed_at_3587 = dispose(result);
+            valid
+    }.
+
+pub expression_list(df: DataFrame): Bool ->
+    case with_columns(df, explicit_prices(1.09)) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 7;
+            let _disposed_at_3596 = dispose(result);
+            valid
+    }.
+
+pub dtype_examples(df: DataFrame): Bool ->
+    case with_columns(
+    df,
+    append(expressions(), round_to(divide(dtype_cols(strings("Float64")), lit(1.09)), 2)),
+) {
+        Err(_error) -> false;
+        Ok(single) ->
+            let single_valid = width(single) == 7;
+            let _disposed_at_3605 = dispose(single);
+            case with_columns(
+    df,
+    append(
+        expressions(),
+        round_to(divide(dtype_cols(strings2("Float32", "Float64")), lit(1.09)), 2),
+    ),
+) {
+                Err(_error) -> false;
+                Ok(multiple) ->
+                    let valid = single_valid and width(multiple) == 7;
+                    let _disposed_at_3610 = dispose(multiple);
+                    valid
+            }
+    }.
+
+pub regex_columns(df: DataFrame): Bool ->
+    let names = strings2("ticker", "^.*_high$");
+    names.push("^.*_low$");
+    case select_exprs(df, append(expressions(), cols(names))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 5;
+            let _disposed_at_3622 = dispose(result);
+            valid
+    }.
+
+pub all_examples(df: DataFrame): Bool ->
+    case select_exprs(df, append(expressions(), all_columns())) {
+        Err(_error) -> false;
+        Ok(all) ->
+            let all_valid = height(all) == 5 and width(all) == 7;
+            let _disposed_at_3631 = dispose(all);
+            case select_exprs(df, append(expressions(), exclude(all_columns(), strings("^day_.*$")))) {
+                Err(_error) -> false;
+                Ok(without_day) ->
+                    let valid = all_valid and width(without_day) == 5;
+                    let _disposed_at_3636 = dispose(without_day);
+                    valid
+            }
+    }.
+
+pub dtype_exclude(df: DataFrame): Bool ->
+    let selector = exclude(dtype_cols(strings("Float64")), strings("^day_.*$"));
+    case select_exprs(df, append(expressions(), selector)) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 3;
+            let _disposed_at_3647 = dispose(result);
+            valid
+    }.
+
+pub duplicate_error(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, divide(col("price"), lit(1.31)));
+    let values = append(values, divide(col("price"), lit(1.09)));
+    case select_exprs(df, values) {
+        Err(_error) -> true;
+        Ok(result) ->
+            let _disposed = dispose(result);
+            false
+    }.
+
+pub alias_example(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, alias(divide(col("price"), lit(1.31)), "price (GBP)"));
+    let values = append(values, alias(divide(col("price"), lit(1.09)), "price (EUR)"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 2;
+            let _disposed_at_3670 = dispose(result);
+            valid
+    }.
+
+pub prefix_suffix_example(df: DataFrame): Bool ->
+    let values = expressions();
+    let years = prefix(divide(col("^year_.*$"), lit(1.09)), "in_eur_");
+    let days = suffix(divide(cols(strings2("day_high", "day_low")), lit(1.31)), "_gbp");
+    let values = append(values, years);
+    let values = append(values, days);
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 4;
+            let _disposed_at_3684 = dispose(result);
+            valid
+    }.
+
+pub uppercase_example(df: DataFrame): Bool ->
+    case select_exprs(df, append(expressions(), uppercase_names(all_columns()))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                width(result) == 7
+                    and case columns(result) {
+    ["TICKER", "COMPANY_NAME", "PRICE", "DAY_HIGH", "DAY_LOW", "YEAR_HIGH", "YEAR_LOW"] -> true;
+    _ -> false
+};
+            let _disposed_at_3696 = dispose(result);
+            valid
+    }.
+
+pub amplitudes(): List[Expr] ->
+    let values = expressions();
+    let values = append(values, alias(subtract(col("day_high"), col("day_low")), "day_amplitude"));
+    append(values, alias(subtract(col("year_high"), col("year_low")), "year_amplitude")).
+
+pub loop_examples(df: DataFrame): Bool ->
+    case with_columns(
+    df,
+    append(expressions(), alias(subtract(col("day_high"), col("day_low")), "day_amplitude")),
+) {
+        Err(_error) -> false;
+        Ok(day) ->
+            let sequential =
+                case with_columns(
+    day,
+    append(expressions(), alias(subtract(col("year_high"), col("year_low")), "year_amplitude")),
+) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = width(result) == 9;
+                        let _disposed_at_3713 = dispose(result);
+                        valid
+                };
+            let _disposed_at_3716 = dispose(day);
+            case with_columns(df, amplitudes()) {
+                Err(_error) -> false;
+                Ok(result) ->
+                    let valid = sequential and width(result) == 9;
+                    let _disposed_at_3721 = dispose(result);
+                    valid
+            }
+    }.
+
+/**
+ * Covers all fifteen executable regions in upstream expression-expansion.rs.
+ */
+pub run(): Bool ->
+    case read_csv("examples/polars_expressions/data/expression_expansion.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                height(df) == 5
+                    and width(df) == 7
+                    and with_named_columns(df)
+                    and expression_list(df)
+                    and dtype_examples(df)
+                    and regex_columns(df)
+                    and all_examples(df)
+                    and dtype_exclude(df)
+                    and duplicate_error(df)
+                    and alias_example(df)
+                    and prefix_suffix_example(df)
+                    and uppercase_example(df)
+                    and loop_examples(df);
+            let _disposed_at_3736 = dispose(df);
+            valid
+    }.

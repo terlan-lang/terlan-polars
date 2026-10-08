@@ -1,0 +1,11 @@
+[package]
+name = "terlan-polars-loaded-helper"
+version = "0.1.0"
+namespace = "terlan_polars_loaded"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

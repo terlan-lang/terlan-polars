@@ -1,0 +1,37 @@
+module polars.DataFrameFilterTest.
+
+import polars.DataFrame.{dispose, filter_eq, height, read_csv}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub filter_eq_filters_rows(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case filter_eq(df, "age", 36) {
+                    Err(_error) -> false;
+                    Ok(filtered) ->
+                        let valid = height(filtered) == 1;
+                        let _disposed_at_3197 = dispose(filtered);
+                        valid
+                };
+            let _disposed_at_3200 = dispose(df);
+            valid
+    }.
+
+@test
+pub filter_eq_reports_missing_columns(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let missing_fails =
+                case filter_eq(df, "missing", 1) {
+                    Err(_error) -> true;
+                    Ok(unexpected) ->
+                        let _disposed = dispose(unexpected);
+                        false
+                };
+            let _disposed_at_3219 = dispose(df);
+            missing_fails
+    }.

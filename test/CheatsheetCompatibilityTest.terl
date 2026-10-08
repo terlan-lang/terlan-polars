@@ -1,0 +1,44 @@
+module polars.CheatsheetCompatibilityTest.
+
+import polars.DataFrame.{dataframe_set_get, dataframe_set_len, describe, describe_plan_dot, dispose, dispose_dataframe_set, glimpse, height, lazy_sort, profile, project, read_csv, release, scan_csv, show_versions, width}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub inspection_and_plan_diagnostics_cross_native_boundary(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let {
+                Ok(scanned) <- scan_csv("test/fixtures/people.csv", false);
+                Ok(overview) <- glimpse(df);
+                Ok(summary) <- describe(df);
+                Ok(profiled) <- profile(lazy_sort(project(scanned, ["age"]), "age", true));
+                Ok(result) <- dataframe_set_get(profiled, 0);
+                Ok(timings) <- dataframe_set_get(profiled, 1)
+            } else {
+                _ ->
+                    let _disposed = dispose(df);
+                    false
+            };
+            (let selected = project(scanned, ["age"]);
+let plan = lazy_sort(selected, "age", true);
+let dot = describe_plan_dot(plan, true);
+let valid =
+    show_versions().contains("polars py-2.0.0")
+        and overview.contains("Rows: 2")
+        and height(summary) == 9
+        and width(summary) == 4
+        and dot.contains("digraph")
+        and dataframe_set_len(profiled) == 2
+        and height(result) == 2
+        and width(timings) >= 2;
+let _released_plan = release(plan);
+let _released_selected = release(selected);
+let _released_scanned = release(scanned);
+let _disposed_timings = dispose(timings);
+let _disposed_result = dispose(result);
+let _disposed_profiled = dispose_dataframe_set(profiled);
+let _disposed_summary = dispose(summary);
+let _disposed_df = dispose(df);
+valid)
+    }.

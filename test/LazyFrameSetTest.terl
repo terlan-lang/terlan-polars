@@ -1,0 +1,37 @@
+module polars.LazyFrameSetTest.
+
+import polars.DataFrame.{collect_all, collect_all_with_engine, collect_with_engine, dataframe_empty_with_height, dataframe_set_get, dataframe_set_len, dispose, dispose_dataframe_set, dispose_lazyframe_set, height, lazy, lazyframe_set_append, lazyframe_set_len, lazyframe_set_new, release}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub lazy_frame_sets_collect_owned_results(): Bool ->
+    let Ok(dataframe) <- dataframe_empty_with_height(2) else {
+        _ -> false
+    };
+    (let plan = lazy(dataframe);
+(let {
+    Ok(one) <- lazyframe_set_new(plan);
+    Ok(two) <- lazyframe_set_append(one, plan);
+    Ok(results) <- collect_all(two, false);
+    Ok(engine_result) <- collect_with_engine(plan, "in_memory");
+    Ok(engine_results) <- collect_all_with_engine(two, "streaming");
+    Ok(second) <- dataframe_set_get(results, 1)
+} else {
+    _ -> false
+};
+(let valid =
+    lazyframe_set_len(one) == 1
+        and lazyframe_set_len(two) == 2
+        and dataframe_set_len(results) == 2
+        and height(engine_result) == 2
+        and dataframe_set_len(engine_results) == 2
+        and height(second) == 2;
+let _disposed_engine_result = dispose(engine_result);
+let _disposed_engine_results = dispose_dataframe_set(engine_results);
+let _disposed_second = dispose(second);
+let _disposed_results = dispose_dataframe_set(results);
+let _disposed_two = dispose_lazyframe_set(two);
+let _disposed_one = dispose_lazyframe_set(one);
+let _disposed_plan = release(plan);
+let _disposed_dataframe = dispose(dataframe);
+valid))).

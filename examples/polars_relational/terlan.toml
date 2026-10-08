@@ -1,0 +1,11 @@
+[package]
+name = "polars-relational"
+version = "0.1.0"
+namespace = "polars_relational"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

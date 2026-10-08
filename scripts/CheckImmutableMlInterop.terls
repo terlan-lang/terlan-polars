@@ -1,0 +1,349 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Snapshots the Polars, ndarray, and PyTorch packages into immutable local Git
+ * repositories, fetches them into the package cache, removes the repositories,
+ * and executes the TNXP pipeline from cache only.
+ */
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File}.
+import std.system.{Arguments, Process}.
+
+import type std.core.{Option, Result}.
+import type std.io.Directory.DirectoryError.
+import type std.io.File.FileError.
+import type std.system.Process.{Command, Output}.
+
+struct Revisions {
+    polars: String,
+    ndarray: String,
+    pytorch: String,
+}.
+
+directory_result(result: Result[Unit, DirectoryError]): Result[Unit, String] ->
+    case result {
+        Ok(Unit) -> Ok(Unit);
+        Err(reason) -> Err(Directory.message(reason))
+    }.
+
+file_result(result: Result[Unit, FileError]): Result[Unit, String] ->
+    case result {
+        Ok(Unit) -> Ok(Unit);
+        Err(reason) -> Err(File.message(reason))
+    }.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.append(parent, String.append("/", name))
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[immutable_ml_interop]: ", message));
+    false.
+
+option_failure(message: String): Option[String] ->
+    let _failed = failure(message);
+    None.
+
+output_failure(message: String): Option[Output] ->
+    let _failed = failure(message);
+    None.
+
+bounded(program: String, arguments: List[String], working_directory: String): Command ->
+    Process.with_output_limit_bytes(
+        Process.with_timeout_ms(
+            Process.with_working_directory(
+                Process.with_arguments(Process.command(program), arguments),
+                working_directory,
+            ),
+            Process.maximum_timeout_ms(Process.limits()),
+        ),
+        16777216,
+    ).
+
+run_output(command: Command): Option[Output] ->
+    case Process.run(command) {
+        Err(reason) -> output_failure(Process.error_message(reason));
+        Ok(output) ->
+            if {
+                Process.status(output) == 0 -> Some(output);
+                true -> output_failure(String.concat([Process.stdout(output), Process.stderr(output)]))
+            }
+    }.
+
+run_ok(command: Command): Bool ->
+    case run_output(command) {
+        Some(_output) -> true;
+        None -> false
+    }.
+
+git(repository: String, arguments: List[String]): Command ->
+    bounded("git", arguments, repository).
+
+commit(repository: String, name: String): Command ->
+    Process.with_environment(
+        git(
+            repository,
+            [
+                "commit",
+                "--quiet",
+                "-m",
+                String.append("immutable ", String.append(name, " interop snapshot")),
+            ],
+        ),
+        [
+            Process.environment_entry("GIT_AUTHOR_DATE", "2000-01-01T00:00:00Z"),
+            Process.environment_entry("GIT_COMMITTER_DATE", "2000-01-01T00:00:00Z"),
+        ],
+    ).
+
+copy_package(source: String, repository: String): Bool ->
+    let {
+        Ok(Unit) <- directory_result(Directory.create_all(repository));
+        Ok(Unit) <- file_result(File.copy(child(source, "terlan.toml"), child(repository, "terlan.toml")));
+        Ok(Unit) <-
+            directory_result(
+                Directory.copy_tree_excluding(child(source, "src"), child(repository, "src"), []),
+            );
+        Ok(Unit) <-
+            directory_result(
+                Directory.copy_tree_excluding(
+                    child(source, "bindings"),
+                    child(repository, "bindings"),
+                    [".git", "target"],
+                ),
+            );
+        Ok(Unit) <-
+            directory_result(
+                Directory.copy_tree_excluding(
+                    child(source, "native"),
+                    child(repository, "native"),
+                    [".git", "target"],
+                ),
+            )
+    } else {
+        Err(message) -> failure(message)
+    };
+    true.
+
+initialize_repository(repository: String, name: String): Bool ->
+    if {
+        not run_ok(git(repository, ["init", "--quiet"])) -> false;
+        not run_ok(git(repository, ["config", "user.name", "Terlan ML interop gate"])) -> false;
+        not run_ok(git(repository, ["config", "user.email", "ml-interop-gate@terlan.invalid"])) -> false;
+        not run_ok(git(repository, ["add", "."])) -> false;
+        true -> run_ok(commit(repository, name))
+    }.
+
+snapshot_package(repositories: String, name: String, source: String): Option[String] ->
+    let repository = child(repositories, name);
+    if {
+        not copy_package(source, repository) -> None;
+        not initialize_repository(repository, name) -> None;
+        true -> case run_output(git(repository, ["rev-parse", "HEAD"])) {
+            None -> None;
+            Some(output) ->
+                let revision = String.trim(Process.stdout(output));
+                if {
+                    revision == "" -> option_failure("git returned an empty package revision");
+                    true -> Some(revision)
+                }
+        }
+    }.
+
+manifest(repositories: String, revisions: Revisions): String ->
+    String.concat(
+        [
+            "[package]\n",
+            "name = \"terlan-immutable-ml-interop\"\n",
+            "version = \"0.0.0\"\n",
+            "namespace = \"interop\"\n\n",
+            "[build]\n",
+            "source_roots = [\"src\"]\n",
+            "artifact = \"terlan-vm\"\n\n",
+            "[dependencies]\n",
+            "polars = { git = \"",
+            child(repositories, "polars"),
+            "\", rev = \"",
+            revisions.polars,
+            "\" }\n",
+            "ndarray = { git = \"",
+            child(repositories, "ndarray"),
+            "\", rev = \"",
+            revisions.ndarray,
+            "\" }\n",
+            "pytorch = { git = \"",
+            child(repositories, "pytorch"),
+            "\", rev = \"",
+            revisions.pytorch,
+            "\" }\n",
+        ],
+    ).
+
+stage_consumer(
+    consumer: String,
+    polars: String,
+    iris: String,
+    repositories: String,
+    revisions: Revisions,
+): Bool ->
+    let tests = child(consumer, "tests/interop");
+    let {
+        Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "src")));
+        Ok(Unit) <- directory_result(Directory.create_all(tests));
+        Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "data")));
+        Ok(Unit) <- file_result(File.copy(iris, child(consumer, "data/iris.csv")));
+        Ok(Unit) <-
+            file_result(
+                File.copy(
+                    child(polars, "scripts/fixtures/ImmutableIrisTest.terl"),
+                    child(tests, "ImmutableIrisTest.terl"),
+                ),
+            );
+        Ok(Unit) <-
+            file_result(
+                File.write_text(child(consumer, "terlan.toml"), manifest(repositories, revisions)),
+            )
+    } else {
+        Err(message) -> failure(message)
+    };
+    true.
+
+fetch_command(terlc: String, consumer: String): Command ->
+    Process.with_environment(
+        bounded(terlc, ["package", "fetch", consumer], consumer),
+        [Process.environment_entry("CARGO_NET_OFFLINE", "true")],
+    ).
+
+lockfile_valid(consumer: String): Bool ->
+    case File.read_text(child(consumer, "terlan.lock")) {
+        Err(reason) -> failure(File.message(reason));
+        Ok(lockfile) ->
+            if {
+                not String.contains(lockfile, "name = \"terlan-polars\"") -> failure("lockfile omits terlan-polars");
+                not String.contains(lockfile, "name = \"terlan-ndarray\"") -> failure("lockfile omits terlan-ndarray");
+                not String.contains(lockfile, "name = \"terlan-pytorch\"") -> failure("lockfile omits terlan-pytorch");
+                true -> true
+            }
+    }.
+
+cache_only_test_command(terlc: String, consumer: String, libtorch: String): Command ->
+    Process.with_environment(
+        Process.without_environment(
+            bounded(terlc, ["test", child(consumer, "tests")], consumer),
+            [
+                "TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH",
+                "TERLAN_NDARRAY_NATIVE_BOUNDARY_HELPER_PATH",
+                "TERLAN_PYTORCH_NATIVE_BOUNDARY_HELPER_PATH",
+            ],
+        ),
+        [
+            Process.environment_entry("CARGO_NET_OFFLINE", "true"),
+            Process.environment_entry("LIBTORCH", libtorch),
+        ],
+    ).
+
+fetch_and_test(terlc: String, repositories: String, consumer: String, libtorch: String): Bool ->
+    if {
+        not run_ok(fetch_command(terlc, consumer)) -> false;
+        not lockfile_valid(consumer) -> false;
+        true -> case Directory.remove_all(repositories) {
+            Err(reason) -> failure(Directory.message(reason));
+            Ok(Unit) -> run_ok(cache_only_test_command(terlc, consumer, libtorch))
+        }
+    }.
+
+snapshot_all(
+    repositories: String,
+    polars: String,
+    ndarray: String,
+    pytorch: String,
+): Option[Revisions] ->
+    let {
+        Some(polars_revision) <- snapshot_package(repositories, "polars", polars);
+        Some(ndarray_revision) <- snapshot_package(repositories, "ndarray", ndarray);
+        Some(pytorch_revision) <- snapshot_package(repositories, "pytorch", pytorch)
+    } else {
+        _ -> None
+    };
+    Some(
+        Revisions(polars = polars_revision, ndarray = ndarray_revision, pytorch = pytorch_revision),
+    ).
+
+execute(
+    temporary: String,
+    terlc: String,
+    polars: String,
+    ndarray: String,
+    pytorch: String,
+    libtorch: String,
+    iris: String,
+): Bool ->
+    let repositories = child(temporary, "repositories");
+    let consumer = child(temporary, "consumer");
+    let Some(revisions) <- snapshot_all(repositories, polars, ndarray, pytorch) else {
+        None -> false
+    };
+    if {
+        not stage_consumer(consumer, polars, iris, repositories, revisions) -> false;
+        not fetch_and_test(terlc, repositories, consumer, libtorch) -> false;
+        true -> report_success(revisions)
+    }.
+
+report_success(revisions: Revisions): Bool ->
+    let message =
+        String.concat(
+            [
+                "[terlan-ml-immutable-interop] polars=",
+                revisions.polars,
+                " ndarray=",
+                revisions.ndarray,
+                " pytorch=",
+                revisions.pytorch,
+                " cache-only=passed",
+            ],
+        );
+    let _printed = println(message);
+    true.
+
+run(
+    terlc: String,
+    polars: String,
+    ndarray: String,
+    pytorch: String,
+    libtorch: String,
+    iris: String,
+): Bool ->
+    case Directory.create_temporary("terlan-immutable-ml-interop.") {
+        Err(reason) -> failure(Directory.message(reason));
+        Ok(temporary) ->
+            let valid = execute(temporary, terlc, polars, ndarray, pytorch, libtorch, iris);
+            case Directory.remove_all(temporary) {
+                Err(reason) -> failure(Directory.message(reason));
+                Ok(Unit) -> valid
+            }
+    }.
+
+entry(): Bool ->
+    case {
+        Arguments.get(0),
+        Arguments.get(1),
+        Arguments.get(2),
+        Arguments.get(3),
+        Arguments.get(4),
+        Arguments.get(5),
+        Arguments.count(),
+    } {
+        {Some(terlc), Some(polars), Some(ndarray), Some(pytorch), Some(libtorch), Some(iris), 6} ->
+            run(terlc, polars, ndarray, pytorch, libtorch, iris);
+        _ ->
+            failure(
+                "expected <terlc> <polars-repository> <ndarray-repository> <pytorch-repository> <libtorch-root> <iris-csv>",
+            )
+    }.
+
+assert(entry());
+Unit.

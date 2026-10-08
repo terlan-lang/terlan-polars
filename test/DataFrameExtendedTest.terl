@@ -1,0 +1,57 @@
+module polars.DataFrameExtendedTest.
+
+import polars.DataFrame.{dataframe_chunk_lengths, dataframe_deserialize, dataframe_empty_with_height, dataframe_first_col_n_chunks, dataframe_full_null, dataframe_insert_column, dataframe_row, dataframe_schema_equal, dataframe_serialize, dataframe_shape, dataframe_shape_has_zero, dataframe_split_after, dataframe_split_before, dispose, height, series_from_ints, width}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub typed_null_shape_and_row_operations_execute(): Bool ->
+    case dataframe_full_null(["id"], ["Int64"], 2) {
+        Err(_error) -> false;
+        Ok(dataframe) ->
+            height(dataframe) == 2
+                and width(dataframe) == 1
+                and dataframe_chunk_lengths(dataframe) == [2]
+                and dataframe_shape(dataframe) == [2, 1]
+                and dataframe_first_col_n_chunks(dataframe) == 1
+                and not dataframe_shape_has_zero(dataframe)
+                and dataframe_row(dataframe, 0) == ["null"]
+    }.
+
+@test
+pub split_and_column_insertion_are_immutable(): Bool ->
+    let {
+        Ok(dataframe) <- dataframe_full_null(["id"], ["Int64"], 2);
+        Ok(series) <- series_from_ints("value", [10, 20]);
+        Ok(inserted) <- dataframe_insert_column(dataframe, 1, series);
+        Ok(before) <- dataframe_split_before(inserted, 1);
+        Ok(trailing) <- dataframe_split_after(inserted, 1)
+    } else {
+        _ -> false
+    };
+    width(dataframe) == 1 and width(inserted) == 2 and height(before) == 1 and height(trailing) == 1.
+
+@test
+pub dataframe_serialization_round_trip_executes(): Bool ->
+    let {
+        Ok(dataframe) <- dataframe_full_null(["id"], ["Int64"], 2);
+        Ok(bytes) <- dataframe_serialize(dataframe);
+        Ok(restored) <- dataframe_deserialize(bytes)
+    } else {
+        _ -> false
+    };
+    dataframe_schema_equal(dataframe, restored) and height(restored) == 2.
+
+@test
+pub column_free_height_preserves_shape_contract(): Bool ->
+    case dataframe_empty_with_height(3) {
+        Err(_error) -> false;
+        Ok(dataframe) ->
+            let valid =
+                height(dataframe) == 3
+                    and width(dataframe) == 0
+                    and dataframe_shape(dataframe) == [3, 0]
+                    and dataframe_first_col_n_chunks(dataframe) == 0
+                    and dataframe_shape_has_zero(dataframe);
+            let _disposed_at_2095 = dispose(dataframe);
+            valid
+    }.

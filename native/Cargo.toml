@@ -1,0 +1,61 @@
+[package]
+name = "terlan_polars_native"
+version = "0.1.0-dev"
+edition = "2021"
+description = "Rust native adapter for the terlan-polars package"
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+default = []
+real-polars = ["dep:polars", "dep:polars-plan", "dep:polars-parquet", "dep:chrono", "dep:connectorx", "dep:arrow", "dep:plotlars-core", "dep:plotlars-plotters", "dep:plotters"]
+plotly-html = ["real-polars", "dep:plotlars-plotly"]
+plot-png = ["real-polars"]
+
+[dependencies]
+base64 = "0.22"
+chrono = { version = "0.4", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+polars = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true, features = ["lazy", "streaming", "cse", "meta", "sql", "csv", "parquet", "json", "ipc", "cloud", "http", "aws", "gcp", "azure", "strings", "string_encoding", "string_normalize", "string_pad", "string_reverse", "binary_encoding", "temporal", "range", "arg_where", "dtype-date", "dtype-datetime", "dtype-time", "month_start", "month_end", "offset_by", "dtype-i8", "dtype-i16", "dtype-u8", "dtype-i128", "dtype-u128", "dtype-f16", "dtype-array", "dtype-extension", "dtype-map", "array_count", "array_to_struct", "list_drop_nulls", "list_sample", "list_gather", "diff", "index_of", "search_sorted", "repeat_by", "pct_change", "abs", "list_to_struct", "list_count", "list_sets", "random", "row_hash", "bitwise", "hist", "propagate_nans", "trigonometry", "cum_agg", "rolling_window", "rolling_window_by", "moment", "mode", "log", "product", "is_close", "is_first_distinct", "is_last_distinct", "is_unique", "dtype-decimal", "dtype-categorical", "timezones", "round_series", "is_between", "is_in", "approx_unique", "dtype-struct", "unique_counts", "regex", "interpolate", "interpolate_by", "peaks", "rle", "ewma", "ewma_by", "concat_str", "rank", "top_k", "replace", "cutqcut", "semi_anti_join", "cross_join", "asof_join", "iejoin", "diagonal_concat", "pivot", "dynamic_group_by"] }
+polars-plan = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true }
+polars-parquet = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true }
+connectorx = { version = "0.4.5", optional = true, default-features = false, features = ["fptr", "src_postgres", "src_sqlite", "dst_arrow"] }
+arrow = { version = "54", optional = true, features = ["ipc"] }
+plotlars-core = { version = "0.12.6", path = "vendor/plotlars-core", optional = true }
+plotlars-plotters = { version = "0.12.6", path = "vendor/plotlars-plotters", optional = true }
+plotlars-plotly = { version = "0.12.6", path = "vendor/plotlars-plotly", optional = true }
+plotters = { version = "0.3.7", optional = true, features = ["fontconfig-dlopen"] }
+
+[dev-dependencies]
+rusqlite = { version = "0.33", features = ["bundled"] }
+
+[[bin]]
+name = "terlan-polars-native-boundary"
+path = "src/bin/terlan_polars_native_boundary.rs"
+
+[package.metadata.terlan]
+package = "terlan-polars"
+namespace = "polars"
+native_capability = "rust-native-adapter"
+
+[package.metadata.terlan.polars]
+cargo = "polars"
+version = "0.55.1+py.2.0.0"
+release = "py-2.0.0"
+source_rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2"
+features = ["lazy", "streaming", "cse", "meta", "sql", "csv", "parquet", "json", "ipc", "cloud", "http", "aws", "gcp", "azure", "strings", "string_encoding", "string_normalize", "string_pad", "string_reverse", "binary_encoding", "temporal", "range", "arg_where", "dtype-date", "dtype-datetime", "dtype-time", "month_start", "month_end", "offset_by", "dtype-i8", "dtype-i16", "dtype-u8", "dtype-i128", "dtype-u128", "dtype-f16", "dtype-array", "dtype-extension", "dtype-map", "array_count", "array_to_struct", "list_drop_nulls", "list_sample", "list_gather", "diff", "index_of", "search_sorted", "repeat_by", "pct_change", "abs", "list_to_struct", "list_count", "list_sets", "random", "row_hash", "bitwise", "hist", "propagate_nans", "trigonometry", "cum_agg", "rolling_window", "rolling_window_by", "moment", "mode", "log", "product", "is_close", "is_first_distinct", "is_last_distinct", "is_unique", "dtype-decimal", "dtype-categorical", "timezones", "round_series", "is_between", "is_in", "approx_unique", "dtype-struct", "unique_counts", "regex", "interpolate", "interpolate_by", "peaks", "rle", "ewma", "ewma_by", "concat_str", "rank", "top_k", "replace", "cutqcut", "semi_anti_join", "cross_join", "asof_join", "iejoin", "diagonal_concat", "pivot", "dynamic_group_by"]
+link_status = "deferred"
+
+[workspace]
+
+[patch."https://github.com/pola-rs/polars"]
+# Python Polars 2.0 uses an integer helper that is not stable until Rust 1.97.
+# This source-identical package replaces it with the equivalent stable bit trick.
+polars-utils = { path = "vendor/polars-utils" }
+
+[patch.crates-io]
+# Required by the Python 2.0 source revision for hash-table prefetch support.
+hashbrown = { git = "https://github.com/pola-rs/hashbrown", rev = "d76a6f81abd8f388676aff15068236a8d21c7e1a" }

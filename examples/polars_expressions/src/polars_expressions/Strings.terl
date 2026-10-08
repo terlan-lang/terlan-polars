@@ -1,0 +1,242 @@
+module polars_expressions.Strings.
+
+import polars.DataFrame.{add, alias, col, dispose, height, lit, read_csv, rows, select_exprs, string_contains, string_ends_with, string_extract, string_extract_all, string_head, string_len_bytes, string_len_chars, string_lowercase, string_replace, string_replace_all, string_slice, string_starts_with, string_strip_chars, string_strip_chars_end, string_strip_chars_start, string_strip_prefix, string_strip_suffix, string_tail, string_titlecase, string_uppercase, width, with_columns}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+import std.io.Console.{println}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub checked(label: String, value: Bool): Bool ->
+    case value {
+        true -> true;
+        false ->
+            let _reported = println(label);
+            false
+    }.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub lengths_and_existence(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_fruit.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let length_values = expressions();
+            let length_values = append(length_values, alias(string_len_bytes(col("fruit")), "byte_count"));
+            let length_values = append(length_values, alias(string_len_chars(col("fruit")), "letter_count"));
+            let lengths =
+                case with_columns(df, length_values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            width(result) == 4
+                                and case rows(result, 1) {
+    Ok([["English", "pear", "4", "4"]]) -> true;
+    _ -> false
+};
+                        let _disposed_at_3259 = dispose(result);
+                        valid
+                };
+            let existence_values = expressions();
+            let existence_values = append(existence_values, col("fruit"));
+            let existence_values =
+                append(
+                    existence_values,
+                    alias(string_starts_with(col("fruit"), lit("p")), "starts_with_p"),
+                );
+            let existence_values = append(existence_values, alias(string_contains(col("fruit"), lit("p..r")), "p..r"));
+            let existence_values = append(existence_values, alias(string_contains(col("fruit"), lit("e+")), "e+"));
+            let existence_values =
+                append(
+                    existence_values,
+                    alias(string_ends_with(col("fruit"), lit("r")), "ends_with_r"),
+                );
+            let existence =
+                case select_exprs(df, existence_values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = height(result) == 4 and width(result) == 5;
+                        let _disposed_at_3272 = dispose(result);
+                        valid
+                };
+            let _disposed_at_3275 = dispose(df);
+            lengths and existence
+    }.
+
+pub extract_example(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_urls.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case select_exprs(df, append(expressions(), string_extract(col("urls"), "candidate=([A-Za-z0-9_]+)", 1))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches =
+                            case rows(result, 3) {
+                                Ok([["messi"], ["null"], ["ronaldo"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3290 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3293 = dispose(df);
+            valid
+    }.
+
+pub extract_all_example(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_extract_all.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case select_exprs(
+    df,
+    append(expressions(), alias(string_extract_all(col("text"), "([0-9]+)"), "extracted_nrs")),
+) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 2 and width(result) == 1;
+                        let _disposed_at_3305 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3308 = dispose(df);
+            valid
+    }.
+
+pub replace_example(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_replace.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values = expressions();
+            let values = append(values, string_replace(col("text"), "[0-9]", "-"));
+            let values =
+                append(
+                    values,
+                    alias(string_replace_all(col("text"), "[0-9]", "-"), "text_replace_all"),
+                );
+            let valid =
+                case with_columns(df, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches =
+                            case rows(result, 2) {
+                                Ok([["-23abc", "---abc"], ["abc-56", "abc---"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3326 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3329 = dispose(df);
+            valid
+    }.
+
+pub concat_example(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_names.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let full = alias(add(add(col("first_name"), lit(" ")), col("last_name")), "full_name");
+            let valid =
+                case with_columns(df, append(expressions(), full)) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches =
+                            case rows(result, 1) {
+                                Ok([["Ada", "Lovelace", "Ada Lovelace"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3345 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3348 = dispose(df);
+            valid
+    }.
+
+pub casing_and_strip(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_addresses.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let casing_values = expressions();
+            let casing_values = append(casing_values, alias(col("addresses"), "originals"));
+            let casing_values = append(casing_values, string_titlecase(col("addresses")));
+            let casing_values = append(casing_values, alias(string_lowercase(col("addresses")), "lower"));
+            let casing_values = append(casing_values, alias(string_uppercase(col("addresses")), "upper"));
+            let casing =
+                case select_exprs(df, casing_values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            width(result) == 4
+                                and case rows(result, 1) {
+    Ok([["128 PERF st", "128 Perf St", "128 perf st", "128 PERF ST"]]) -> true;
+    _ -> false
+};
+                        let _disposed_at_3368 = dispose(result);
+                        valid
+                };
+            let chars = lit(", 0123456789");
+            let strip_values = expressions();
+            let strip_values = append(strip_values, alias(string_strip_chars(col("addresses"), chars), "strip"));
+            let strip_values = append(strip_values, alias(string_strip_chars_end(col("addresses"), chars), "end"));
+            let strip_values =
+                append(
+                    strip_values,
+                    alias(string_strip_chars_start(col("addresses"), chars), "start"),
+                );
+            let strip_values =
+                append(
+                    strip_values,
+                    alias(string_strip_prefix(col("addresses"), lit("128 ")), "prefix"),
+                );
+            let strip_values =
+                append(
+                    strip_values,
+                    alias(string_strip_suffix(col("addresses"), lit(", 158")), "suffix"),
+                );
+            let strip =
+                case select_exprs(df, strip_values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = height(result) == 4 and width(result) == 5;
+                        let _disposed_at_3382 = dispose(result);
+                        valid
+                };
+            let _disposed_at_3385 = dispose(df);
+            casing and strip
+    }.
+
+pub slice_example(): Bool ->
+    case read_csv("examples/polars_expressions/data/strings_slice.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values = expressions();
+            let values = append(values, alias(string_slice(col("fruits"), col("n")), "slice"));
+            let values = append(values, alias(string_head(col("fruits"), col("n")), "head"));
+            let values = append(values, alias(string_tail(col("fruits"), col("n")), "tail"));
+            let valid =
+                case with_columns(df, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 4 and width(result) == 5;
+                        let _disposed_at_3401 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3404 = dispose(df);
+            valid
+    }.
+
+/**
+ * Covers all nine executable regions in upstream strings.rs.
+ */
+pub run(): Bool ->
+    checked("strings:lengths-or-existence", lengths_and_existence())
+        and checked("strings:extract", extract_example())
+        and checked("strings:extract-all", extract_all_example())
+        and checked("strings:replace", replace_example())
+        and checked("strings:concat", concat_example())
+        and checked("strings:casing-or-strip", casing_and_strip())
+        and checked("strings:slice", slice_example()).

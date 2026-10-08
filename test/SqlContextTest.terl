@@ -1,0 +1,68 @@
+module polars.SqlContextTest.
+
+import polars.DataFrame.{dispose, dispose_sql_context, read_csv, register_table, sql_context, sql_expr, sql_table_identifiers, sql_tables}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.{DataFrame, SqlContext}.
+
+cleanup(context: SqlContext, dataframe: DataFrame, result: Bool): Bool ->
+    let _context_disposed = dispose_sql_context(context);
+    let _frame_disposed = dispose(dataframe);
+    result.
+
+@test
+pub sql_context_starts_without_tables(): Bool ->
+    let context = sql_context();
+    let valid = sql_tables(context) == [];
+    dispose_sql_context(context);
+    valid.
+
+@test
+pub sql_context_registers_dataframe_table(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(dataframe) ->
+            let context = sql_context();
+            case register_table(context, "people", dataframe) {
+                Err(_error) -> cleanup(context, dataframe, false);
+                Ok(_unit) -> cleanup(context, dataframe, true)
+            }
+    }.
+
+@test
+pub sql_context_exposes_registered_table(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(dataframe) ->
+            let context = sql_context();
+            case register_table(context, "people", dataframe) {
+                Err(_error) -> cleanup(context, dataframe, false);
+                Ok(_unit) ->
+                    let visible =
+                        case sql_tables(context) {
+                            ["people"] -> true;
+                            _ -> false
+                        };
+                    cleanup(context, dataframe, visible)
+            }
+    }.
+
+@test
+pub sql_identifiers_preserve_schema_and_order(): Bool ->
+    let {
+        Ok(names) <- sql_table_identifiers("SELECT * FROM analytics.people JOIN events ON true", true, false);
+        ["analytics.people", "events"] <- names
+    } else {
+        _ -> false
+    };
+    true.
+
+@test
+pub standalone_sql_expressions_validate_input(): Bool ->
+    let {
+        Ok(_expression) <- sql_expr("score + 1");
+        Err(_error) <- sql_expr("")
+    } else {
+        _ -> false
+    };
+    true.

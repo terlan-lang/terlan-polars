@@ -1,0 +1,58 @@
+module polars.DataFramePartitionTest.
+
+import polars.DataFrame.{dataframe_empty_with_height, dataframe_set_get, dataframe_set_len, dataframe_with_column, dispose, dispose_dataframe_set, height, partition_by, rows, series_from_strings, width}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.
+import type std.core.{Error, Result}.
+
+pub fixture(): Result[DataFrame, Error] ->
+    case dataframe_empty_with_height(3) {
+        Err(error) -> Err(error);
+        Ok(empty) ->
+            case series_from_strings("group", ["b", "a", "b"]) {
+                Err(error) -> Err(error);
+                Ok(groups) ->
+                    case dataframe_with_column(empty, groups) {
+                        Err(error) -> Err(error);
+                        Ok(grouped) ->
+                            case series_from_strings("value", ["1", "2", "3"]) {
+                                Err(error) -> Err(error);
+                                Ok(values) -> dataframe_with_column(grouped, values)
+                            }
+                    }
+            }
+    }.
+
+@test
+pub stable_partitioning_returns_owned_frames(): Bool ->
+    let {
+        Ok(dataframe) <- fixture();
+        Ok(partitions) <- partition_by(dataframe, ["group"], true, false);
+        Ok(first) <- dataframe_set_get(partitions, 0);
+        Ok(first_rows) <- rows(first, 10)
+    } else {
+        _ -> false
+    };
+    (let valid =
+    dataframe_set_len(partitions) == 2
+        and width(first) == 1
+        and height(first) == 2
+        and first_rows == [["1"], ["3"]];
+let _disposed_first = dispose(first);
+let _disposed_partitions = dispose_dataframe_set(partitions);
+let _disposed_dataframe = dispose(dataframe);
+valid).
+
+@test
+pub partitioning_rejects_empty_keys(): Bool ->
+    case fixture() {
+        Err(_error) -> false;
+        Ok(dataframe) ->
+            case partition_by(dataframe, [], true, true) {
+                Err(_error) -> true;
+                Ok(partitions) ->
+                    let _disposed_partitions = dispose_dataframe_set(partitions);
+                    false
+            }
+    }.

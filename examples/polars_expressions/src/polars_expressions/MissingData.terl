@@ -1,0 +1,168 @@
+module polars_expressions.MissingData.
+
+import polars.DataFrame.{alias, all_columns, cast, col, dispose, divide, fill_nan, fill_null, fill_null_backward, fill_null_forward, height, interpolate, is_null, lit, mean, multiply, null_count, null_lit, prefix, read_csv, rows, select_exprs, suffix, sum, width, with_columns}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+import std.io.Console.{println}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub checked(label: String, value: Bool): Bool ->
+    case value {
+        true -> true;
+        false ->
+            let _reported = println(label);
+            false
+    }.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub null_basics_df(df: DataFrame): Bool ->
+    let dataframe = height(df) == 2 and width(df) == 1;
+    let count =
+        case select_exprs(df, append(expressions(), null_count(all_columns()))) {
+            Err(_error) -> false;
+            Ok(result) ->
+                let valid =
+                    case rows(result, 1) {
+                        Ok([["1"]]) -> true;
+                        _ -> false
+                    };
+                let _disposed_at_2797 = dispose(result);
+                valid
+        };
+    let flags =
+        case select_exprs(df, append(expressions(), is_null(col("value")))) {
+            Err(_error) -> false;
+            Ok(result) ->
+                let valid =
+                    case rows(result, 2) {
+                        Ok([["false"], ["true"]]) -> true;
+                        _ -> false
+                    };
+                let _disposed_at_2807 = dispose(result);
+                valid
+        };
+    checked("missing:null-dataframe", dataframe)
+        and checked("missing:null-count", count)
+        and checked("missing:is-null", flags).
+
+pub null_basics(): Bool ->
+    let {
+        Ok(raw) <- read_csv("examples/polars_expressions/data/missing_value.csv");
+        Ok(df) <- with_columns(raw, append(expressions(), cast(col("value"), "Int64")))
+    } else {
+        _ -> false
+    };
+    (let valid = null_basics_df(df); let _disposed_at_2822 = dispose(df); let _disposed_at_2823 = dispose(raw); valid).
+
+pub fill_examples(): Bool ->
+    case read_csv("examples/polars_expressions/data/missing_fill.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let dataframe = height(df) == 5 and width(df) == 2;
+            let literal =
+                case with_columns(df, append(expressions(), fill_null(col("col2"), lit(3)))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            case rows(result, 2) {
+                                Ok([["0.5", "1"], ["1.0", "3"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_2840 = dispose(result);
+                        valid
+                };
+            let strategies = expressions();
+            let strategies = append(strategies, alias(fill_null_forward(col("col2")), "forward"));
+            let strategies = append(strategies, alias(fill_null_backward(col("col2")), "backward"));
+            let strategy =
+                case with_columns(df, strategies) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = height(result) == 5 and width(result) == 4;
+                        let _disposed_at_2850 = dispose(result);
+                        valid
+                };
+            let replacement = cast(multiply(lit(2), col("col1")), "Int64");
+            let expression =
+                case with_columns(df, append(expressions(), fill_null(col("col2"), replacement))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            case rows(result, 2) {
+                                Ok([["0.5", "1"], ["1.0", "2"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_2861 = dispose(result);
+                        valid
+                };
+            let interpolation =
+                case with_columns(df, append(expressions(), interpolate(col("col2")))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = height(result) == 5 and width(result) == 2;
+                        let _disposed_at_2868 = dispose(result);
+                        valid
+                };
+            let _disposed_at_2871 = dispose(df);
+            checked("missing:dataframe2", dataframe)
+                and checked("missing:fill-literal", literal)
+                and checked("missing:fill-strategy", strategy)
+                and checked("missing:fill-expression", expression)
+                and checked("missing:interpolate", interpolation)
+    }.
+
+pub nan_examples(): Bool ->
+    case read_csv("examples/polars_expressions/data/missing_nan.csv") {
+        Err(_error) -> false;
+        Ok(nan_df) ->
+            let NaN = height(nan_df) == 4 and width(nan_df) == 1;
+            let replaced =
+                case with_columns(nan_df, append(expressions(), alias(fill_nan(col("value"), null_lit()), "replaced"))) {
+                    Err(_error) -> false;
+                    Ok(cleaned) ->
+                        let aggregations = expressions();
+                        let aggregations = append(aggregations, suffix(mean(all_columns()), "_mean"));
+                        let aggregations = append(aggregations, suffix(sum(all_columns()), "_sum"));
+                        let valid =
+                            case select_exprs(cleaned, aggregations) {
+                                Err(_error) -> false;
+                                Ok(result) ->
+                                    let matches = height(result) == 1 and width(result) == 4;
+                                    let _disposed_at_2894 = dispose(result);
+                                    matches
+                            };
+                        let _disposed_at_2897 = dispose(cleaned);
+                        valid
+                };
+            let _disposed_at_2900 = dispose(nan_df);
+            case read_csv("examples/polars_expressions/data/missing_computed_nan.csv") {
+                Err(_error) -> false;
+                Ok(computed_df) ->
+                    let computed =
+                        case select_exprs(computed_df, append(expressions(), divide(col("dividend"), col("divisor")))) {
+                            Err(_error) -> false;
+                            Ok(result) ->
+                                let valid = height(result) == 3 and width(result) == 1;
+                                let _disposed_at_2908 = dispose(result);
+                                valid
+                        };
+                    let _disposed_at_2911 = dispose(computed_df);
+                    nan and computed and replaced
+            }
+    }.
+
+/**
+ * Covers all eleven executable regions in upstream missing-data.rs.
+ */
+pub run(): Bool ->
+    checked("missing:null-basics", null_basics())
+        and checked("missing:fill", fill_examples())
+        and checked("missing:nan", nan_examples()).

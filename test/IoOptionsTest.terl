@@ -1,0 +1,21 @@
+module polars.IoOptionsTest.
+
+import polars.DataFrame.{csv_read_options, dispose, height, read_csv_with, width}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub csv_options_execute_through_native_boundary(): Bool ->
+    let {
+        Ok(options) <- csv_read_options(n_rows = 1, columns = ["name", "age"], rechunk = true);
+        Ok(frame) <- read_csv_with("test/fixtures/people.csv", options)
+    } else {
+        _ -> false
+    };
+    (let valid = height(frame) == 1 and width(frame) == 2; let _disposed_at_2346 = dispose(frame); valid).
+
+@test
+pub invalid_io_options_are_typed_errors(): Bool ->
+    case csv_read_options(separator = "::") {
+        Err(_error) -> true;
+        Ok(_options) -> false
+    }.

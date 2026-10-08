@@ -1,0 +1,30 @@
+module polars.WideIntegerSeriesTest.
+
+import polars.DataFrame.{dispose_series, series_from_int128_strings, series_from_uint128_strings, series_int128_strings, series_uint128_strings}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub populated_wide_integer_series_are_lossless(): Bool ->
+    let signed_values = ["-170141183460469231731687303715884105728", "0", "170141183460469231731687303715884105727"];
+    let unsigned_values = ["0", "340282366920938463463374607431768211455"];
+    let {
+        Ok(signed) <- series_from_int128_strings("signed", signed_values);
+        Ok(unsigned) <- series_from_uint128_strings("unsigned", unsigned_values)
+    } else {
+        _ -> false
+    };
+    (let valid =
+    series_int128_strings(signed) == Ok(signed_values)
+        and series_uint128_strings(unsigned) == Ok(unsigned_values);
+let _disposed_signed = dispose_series(signed);
+let _disposed_unsigned = dispose_series(unsigned);
+valid).
+
+@test
+pub invalid_wide_integer_decimal_is_rejected(): Bool ->
+    case series_from_int128_strings("invalid", ["170141183460469231731687303715884105728"]) {
+        Err(_error) -> true;
+        Ok(series) ->
+            let _disposed = dispose_series(series);
+            false
+    }.

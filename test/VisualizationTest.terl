@@ -1,0 +1,88 @@
+module polars.VisualizationTest.
+
+import polars.DataFrame.{dispose, plot_bar_svg, plot_box_svg, plot_histogram_svg, plot_line_svg, plot_scatter_svg, read_csv}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub scatter_svg_renders(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_scatter_svg(df, "age", "age", "city", "Scatter") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub line_svg_renders(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_line_svg(df, "age", "age", "Line") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub bar_svg_renders(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_bar_svg(df, "city", "age", "", "Bar") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub histogram_svg_renders(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_histogram_svg(df, "age", "", "Histogram") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub box_svg_renders(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_box_svg(df, "city", "age", "", "Box") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub svg_visualizations_validate_columns(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_line_svg(df, "missing", "age", "Invalid") {
+                    Err(_error) -> true;
+                    Ok(_svg) -> false
+                };
+            let _disposed = dispose(df);
+            valid
+    }.

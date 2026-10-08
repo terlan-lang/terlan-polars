@@ -1,0 +1,11 @@
+[package]
+name = "polars-io-formats"
+version = "0.1.0"
+namespace = "polars_io_formats"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

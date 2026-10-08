@@ -1,0 +1,11 @@
+[package]
+name = "polars-getting-started"
+version = "0.1.0"
+namespace = "polars_getting_started"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

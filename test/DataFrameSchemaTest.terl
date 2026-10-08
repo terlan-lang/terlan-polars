@@ -1,0 +1,22 @@
+module polars.DataFrameSchemaTest.
+
+import polars.DataFrame.
+import std.collections.List.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.{ColumnSchema}.
+
+@test
+pub schema_returns_ordered_typed_entries(): Bool ->
+    case DataFrame.read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case DataFrame.schema(df).first() {
+                    Some(column) -> column.name == "name" and column.data_type == "String";
+                    None -> false
+                };
+            let _disposed = DataFrame.dispose(df);
+            valid
+    }.

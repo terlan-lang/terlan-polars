@@ -1,0 +1,17 @@
+module polars.DataFrameSelectTest.
+
+import polars.DataFrame.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub select_has_typed_result_surface(): Bool ->
+    let columns = List.new[String]();
+    columns.push("name");
+    let {
+        Ok(df) <- DataFrame.read_csv("test/fixtures/people.csv");
+        Ok(selected) <- DataFrame.select(df, columns)
+    } else {
+        _ -> true
+    };
+    DataFrame.height(selected) == 2.

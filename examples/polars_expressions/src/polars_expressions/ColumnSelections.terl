@@ -1,0 +1,99 @@
+module polars_expressions.ColumnSelections.
+
+import polars.DataFrame.{all_columns, col, cols, date_format, dispose, dtype_cols, exclude, height, n_unique, read_csv_dates, select_exprs, width}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub one(value: Expr): List[Expr] ->
+    let values = List.new();
+    values.push(value);
+    values.
+
+pub strings(first: String): List[String] ->
+    let values = List.new();
+    values.push(first);
+    values.
+
+pub strings2(first: String, second: String): List[String] ->
+    let values = strings(first);
+    values.push(second);
+    values.
+
+pub strings3(first: String, second: String, third: String): List[String] ->
+    let values = strings2(first, second);
+    values.push(third);
+    values.
+
+pub all_example(df: DataFrame): Bool ->
+    case select_exprs(df, one(col("*"))) {
+        Err(_error) -> false;
+        Ok(star) ->
+            let star_valid = height(star) == 3 and width(star) == 7;
+            let _disposed_at_2588 = dispose(star);
+            case select_exprs(df, one(all_columns())) {
+                Err(_error) -> false;
+                Ok(all) ->
+                    let valid = star_valid and height(all) == 3 and width(all) == 7;
+                    let _disposed_at_2593 = dispose(all);
+                    valid
+            }
+    }.
+
+pub exclude_example(df: DataFrame): Bool ->
+    case select_exprs(df, one(exclude(all_columns(), strings2("logged_at", "index")))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 5;
+            let _disposed_at_2603 = dispose(result);
+            valid
+    }.
+
+pub names_example(df: DataFrame): Bool ->
+    case select_exprs(df, one(date_format(cols(strings2("date", "logged_at")), "%Y-%h-%d"))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 3 and width(result) == 2;
+            let _disposed_at_2612 = dispose(result);
+            valid
+    }.
+
+pub regex_example(df: DataFrame): Bool ->
+    case select_exprs(df, one(col("^.*(as|sa).*$"))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 2;
+            let _disposed_at_2621 = dispose(result);
+            valid
+    }.
+
+pub dtype_example(df: DataFrame): Bool ->
+    let selected = dtype_cols(strings3("Int64", "UInt32", "Boolean"));
+    case select_exprs(df, one(n_unique(selected))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 1 and width(result) == 3;
+            let _disposed_at_2631 = dispose(result);
+            valid
+    }.
+
+/**
+ * Covers all six executable regions in upstream column-selections.rs.
+ */
+pub run(): Bool ->
+    case read_csv_dates("examples/polars_expressions/data/column_selections.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                height(df) == 3
+                    and width(df) == 7
+                    and all_example(df)
+                    and exclude_example(df)
+                    and names_example(df)
+                    and regex_example(df)
+                    and dtype_example(df);
+            let _disposed_at_2643 = dispose(df);
+            valid
+    }.

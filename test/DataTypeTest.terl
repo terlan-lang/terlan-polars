@@ -1,0 +1,71 @@
+module polars.DataTypeTest.
+
+import polars.DataFrame.{DataTypeValue, DateType, Float32, Int64, NullType, Utf8, array_leaf_data_type, array_shape, array_type, can_cast_to, cast_leaf, contains_data_type, contains_list, data_type_max, data_type_to_physical, inner_data_type, is_array, is_date, is_float, is_integer, is_list, is_nested_null, is_numeric, is_unsigned_integer, leaf_data_type, list_type, matches_schema_type, nesting_level, pretty_format, unsigned_bit_representation}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub scalar_data_type_queries_cross_native_boundary(): Bool ->
+    is_integer(Int64)
+        and is_numeric(Int64)
+        and is_date(DateType)
+        and pretty_format(Utf8) == "str"
+        and is_integer(data_type_to_physical(DateType))
+        and case data_type_max(Int64) {
+    Ok(value) -> value == "9223372036854775807";
+    Err(_error) -> false
+}.
+
+@test
+pub nested_data_type_queries_cross_native_boundary(): Bool ->
+    let list = list_type(Int64);
+    let array = array_type(list, 3);
+    is_array(array)
+        and contains_list(array)
+        and contains_data_type(array, Int64)
+        and nesting_level(array) == 2
+        and case array_shape(array) {
+    Err(_error) -> false;
+    Ok(shape) ->
+        shape == [3]
+            and case inner_data_type(array) {
+    Err(_error) -> false;
+    Ok(inner) ->
+        is_list(inner)
+            and is_integer(leaf_data_type(array))
+            and case array_leaf_data_type(array) {
+    Ok(array_leaf) -> is_list(array_leaf);
+    Err(_error) -> false
+}
+}
+}.
+
+@test
+pub data_type_leaf_transforms_cross_native_boundary(): Bool ->
+    let array = array_type(Int64, 2);
+    let converted = cast_leaf(array, Float32);
+    is_float(leaf_data_type(converted)).
+
+@test
+pub data_type_cast_compatibility_result_is_typed(): Bool ->
+    case can_cast_to(Int64, Float32) {
+        Err(_error) -> false;
+        Ok(can_cast) -> can_cast
+    }.
+
+@test
+pub data_type_schema_compatibility_result_is_typed(): Bool ->
+    case matches_schema_type(NullType, Utf8) {
+        Err(_error) -> false;
+        Ok(requires_cast) -> requires_cast
+    }.
+
+@test
+pub data_type_unsigned_representation_result_is_typed(): Bool ->
+    case unsigned_bit_representation(Float32) {
+        Ok(data_type) -> is_unsigned_integer(data_type);
+        Err(_error) -> false
+    }.
+
+@test
+pub nested_null_classification_crosses_native_boundary(): Bool ->
+    is_nested_null(list_type(NullType)).

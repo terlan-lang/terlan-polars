@@ -1,0 +1,32 @@
+[package]
+name = "terlan-polars"
+version = "0.1.0-dev"
+namespace = "polars"
+hex = "terlan_polars"
+repository = "https://github.com/terlan-lang/terlan-polars"
+description = "External Polars DataFrame package for Terlan"
+license = "MIT"
+compiler = ">= 0.0.7"
+links = ["https://terlan.org", "https://pola.rs"]
+
+[source]
+roots = ["src"]
+
+[capabilities]
+requires = ["rust-native-adapter", "native-process-helper"]
+
+[native.rust]
+crate = "terlan_polars_native"
+path = "native"
+helper = "terlan-polars-native-boundary"
+helper_env = "TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH"
+features = ["real-polars"]
+
+[native.rust.dependencies]
+polars = { cargo = "polars", version = "0.55.1", features = ["lazy", "streaming", "cse", "meta", "sql", "csv", "parquet", "json", "ipc", "cloud", "http", "aws", "gcp", "azure", "strings", "string_encoding", "string_normalize", "string_pad", "string_reverse", "binary_encoding", "temporal", "range", "arg_where", "dtype-date", "dtype-datetime", "dtype-time", "month_start", "month_end", "offset_by", "dtype-i8", "dtype-i16", "dtype-u8", "dtype-i128", "dtype-u128", "dtype-f16", "dtype-array", "dtype-extension", "dtype-map", "array_count", "array_to_struct", "list_drop_nulls", "list_sample", "list_gather", "diff", "index_of", "search_sorted", "repeat_by", "pct_change", "abs", "list_to_struct", "list_count", "list_sets", "random", "row_hash", "bitwise", "hist", "propagate_nans", "trigonometry", "cum_agg", "rolling_window", "rolling_window_by", "moment", "mode", "log", "product", "is_close", "is_first_distinct", "is_last_distinct", "is_unique", "dtype-decimal", "dtype-categorical", "timezones", "round_series", "is_between", "is_in", "approx_unique", "dtype-struct", "unique_counts", "regex", "interpolate", "interpolate_by", "peaks", "rle", "ewma", "ewma_by", "concat_str", "rank", "top_k", "replace", "cutqcut", "semi_anti_join", "cross_join", "asof_join", "iejoin", "diagonal_concat", "pivot", "dynamic_group_by"], status = "feature-gated" }
+connectorx = { cargo = "connectorx", version = "0.4.5", default_features = false, features = ["fptr", "src_postgres", "src_sqlite", "dst_arrow"], status = "feature-gated" }
+arrow = { cargo = "arrow", version = "54", features = ["ipc"], status = "feature-gated" }
+plotlars-core = { cargo = "plotlars-core", version = "0.12.6", status = "feature-gated" }
+plotlars-plotters = { cargo = "plotlars-plotters", version = "0.12.6", status = "feature-gated" }
+plotlars-plotly = { cargo = "plotlars-plotly", version = "0.12.6", status = "optional", feature = "plotly-html" }
+plotters = { cargo = "plotters", version = "0.3.7", features = ["fontconfig-dlopen"], status = "feature-gated" }

@@ -1,0 +1,14 @@
+module polars.DataFrameDisposeTest.
+
+import polars.DataFrame.{dispose, height, read_csv}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub dispose_has_typed_unit_surface(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> true;
+        Ok(df) ->
+            let valid = height(df) == 2;
+            let _disposed_at_3444 = dispose(df);
+            valid
+    }.

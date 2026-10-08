@@ -1,0 +1,13 @@
+first_name,middle_name,last_name,gender,type,state,party,birthday
+John,,Adams,M,rep,MA,Pro-Administration,1735-10-30
+Samuel,,Adams,M,rep,MA,Anti-Administration,1722-09-27
+Abigail,,Smith,F,rep,MA,Pro-Administration,1744-11-11
+John,Q,Doe,M,sen,NY,Pro-Administration,1960-01-02
+Jane,R,Doe,F,sen,NY,Anti-Administration,1970-02-03
+John,S,Roe,M,rep,NY,Other,1980-03-04
+Alice,,Jones,F,rep,CA,Pro-Administration,1975-04-05
+Bob,,Jones,M,sen,CA,Anti-Administration,1965-05-06
+Carol,,White,F,rep,CA,Other,1985-06-07
+David,,Black,M,rep,TX,Pro-Administration,1955-07-08
+Eve,,Green,F,sen,TX,Anti-Administration,1990-08-09
+Frank,,Brown,M,rep,TX,Other,1945-09-10

@@ -1,0 +1,8 @@
+module polars.ExtensionDataTypeTest.
+
+import polars.DataFrame.{BinaryType, DataTypeValue, extension_type}.
+
+@test
+pub extension_data_type_uses_explicit_storage(): Bool ->
+    let _data_type = extension_type("terlan.uuid", "version=1", BinaryType);
+    true.

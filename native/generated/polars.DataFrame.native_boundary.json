@@ -1,0 +1,5153 @@
+{
+  "functions": [
+    {
+      "arity": 0,
+      "name": "show_versions",
+      "operation": "polars.show_versions"
+    },
+    {
+      "arity": 1,
+      "name": "list_type",
+      "operation": "polars.dtype.list"
+    },
+    {
+      "arity": 2,
+      "name": "map_type",
+      "operation": "polars.dtype.map"
+    },
+    {
+      "arity": 2,
+      "name": "array_type",
+      "operation": "polars.dtype.array"
+    },
+    {
+      "arity": 2,
+      "name": "decimal_type",
+      "operation": "polars.dtype.decimal"
+    },
+    {
+      "arity": 0,
+      "name": "categorical_type",
+      "operation": "polars.dtype.categorical"
+    },
+    {
+      "arity": 1,
+      "name": "enum_type",
+      "operation": "polars.dtype.enum_type"
+    },
+    {
+      "arity": 2,
+      "name": "datetime_type",
+      "operation": "polars.dtype.datetime_tz"
+    },
+    {
+      "arity": 2,
+      "name": "data_type_field",
+      "operation": "polars.dtype.field"
+    },
+    {
+      "arity": 1,
+      "name": "struct_type",
+      "operation": "polars.dtype.struct_type"
+    },
+    {
+      "arity": 2,
+      "name": "extension_type",
+      "operation": "polars.dtype.extension"
+    },
+    {
+      "arity": 3,
+      "name": "extension_type",
+      "operation": "polars.dtype.extension_metadata"
+    },
+    {
+      "arity": 1,
+      "name": "pretty_format",
+      "operation": "polars.dtype.pretty_format"
+    },
+    {
+      "arity": 1,
+      "name": "is_known",
+      "operation": "polars.dtype.is_known"
+    },
+    {
+      "arity": 1,
+      "name": "array_shape",
+      "operation": "polars.dtype.get_shape"
+    },
+    {
+      "arity": 1,
+      "name": "inner_data_type",
+      "operation": "polars.dtype.inner_dtype"
+    },
+    {
+      "arity": 1,
+      "name": "map_key_data_type",
+      "operation": "polars.dtype.map_key"
+    },
+    {
+      "arity": 1,
+      "name": "map_value_data_type",
+      "operation": "polars.dtype.map_value"
+    },
+    {
+      "arity": 1,
+      "name": "leaf_data_type",
+      "operation": "polars.dtype.leaf_dtype"
+    },
+    {
+      "arity": 1,
+      "name": "array_leaf_data_type",
+      "operation": "polars.dtype.array_leaf_dtype"
+    },
+    {
+      "arity": 2,
+      "name": "cast_leaf",
+      "operation": "polars.dtype.cast_leaf"
+    },
+    {
+      "arity": 2,
+      "name": "can_cast_to",
+      "operation": "polars.dtype.can_cast_to"
+    },
+    {
+      "arity": 1,
+      "name": "implode",
+      "operation": "polars.dtype.implode"
+    },
+    {
+      "arity": 1,
+      "name": "data_type_to_physical",
+      "operation": "polars.dtype.to_physical"
+    },
+    {
+      "arity": 1,
+      "name": "data_type_to_storage",
+      "operation": "polars.dtype.to_storage"
+    },
+    {
+      "arity": 1,
+      "name": "is_supported_list_arithmetic_input",
+      "operation": "polars.dtype.is_supported_list_arithmetic_input"
+    },
+    {
+      "arity": 1,
+      "name": "is_logical",
+      "operation": "polars.dtype.is_logical"
+    },
+    {
+      "arity": 1,
+      "name": "is_temporal",
+      "operation": "polars.dtype.is_temporal"
+    },
+    {
+      "arity": 1,
+      "name": "is_primitive",
+      "operation": "polars.dtype.is_primitive"
+    },
+    {
+      "arity": 1,
+      "name": "is_primitive_numeric",
+      "operation": "polars.dtype.is_primitive_numeric"
+    },
+    {
+      "arity": 1,
+      "name": "is_bool",
+      "operation": "polars.dtype.is_bool"
+    },
+    {
+      "arity": 1,
+      "name": "is_list",
+      "operation": "polars.dtype.is_list"
+    },
+    {
+      "arity": 1,
+      "name": "is_map",
+      "operation": "polars.dtype.is_map"
+    },
+    {
+      "arity": 1,
+      "name": "is_array",
+      "operation": "polars.dtype.is_array"
+    },
+    {
+      "arity": 1,
+      "name": "is_nested",
+      "operation": "polars.dtype.is_nested"
+    },
+    {
+      "arity": 1,
+      "name": "is_struct",
+      "operation": "polars.dtype.is_struct"
+    },
+    {
+      "arity": 1,
+      "name": "is_binary",
+      "operation": "polars.dtype.is_binary"
+    },
+    {
+      "arity": 1,
+      "name": "is_date",
+      "operation": "polars.dtype.is_date"
+    },
+    {
+      "arity": 1,
+      "name": "is_datetime",
+      "operation": "polars.dtype.is_datetime"
+    },
+    {
+      "arity": 1,
+      "name": "is_duration",
+      "operation": "polars.dtype.is_duration"
+    },
+    {
+      "arity": 1,
+      "name": "is_object",
+      "operation": "polars.dtype.is_object"
+    },
+    {
+      "arity": 1,
+      "name": "data_type_is_null",
+      "operation": "polars.dtype.is_null"
+    },
+    {
+      "arity": 1,
+      "name": "contains_views",
+      "operation": "polars.dtype.contains_views"
+    },
+    {
+      "arity": 1,
+      "name": "contains_categoricals",
+      "operation": "polars.dtype.contains_categoricals"
+    },
+    {
+      "arity": 1,
+      "name": "contains_enums",
+      "operation": "polars.dtype.contains_enums"
+    },
+    {
+      "arity": 1,
+      "name": "contains_objects",
+      "operation": "polars.dtype.contains_objects"
+    },
+    {
+      "arity": 1,
+      "name": "contains_list",
+      "operation": "polars.dtype.contains_list_recursive"
+    },
+    {
+      "arity": 1,
+      "name": "contains_unknown",
+      "operation": "polars.dtype.contains_unknown"
+    },
+    {
+      "arity": 2,
+      "name": "contains_data_type",
+      "operation": "polars.dtype.contains_dtype_recursive"
+    },
+    {
+      "arity": 1,
+      "name": "is_ordered",
+      "operation": "polars.dtype.is_ord"
+    },
+    {
+      "arity": 1,
+      "name": "is_decimal",
+      "operation": "polars.dtype.is_decimal"
+    },
+    {
+      "arity": 1,
+      "name": "is_float",
+      "operation": "polars.dtype.is_float"
+    },
+    {
+      "arity": 1,
+      "name": "is_integer",
+      "operation": "polars.dtype.is_integer"
+    },
+    {
+      "arity": 1,
+      "name": "is_signed_integer",
+      "operation": "polars.dtype.is_signed_integer"
+    },
+    {
+      "arity": 1,
+      "name": "is_unsigned_integer",
+      "operation": "polars.dtype.is_unsigned_integer"
+    },
+    {
+      "arity": 1,
+      "name": "is_string",
+      "operation": "polars.dtype.is_string"
+    },
+    {
+      "arity": 1,
+      "name": "is_categorical",
+      "operation": "polars.dtype.is_categorical"
+    },
+    {
+      "arity": 1,
+      "name": "is_enum",
+      "operation": "polars.dtype.is_enum"
+    },
+    {
+      "arity": 1,
+      "name": "is_extension",
+      "operation": "polars.dtype.is_extension"
+    },
+    {
+      "arity": 1,
+      "name": "data_type_max",
+      "operation": "polars.dtype.max"
+    },
+    {
+      "arity": 1,
+      "name": "data_type_min",
+      "operation": "polars.dtype.min"
+    },
+    {
+      "arity": 1,
+      "name": "is_nested_null",
+      "operation": "polars.dtype.is_nested_null"
+    },
+    {
+      "arity": 2,
+      "name": "matches_schema_type",
+      "operation": "polars.dtype.matches_schema_type"
+    },
+    {
+      "arity": 1,
+      "name": "is_unknown",
+      "operation": "polars.dtype.is_unknown"
+    },
+    {
+      "arity": 1,
+      "name": "nesting_level",
+      "operation": "polars.dtype.nesting_level"
+    },
+    {
+      "arity": 1,
+      "name": "is_numeric",
+      "operation": "polars.dtype.is_numeric"
+    },
+    {
+      "arity": 1,
+      "name": "unsigned_bit_representation",
+      "operation": "polars.dtype.numeric_to_unsigned_bit_repr"
+    },
+    {
+      "arity": 1,
+      "name": "col",
+      "operation": "polars.expr.col"
+    },
+    {
+      "arity": 1,
+      "name": "udf_parameter",
+      "operation": "polars.expr.udf_parameter"
+    },
+    {
+      "arity": 3,
+      "name": "define_udf",
+      "operation": "polars.expr.define_udf"
+    },
+    {
+      "arity": 3,
+      "name": "define_udf",
+      "operation": "polars.expr.define_nested_udf"
+    },
+    {
+      "arity": 2,
+      "name": "apply_udf",
+      "operation": "polars.expr.apply_udf"
+    },
+    {
+      "arity": 1,
+      "name": "cols",
+      "operation": "polars.expr.cols"
+    },
+    {
+      "arity": 1,
+      "name": "dtype_cols",
+      "operation": "polars.expr.dtype_cols"
+    },
+    {
+      "arity": 1,
+      "name": "dtype_cols_typed",
+      "operation": "polars.expr.dtype_cols_typed"
+    },
+    {
+      "arity": 1,
+      "name": "dtype_cols_typed",
+      "operation": "polars.expr.dtype_cols_nested"
+    },
+    {
+      "arity": 0,
+      "name": "all_columns",
+      "operation": "polars.expr.all"
+    },
+    {
+      "arity": 0,
+      "name": "selector_all",
+      "operation": "polars.expr.selector_all"
+    },
+    {
+      "arity": 1,
+      "name": "selector_names",
+      "operation": "polars.expr.selector_names"
+    },
+    {
+      "arity": 0,
+      "name": "selector_numeric",
+      "operation": "polars.expr.selector_numeric"
+    },
+    {
+      "arity": 0,
+      "name": "selector_string",
+      "operation": "polars.expr.selector_string"
+    },
+    {
+      "arity": 1,
+      "name": "selector_starts_with",
+      "operation": "polars.expr.selector_starts_with"
+    },
+    {
+      "arity": 1,
+      "name": "selector_contains",
+      "operation": "polars.expr.selector_contains"
+    },
+    {
+      "arity": 0,
+      "name": "selector_first",
+      "operation": "polars.expr.selector_first"
+    },
+    {
+      "arity": 2,
+      "name": "selector_union",
+      "operation": "polars.expr.selector_union"
+    },
+    {
+      "arity": 2,
+      "name": "selector_intersection",
+      "operation": "polars.expr.selector_intersection"
+    },
+    {
+      "arity": 2,
+      "name": "selector_difference",
+      "operation": "polars.expr.selector_difference"
+    },
+    {
+      "arity": 2,
+      "name": "selector_exclusive_or",
+      "operation": "polars.expr.selector_exclusive_or"
+    },
+    {
+      "arity": 1,
+      "name": "selector_complement",
+      "operation": "polars.expr.selector_complement"
+    },
+    {
+      "arity": 1,
+      "name": "into_selector",
+      "operation": "polars.expr.into_selector"
+    },
+    {
+      "arity": 1,
+      "name": "try_into_selector",
+      "operation": "polars.expr.try_into_selector"
+    },
+    {
+      "arity": 1,
+      "name": "concat_list",
+      "operation": "polars.expr.concat_list"
+    },
+    {
+      "arity": 4,
+      "name": "int_range",
+      "operation": "polars.expr.int_range"
+    },
+    {
+      "arity": 4,
+      "name": "int_ranges",
+      "operation": "polars.expr.int_ranges"
+    },
+    {
+      "arity": 1,
+      "name": "lit",
+      "operation": "polars.expr.lit"
+    },
+    {
+      "arity": 1,
+      "name": "extract_i64",
+      "operation": "polars.expr.extract_i64"
+    },
+    {
+      "arity": 1,
+      "name": "extract_usize",
+      "operation": "polars.expr.extract_usize"
+    },
+    {
+      "arity": 0,
+      "name": "null_lit",
+      "operation": "polars.expr.null"
+    },
+    {
+      "arity": 1,
+      "name": "date",
+      "operation": "polars.expr.date"
+    },
+    {
+      "arity": 3,
+      "name": "date",
+      "operation": "polars.expr.date_components"
+    },
+    {
+      "arity": 1,
+      "name": "sql_expr",
+      "operation": "polars.expr.sql"
+    },
+    {
+      "arity": 0,
+      "name": "len_expr",
+      "operation": "polars.expr.len"
+    },
+    {
+      "arity": 0,
+      "name": "pi",
+      "operation": "polars.expr.pi"
+    },
+    {
+      "arity": 0,
+      "name": "element",
+      "operation": "polars.expr.element"
+    },
+    {
+      "arity": 1,
+      "name": "millennium",
+      "operation": "polars.expr.millennium"
+    },
+    {
+      "arity": 1,
+      "name": "century",
+      "operation": "polars.expr.century"
+    },
+    {
+      "arity": 1,
+      "name": "year",
+      "operation": "polars.expr.year"
+    },
+    {
+      "arity": 1,
+      "name": "is_leap_year",
+      "operation": "polars.expr.is_leap_year"
+    },
+    {
+      "arity": 1,
+      "name": "iso_year",
+      "operation": "polars.expr.iso_year"
+    },
+    {
+      "arity": 1,
+      "name": "month",
+      "operation": "polars.expr.month"
+    },
+    {
+      "arity": 1,
+      "name": "days_in_month",
+      "operation": "polars.expr.days_in_month"
+    },
+    {
+      "arity": 1,
+      "name": "quarter",
+      "operation": "polars.expr.quarter"
+    },
+    {
+      "arity": 1,
+      "name": "week",
+      "operation": "polars.expr.week"
+    },
+    {
+      "arity": 1,
+      "name": "day",
+      "operation": "polars.expr.day"
+    },
+    {
+      "arity": 1,
+      "name": "weekday",
+      "operation": "polars.expr.weekday"
+    },
+    {
+      "arity": 1,
+      "name": "ordinal_day",
+      "operation": "polars.expr.ordinal_day"
+    },
+    {
+      "arity": 1,
+      "name": "time_of_day",
+      "operation": "polars.expr.time_of_day"
+    },
+    {
+      "arity": 1,
+      "name": "calendar_date",
+      "operation": "polars.expr.calendar_date"
+    },
+    {
+      "arity": 1,
+      "name": "local_datetime",
+      "operation": "polars.expr.local_datetime"
+    },
+    {
+      "arity": 1,
+      "name": "hour",
+      "operation": "polars.expr.hour"
+    },
+    {
+      "arity": 1,
+      "name": "minute",
+      "operation": "polars.expr.minute"
+    },
+    {
+      "arity": 1,
+      "name": "second",
+      "operation": "polars.expr.second"
+    },
+    {
+      "arity": 1,
+      "name": "millisecond",
+      "operation": "polars.expr.millisecond"
+    },
+    {
+      "arity": 1,
+      "name": "microsecond",
+      "operation": "polars.expr.microsecond"
+    },
+    {
+      "arity": 1,
+      "name": "nanosecond",
+      "operation": "polars.expr.nanosecond"
+    },
+    {
+      "arity": 1,
+      "name": "month_start",
+      "operation": "polars.expr.month_start"
+    },
+    {
+      "arity": 1,
+      "name": "month_end",
+      "operation": "polars.expr.month_end"
+    },
+    {
+      "arity": 4,
+      "name": "date_range",
+      "operation": "polars.expr.date_range"
+    },
+    {
+      "arity": 4,
+      "name": "date_ranges",
+      "operation": "polars.expr.date_ranges"
+    },
+    {
+      "arity": 6,
+      "name": "datetime_range",
+      "operation": "polars.expr.datetime_range"
+    },
+    {
+      "arity": 6,
+      "name": "datetime_ranges",
+      "operation": "polars.expr.datetime_ranges"
+    },
+    {
+      "arity": 4,
+      "name": "time_range",
+      "operation": "polars.expr.time_range"
+    },
+    {
+      "arity": 4,
+      "name": "time_ranges",
+      "operation": "polars.expr.time_ranges"
+    },
+    {
+      "arity": 2,
+      "name": "duration",
+      "operation": "polars.expr.duration"
+    },
+    {
+      "arity": 3,
+      "name": "datetime",
+      "operation": "polars.expr.datetime"
+    },
+    {
+      "arity": 2,
+      "name": "repeat",
+      "operation": "polars.expr.repeat"
+    },
+    {
+      "arity": 2,
+      "name": "temporal_replace",
+      "operation": "polars.expr.temporal_replace"
+    },
+    {
+      "arity": 2,
+      "name": "convert_time_zone",
+      "operation": "polars.expr.convert_time_zone"
+    },
+    {
+      "arity": 4,
+      "name": "replace_time_zone",
+      "operation": "polars.expr.replace_time_zone"
+    },
+    {
+      "arity": 1,
+      "name": "timestamp_milliseconds",
+      "operation": "polars.expr.timestamp_milliseconds"
+    },
+    {
+      "arity": 1,
+      "name": "timestamp_microseconds",
+      "operation": "polars.expr.timestamp_microseconds"
+    },
+    {
+      "arity": 1,
+      "name": "timestamp_nanoseconds",
+      "operation": "polars.expr.timestamp_nanoseconds"
+    },
+    {
+      "arity": 2,
+      "name": "temporal_truncate",
+      "operation": "polars.expr.temporal_truncate"
+    },
+    {
+      "arity": 2,
+      "name": "temporal_round",
+      "operation": "polars.expr.temporal_round"
+    },
+    {
+      "arity": 2,
+      "name": "temporal_offset_by",
+      "operation": "polars.expr.temporal_offset_by"
+    },
+    {
+      "arity": 2,
+      "name": "total_days",
+      "operation": "polars.expr.total_days"
+    },
+    {
+      "arity": 2,
+      "name": "total_hours",
+      "operation": "polars.expr.total_hours"
+    },
+    {
+      "arity": 2,
+      "name": "total_minutes",
+      "operation": "polars.expr.total_minutes"
+    },
+    {
+      "arity": 2,
+      "name": "total_seconds",
+      "operation": "polars.expr.total_seconds"
+    },
+    {
+      "arity": 2,
+      "name": "total_milliseconds",
+      "operation": "polars.expr.total_milliseconds"
+    },
+    {
+      "arity": 2,
+      "name": "total_microseconds",
+      "operation": "polars.expr.total_microseconds"
+    },
+    {
+      "arity": 2,
+      "name": "total_nanoseconds",
+      "operation": "polars.expr.total_nanoseconds"
+    },
+    {
+      "arity": 1,
+      "name": "mean",
+      "operation": "polars.expr.mean"
+    },
+    {
+      "arity": 1,
+      "name": "max",
+      "operation": "polars.expr.max"
+    },
+    {
+      "arity": 1,
+      "name": "not_expr",
+      "operation": "polars.expr.not_expr"
+    },
+    {
+      "arity": 1,
+      "name": "is_null",
+      "operation": "polars.expr.is_null"
+    },
+    {
+      "arity": 1,
+      "name": "is_not_null",
+      "operation": "polars.expr.is_not_null"
+    },
+    {
+      "arity": 1,
+      "name": "is_finite",
+      "operation": "polars.expr.is_finite"
+    },
+    {
+      "arity": 1,
+      "name": "is_infinite",
+      "operation": "polars.expr.is_infinite"
+    },
+    {
+      "arity": 1,
+      "name": "is_nan",
+      "operation": "polars.expr.is_nan"
+    },
+    {
+      "arity": 1,
+      "name": "is_not_nan",
+      "operation": "polars.expr.is_not_nan"
+    },
+    {
+      "arity": 1,
+      "name": "is_first_distinct",
+      "operation": "polars.expr.is_first_distinct"
+    },
+    {
+      "arity": 1,
+      "name": "is_last_distinct",
+      "operation": "polars.expr.is_last_distinct"
+    },
+    {
+      "arity": 1,
+      "name": "is_unique",
+      "operation": "polars.expr.is_unique"
+    },
+    {
+      "arity": 1,
+      "name": "is_duplicated",
+      "operation": "polars.expr.is_duplicated"
+    },
+    {
+      "arity": 1,
+      "name": "has_nulls",
+      "operation": "polars.expr.has_nulls"
+    },
+    {
+      "arity": 2,
+      "name": "any",
+      "operation": "polars.expr.any"
+    },
+    {
+      "arity": 2,
+      "name": "all",
+      "operation": "polars.expr.all_true"
+    },
+    {
+      "arity": 2,
+      "name": "is_empty",
+      "operation": "polars.expr.is_empty"
+    },
+    {
+      "arity": 1,
+      "name": "n_unique",
+      "operation": "polars.expr.n_unique"
+    },
+    {
+      "arity": 1,
+      "name": "approx_n_unique",
+      "operation": "polars.expr.approx_n_unique"
+    },
+    {
+      "arity": 1,
+      "name": "value_counts",
+      "operation": "polars.expr.value_counts"
+    },
+    {
+      "arity": 1,
+      "name": "unique_stable",
+      "operation": "polars.expr.unique_stable"
+    },
+    {
+      "arity": 1,
+      "name": "unique_counts",
+      "operation": "polars.expr.unique_counts"
+    },
+    {
+      "arity": 1,
+      "name": "cos",
+      "operation": "polars.expr.cos"
+    },
+    {
+      "arity": 1,
+      "name": "cot",
+      "operation": "polars.expr.cot"
+    },
+    {
+      "arity": 1,
+      "name": "sin",
+      "operation": "polars.expr.sin"
+    },
+    {
+      "arity": 1,
+      "name": "tan",
+      "operation": "polars.expr.tan"
+    },
+    {
+      "arity": 1,
+      "name": "arccos",
+      "operation": "polars.expr.arccos"
+    },
+    {
+      "arity": 1,
+      "name": "arcsin",
+      "operation": "polars.expr.arcsin"
+    },
+    {
+      "arity": 1,
+      "name": "arctan",
+      "operation": "polars.expr.arctan"
+    },
+    {
+      "arity": 2,
+      "name": "arctan2",
+      "operation": "polars.expr.arctan2"
+    },
+    {
+      "arity": 1,
+      "name": "cosh",
+      "operation": "polars.expr.cosh"
+    },
+    {
+      "arity": 1,
+      "name": "sinh",
+      "operation": "polars.expr.sinh"
+    },
+    {
+      "arity": 1,
+      "name": "tanh",
+      "operation": "polars.expr.tanh"
+    },
+    {
+      "arity": 1,
+      "name": "arccosh",
+      "operation": "polars.expr.arccosh"
+    },
+    {
+      "arity": 1,
+      "name": "arcsinh",
+      "operation": "polars.expr.arcsinh"
+    },
+    {
+      "arity": 1,
+      "name": "arctanh",
+      "operation": "polars.expr.arctanh"
+    },
+    {
+      "arity": 1,
+      "name": "degrees",
+      "operation": "polars.expr.degrees"
+    },
+    {
+      "arity": 1,
+      "name": "radians",
+      "operation": "polars.expr.radians"
+    },
+    {
+      "arity": 2,
+      "name": "add",
+      "operation": "polars.expr.add"
+    },
+    {
+      "arity": 2,
+      "name": "subtract",
+      "operation": "polars.expr.subtract"
+    },
+    {
+      "arity": 2,
+      "name": "multiply",
+      "operation": "polars.expr.multiply"
+    },
+    {
+      "arity": 2,
+      "name": "divide",
+      "operation": "polars.expr.divide"
+    },
+    {
+      "arity": 2,
+      "name": "true_div",
+      "operation": "polars.expr.true_div"
+    },
+    {
+      "arity": 2,
+      "name": "floor_divide",
+      "operation": "polars.expr.floor_divide"
+    },
+    {
+      "arity": 2,
+      "name": "modulo",
+      "operation": "polars.expr.modulo"
+    },
+    {
+      "arity": 2,
+      "name": "pow",
+      "operation": "polars.expr.pow"
+    },
+    {
+      "arity": 1,
+      "name": "neg",
+      "operation": "polars.expr.neg"
+    },
+    {
+      "arity": 1,
+      "name": "sqrt",
+      "operation": "polars.expr.sqrt"
+    },
+    {
+      "arity": 1,
+      "name": "cbrt",
+      "operation": "polars.expr.cbrt"
+    },
+    {
+      "arity": 2,
+      "name": "lt",
+      "operation": "polars.expr.lt"
+    },
+    {
+      "arity": 2,
+      "name": "lte",
+      "operation": "polars.expr.lte"
+    },
+    {
+      "arity": 2,
+      "name": "gt",
+      "operation": "polars.expr.gt"
+    },
+    {
+      "arity": 2,
+      "name": "gte",
+      "operation": "polars.expr.gte"
+    },
+    {
+      "arity": 2,
+      "name": "equal",
+      "operation": "polars.expr.equal"
+    },
+    {
+      "arity": 2,
+      "name": "not_equal",
+      "operation": "polars.expr.not_equal"
+    },
+    {
+      "arity": 2,
+      "name": "equal_missing",
+      "operation": "polars.expr.equal_missing"
+    },
+    {
+      "arity": 2,
+      "name": "not_equal_missing",
+      "operation": "polars.expr.not_equal_missing"
+    },
+    {
+      "arity": 2,
+      "name": "and_predicate",
+      "operation": "polars.expr.and_predicate"
+    },
+    {
+      "arity": 2,
+      "name": "or_predicate",
+      "operation": "polars.expr.or_predicate"
+    },
+    {
+      "arity": 2,
+      "name": "xor",
+      "operation": "polars.expr.xor"
+    },
+    {
+      "arity": 2,
+      "name": "logical_and",
+      "operation": "polars.expr.logical_and"
+    },
+    {
+      "arity": 2,
+      "name": "logical_or",
+      "operation": "polars.expr.logical_or"
+    },
+    {
+      "arity": 3,
+      "name": "when_then_otherwise",
+      "operation": "polars.expr.when_then_otherwise"
+    },
+    {
+      "arity": 3,
+      "name": "when_chain",
+      "operation": "polars.expr.when_chain"
+    },
+    {
+      "arity": 2,
+      "name": "alias",
+      "operation": "polars.expr.alias"
+    },
+    {
+      "arity": 2,
+      "name": "suffix",
+      "operation": "polars.expr.suffix"
+    },
+    {
+      "arity": 2,
+      "name": "prefix",
+      "operation": "polars.expr.prefix"
+    },
+    {
+      "arity": 1,
+      "name": "keep_name",
+      "operation": "polars.expr.keep_name"
+    },
+    {
+      "arity": 4,
+      "name": "replace_name",
+      "operation": "polars.expr.replace_name"
+    },
+    {
+      "arity": 1,
+      "name": "lowercase_names",
+      "operation": "polars.expr.lowercase_names"
+    },
+    {
+      "arity": 4,
+      "name": "map_name",
+      "operation": "polars.expr.map_name"
+    },
+    {
+      "arity": 4,
+      "name": "map_field_names",
+      "operation": "polars.expr.map_field_names"
+    },
+    {
+      "arity": 2,
+      "name": "prefix_field_names",
+      "operation": "polars.expr.prefix_field_names"
+    },
+    {
+      "arity": 2,
+      "name": "suffix_field_names",
+      "operation": "polars.expr.suffix_field_names"
+    },
+    {
+      "arity": 2,
+      "name": "exclude",
+      "operation": "polars.expr.exclude"
+    },
+    {
+      "arity": 2,
+      "name": "round_to",
+      "operation": "polars.expr.round"
+    },
+    {
+      "arity": 3,
+      "name": "round_with_mode",
+      "operation": "polars.expr.round_with_mode"
+    },
+    {
+      "arity": 2,
+      "name": "round_sig_figs",
+      "operation": "polars.expr.round_sig_figs"
+    },
+    {
+      "arity": 2,
+      "name": "truncate",
+      "operation": "polars.expr.truncate"
+    },
+    {
+      "arity": 1,
+      "name": "floor",
+      "operation": "polars.expr.floor"
+    },
+    {
+      "arity": 1,
+      "name": "ceil",
+      "operation": "polars.expr.ceil"
+    },
+    {
+      "arity": 1,
+      "name": "abs",
+      "operation": "polars.expr.abs"
+    },
+    {
+      "arity": 1,
+      "name": "sign",
+      "operation": "polars.expr.sign"
+    },
+    {
+      "arity": 1,
+      "name": "to_physical",
+      "operation": "polars.expr.to_physical"
+    },
+    {
+      "arity": 3,
+      "name": "set_sorted_flag",
+      "operation": "polars.expr.set_sorted_flag"
+    },
+    {
+      "arity": 3,
+      "name": "is_sorted",
+      "operation": "polars.expr.is_sorted"
+    },
+    {
+      "arity": 3,
+      "name": "clip",
+      "operation": "polars.expr.clip"
+    },
+    {
+      "arity": 2,
+      "name": "clip_min",
+      "operation": "polars.expr.clip_min"
+    },
+    {
+      "arity": 2,
+      "name": "clip_max",
+      "operation": "polars.expr.clip_max"
+    },
+    {
+      "arity": 1,
+      "name": "product",
+      "operation": "polars.expr.product"
+    },
+    {
+      "arity": 2,
+      "name": "log",
+      "operation": "polars.expr.log"
+    },
+    {
+      "arity": 1,
+      "name": "log10",
+      "operation": "polars.expr.log10"
+    },
+    {
+      "arity": 1,
+      "name": "log1p",
+      "operation": "polars.expr.log1p"
+    },
+    {
+      "arity": 1,
+      "name": "exp",
+      "operation": "polars.expr.exp"
+    },
+    {
+      "arity": 3,
+      "name": "entropy",
+      "operation": "polars.expr.entropy"
+    },
+    {
+      "arity": 2,
+      "name": "skew",
+      "operation": "polars.expr.skew"
+    },
+    {
+      "arity": 3,
+      "name": "kurtosis",
+      "operation": "polars.expr.kurtosis"
+    },
+    {
+      "arity": 1,
+      "name": "upper_bound",
+      "operation": "polars.expr.upper_bound"
+    },
+    {
+      "arity": 1,
+      "name": "lower_bound",
+      "operation": "polars.expr.lower_bound"
+    },
+    {
+      "arity": 3,
+      "name": "between",
+      "operation": "polars.expr.between"
+    },
+    {
+      "arity": 4,
+      "name": "between_closed",
+      "operation": "polars.expr.between_closed"
+    },
+    {
+      "arity": 3,
+      "name": "is_in",
+      "operation": "polars.expr.is_in"
+    },
+    {
+      "arity": 5,
+      "name": "is_close",
+      "operation": "polars.expr.is_close"
+    },
+    {
+      "arity": 2,
+      "name": "split_first",
+      "operation": "polars.expr.split_first"
+    },
+    {
+      "arity": 2,
+      "name": "string_split",
+      "operation": "polars.expr.string_split"
+    },
+    {
+      "arity": 2,
+      "name": "date_format",
+      "operation": "polars.expr.date_format"
+    },
+    {
+      "arity": 1,
+      "name": "uppercase_names",
+      "operation": "polars.expr.uppercase_names"
+    },
+    {
+      "arity": 2,
+      "name": "cast",
+      "operation": "polars.expr.cast"
+    },
+    {
+      "arity": 3,
+      "name": "cast_with_options",
+      "operation": "polars.expr.cast_with_options"
+    },
+    {
+      "arity": 2,
+      "name": "cast_to",
+      "operation": "polars.expr.cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "cast_nested",
+      "operation": "polars.expr.cast_nested"
+    },
+    {
+      "arity": 2,
+      "name": "strict_cast",
+      "operation": "polars.expr.strict_cast"
+    },
+    {
+      "arity": 2,
+      "name": "strict_cast_to",
+      "operation": "polars.expr.strict_cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "strict_cast_nested",
+      "operation": "polars.expr.strict_cast_nested"
+    },
+    {
+      "arity": 1,
+      "name": "parse_datetime",
+      "operation": "polars.expr.parse_datetime"
+    },
+    {
+      "arity": 1,
+      "name": "string_len_bytes",
+      "operation": "polars.expr.string_len_bytes"
+    },
+    {
+      "arity": 1,
+      "name": "string_len_chars",
+      "operation": "polars.expr.string_len_chars"
+    },
+    {
+      "arity": 2,
+      "name": "string_starts_with",
+      "operation": "polars.expr.string_starts_with"
+    },
+    {
+      "arity": 2,
+      "name": "string_contains",
+      "operation": "polars.expr.string_contains"
+    },
+    {
+      "arity": 2,
+      "name": "string_ends_with",
+      "operation": "polars.expr.string_ends_with"
+    },
+    {
+      "arity": 3,
+      "name": "string_extract",
+      "operation": "polars.expr.string_extract"
+    },
+    {
+      "arity": 2,
+      "name": "string_extract_all",
+      "operation": "polars.expr.string_extract_all"
+    },
+    {
+      "arity": 3,
+      "name": "string_replace",
+      "operation": "polars.expr.string_replace"
+    },
+    {
+      "arity": 3,
+      "name": "string_replace_all",
+      "operation": "polars.expr.string_replace_all"
+    },
+    {
+      "arity": 1,
+      "name": "string_titlecase",
+      "operation": "polars.expr.string_titlecase"
+    },
+    {
+      "arity": 1,
+      "name": "string_lowercase",
+      "operation": "polars.expr.string_lowercase"
+    },
+    {
+      "arity": 1,
+      "name": "string_uppercase",
+      "operation": "polars.expr.string_uppercase"
+    },
+    {
+      "arity": 2,
+      "name": "string_strip_chars",
+      "operation": "polars.expr.string_strip_chars"
+    },
+    {
+      "arity": 2,
+      "name": "string_strip_chars_start",
+      "operation": "polars.expr.string_strip_chars_start"
+    },
+    {
+      "arity": 2,
+      "name": "string_strip_chars_end",
+      "operation": "polars.expr.string_strip_chars_end"
+    },
+    {
+      "arity": 2,
+      "name": "string_strip_prefix",
+      "operation": "polars.expr.string_strip_prefix"
+    },
+    {
+      "arity": 2,
+      "name": "string_strip_suffix",
+      "operation": "polars.expr.string_strip_suffix"
+    },
+    {
+      "arity": 2,
+      "name": "string_slice",
+      "operation": "polars.expr.string_slice"
+    },
+    {
+      "arity": 2,
+      "name": "string_head",
+      "operation": "polars.expr.string_head"
+    },
+    {
+      "arity": 2,
+      "name": "string_tail",
+      "operation": "polars.expr.string_tail"
+    },
+    {
+      "arity": 2,
+      "name": "string_contains_literal",
+      "operation": "polars.expr.string_contains_literal"
+    },
+    {
+      "arity": 2,
+      "name": "string_find_literal",
+      "operation": "polars.expr.string_find_literal"
+    },
+    {
+      "arity": 3,
+      "name": "string_find",
+      "operation": "polars.expr.string_find"
+    },
+    {
+      "arity": 3,
+      "name": "string_count_matches",
+      "operation": "polars.expr.string_count_matches"
+    },
+    {
+      "arity": 3,
+      "name": "string_pad_start",
+      "operation": "polars.expr.string_pad_start"
+    },
+    {
+      "arity": 3,
+      "name": "string_pad_end",
+      "operation": "polars.expr.string_pad_end"
+    },
+    {
+      "arity": 2,
+      "name": "string_zfill",
+      "operation": "polars.expr.string_zfill"
+    },
+    {
+      "arity": 1,
+      "name": "string_hex_encode",
+      "operation": "polars.expr.string_hex_encode"
+    },
+    {
+      "arity": 2,
+      "name": "string_hex_decode",
+      "operation": "polars.expr.string_hex_decode"
+    },
+    {
+      "arity": 1,
+      "name": "string_base64_encode",
+      "operation": "polars.expr.string_base64_encode"
+    },
+    {
+      "arity": 2,
+      "name": "string_base64_decode",
+      "operation": "polars.expr.string_base64_decode"
+    },
+    {
+      "arity": 2,
+      "name": "string_normalize",
+      "operation": "polars.expr.string_normalize"
+    },
+    {
+      "arity": 1,
+      "name": "string_reverse",
+      "operation": "polars.expr.string_reverse"
+    },
+    {
+      "arity": 1,
+      "name": "string_escape_regex",
+      "operation": "polars.expr.string_escape_regex"
+    },
+    {
+      "arity": 1,
+      "name": "null_count",
+      "operation": "polars.expr.null_count"
+    },
+    {
+      "arity": 1,
+      "name": "drop_nulls",
+      "operation": "polars.expr.drop_nulls"
+    },
+    {
+      "arity": 1,
+      "name": "drop_nans",
+      "operation": "polars.expr.drop_nans"
+    },
+    {
+      "arity": 2,
+      "name": "fill_null",
+      "operation": "polars.expr.fill_null"
+    },
+    {
+      "arity": 1,
+      "name": "fill_null_forward",
+      "operation": "polars.expr.fill_null_forward"
+    },
+    {
+      "arity": 1,
+      "name": "fill_null_backward",
+      "operation": "polars.expr.fill_null_backward"
+    },
+    {
+      "arity": 3,
+      "name": "fill_null_with_strategy",
+      "operation": "polars.expr.fill_null_with_strategy"
+    },
+    {
+      "arity": 1,
+      "name": "interpolate",
+      "operation": "polars.expr.interpolate"
+    },
+    {
+      "arity": 2,
+      "name": "interpolate_by",
+      "operation": "polars.expr.interpolate_by"
+    },
+    {
+      "arity": 1,
+      "name": "peak_min",
+      "operation": "polars.expr.peak_min"
+    },
+    {
+      "arity": 1,
+      "name": "peak_max",
+      "operation": "polars.expr.peak_max"
+    },
+    {
+      "arity": 1,
+      "name": "rle",
+      "operation": "polars.expr.rle"
+    },
+    {
+      "arity": 1,
+      "name": "rle_id",
+      "operation": "polars.expr.rle_id"
+    },
+    {
+      "arity": 2,
+      "name": "reshape_expression",
+      "operation": "polars.expr.reshape_expression"
+    },
+    {
+      "arity": 5,
+      "name": "ewm_sum",
+      "operation": "polars.expr.ewm_sum"
+    },
+    {
+      "arity": 5,
+      "name": "ewm_mean",
+      "operation": "polars.expr.ewm_mean"
+    },
+    {
+      "arity": 6,
+      "name": "ewm_std",
+      "operation": "polars.expr.ewm_std"
+    },
+    {
+      "arity": 6,
+      "name": "ewm_var",
+      "operation": "polars.expr.ewm_var"
+    },
+    {
+      "arity": 3,
+      "name": "ewm_mean_by",
+      "operation": "polars.expr.ewm_mean_by"
+    },
+    {
+      "arity": 3,
+      "name": "ewm_sum_by",
+      "operation": "polars.expr.ewm_sum_by"
+    },
+    {
+      "arity": 2,
+      "name": "fill_nan",
+      "operation": "polars.expr.fill_nan"
+    },
+    {
+      "arity": 1,
+      "name": "sum",
+      "operation": "polars.expr.sum"
+    },
+    {
+      "arity": 1,
+      "name": "count",
+      "operation": "polars.expr.count"
+    },
+    {
+      "arity": 1,
+      "name": "len_values",
+      "operation": "polars.expr.len_values"
+    },
+    {
+      "arity": 1,
+      "name": "first_non_null",
+      "operation": "polars.expr.first_non_null"
+    },
+    {
+      "arity": 1,
+      "name": "last_non_null",
+      "operation": "polars.expr.last_non_null"
+    },
+    {
+      "arity": 2,
+      "name": "item",
+      "operation": "polars.expr.item"
+    },
+    {
+      "arity": 2,
+      "name": "implode",
+      "operation": "polars.expr.implode"
+    },
+    {
+      "arity": 3,
+      "name": "quantile",
+      "operation": "polars.expr.quantile"
+    },
+    {
+      "arity": 2,
+      "name": "mode",
+      "operation": "polars.expr.mode"
+    },
+    {
+      "arity": 1,
+      "name": "unique",
+      "operation": "polars.expr.unique"
+    },
+    {
+      "arity": 1,
+      "name": "arg_unique",
+      "operation": "polars.expr.arg_unique"
+    },
+    {
+      "arity": 1,
+      "name": "arg_true",
+      "operation": "polars.expr.arg_true"
+    },
+    {
+      "arity": 1,
+      "name": "arg_min",
+      "operation": "polars.expr.arg_min"
+    },
+    {
+      "arity": 1,
+      "name": "arg_max",
+      "operation": "polars.expr.arg_max"
+    },
+    {
+      "arity": 2,
+      "name": "dot",
+      "operation": "polars.expr.dot"
+    },
+    {
+      "arity": 2,
+      "name": "cum_count",
+      "operation": "polars.expr.cum_count"
+    },
+    {
+      "arity": 2,
+      "name": "cum_sum",
+      "operation": "polars.expr.cum_sum"
+    },
+    {
+      "arity": 2,
+      "name": "cum_product",
+      "operation": "polars.expr.cum_product"
+    },
+    {
+      "arity": 2,
+      "name": "cum_min",
+      "operation": "polars.expr.cum_min"
+    },
+    {
+      "arity": 2,
+      "name": "cum_max",
+      "operation": "polars.expr.cum_max"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_min",
+      "operation": "polars.expr.rolling_min"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_max",
+      "operation": "polars.expr.rolling_max"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_mean",
+      "operation": "polars.expr.rolling_mean"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_sum",
+      "operation": "polars.expr.rolling_sum"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_median",
+      "operation": "polars.expr.rolling_median"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_var",
+      "operation": "polars.expr.rolling_var"
+    },
+    {
+      "arity": 4,
+      "name": "rolling_std",
+      "operation": "polars.expr.rolling_std"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_min_weighted",
+      "operation": "polars.expr.rolling_min_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_max_weighted",
+      "operation": "polars.expr.rolling_max_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_mean_weighted",
+      "operation": "polars.expr.rolling_mean_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_sum_weighted",
+      "operation": "polars.expr.rolling_sum_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_median_weighted",
+      "operation": "polars.expr.rolling_median_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_var_weighted",
+      "operation": "polars.expr.rolling_var_weighted"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_std_weighted",
+      "operation": "polars.expr.rolling_std_weighted"
+    },
+    {
+      "arity": 6,
+      "name": "rolling_quantile",
+      "operation": "polars.expr.rolling_quantile"
+    },
+    {
+      "arity": 7,
+      "name": "rolling_quantile_weighted",
+      "operation": "polars.expr.rolling_quantile_weighted"
+    },
+    {
+      "arity": 6,
+      "name": "rolling_rank",
+      "operation": "polars.expr.rolling_rank"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_skew",
+      "operation": "polars.expr.rolling_skew"
+    },
+    {
+      "arity": 6,
+      "name": "rolling_kurtosis",
+      "operation": "polars.expr.rolling_kurtosis"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_map",
+      "operation": "polars.expr.rolling_map"
+    },
+    {
+      "arity": 5,
+      "name": "rolling",
+      "operation": "polars.expr.rolling"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_min_by",
+      "operation": "polars.expr.rolling_min_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_max_by",
+      "operation": "polars.expr.rolling_max_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_mean_by",
+      "operation": "polars.expr.rolling_mean_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_sum_by",
+      "operation": "polars.expr.rolling_sum_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_median_by",
+      "operation": "polars.expr.rolling_median_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_var_by",
+      "operation": "polars.expr.rolling_var_by"
+    },
+    {
+      "arity": 5,
+      "name": "rolling_std_by",
+      "operation": "polars.expr.rolling_std_by"
+    },
+    {
+      "arity": 7,
+      "name": "rolling_quantile_by",
+      "operation": "polars.expr.rolling_quantile_by"
+    },
+    {
+      "arity": 7,
+      "name": "rolling_rank_by",
+      "operation": "polars.expr.rolling_rank_by"
+    },
+    {
+      "arity": 2,
+      "name": "std",
+      "operation": "polars.expr.std"
+    },
+    {
+      "arity": 2,
+      "name": "var",
+      "operation": "polars.expr.var"
+    },
+    {
+      "arity": 1,
+      "name": "min",
+      "operation": "polars.expr.min"
+    },
+    {
+      "arity": 1,
+      "name": "median",
+      "operation": "polars.expr.median"
+    },
+    {
+      "arity": 2,
+      "name": "min_by",
+      "operation": "polars.expr.min_by"
+    },
+    {
+      "arity": 2,
+      "name": "max_by",
+      "operation": "polars.expr.max_by"
+    },
+    {
+      "arity": 1,
+      "name": "nan_min",
+      "operation": "polars.expr.nan_min"
+    },
+    {
+      "arity": 1,
+      "name": "nan_max",
+      "operation": "polars.expr.nan_max"
+    },
+    {
+      "arity": 3,
+      "name": "histogram_auto",
+      "operation": "polars.expr.histogram_auto"
+    },
+    {
+      "arity": 4,
+      "name": "histogram_count",
+      "operation": "polars.expr.histogram_count"
+    },
+    {
+      "arity": 4,
+      "name": "histogram_bins",
+      "operation": "polars.expr.histogram_bins"
+    },
+    {
+      "arity": 2,
+      "name": "fold_sum",
+      "operation": "polars.expr.fold_sum"
+    },
+    {
+      "arity": 2,
+      "name": "fold_product",
+      "operation": "polars.expr.fold_product"
+    },
+    {
+      "arity": 1,
+      "name": "sum_horizontal",
+      "operation": "polars.expr.sum_horizontal"
+    },
+    {
+      "arity": 1,
+      "name": "all_horizontal",
+      "operation": "polars.expr.all_horizontal"
+    },
+    {
+      "arity": 1,
+      "name": "any_horizontal",
+      "operation": "polars.expr.any_horizontal"
+    },
+    {
+      "arity": 2,
+      "name": "concat_string",
+      "operation": "polars.expr.concat_string"
+    },
+    {
+      "arity": 1,
+      "name": "first",
+      "operation": "polars.expr.first"
+    },
+    {
+      "arity": 1,
+      "name": "last",
+      "operation": "polars.expr.last"
+    },
+    {
+      "arity": 1,
+      "name": "sort_ascending",
+      "operation": "polars.expr.sort_ascending"
+    },
+    {
+      "arity": 1,
+      "name": "rank_dense_descending",
+      "operation": "polars.expr.rank_dense_descending"
+    },
+    {
+      "arity": 3,
+      "name": "rank",
+      "operation": "polars.expr.rank"
+    },
+    {
+      "arity": 3,
+      "name": "rank_random",
+      "operation": "polars.expr.rank_random"
+    },
+    {
+      "arity": 2,
+      "name": "top_k",
+      "operation": "polars.expr.top_k"
+    },
+    {
+      "arity": 2,
+      "name": "bottom_k",
+      "operation": "polars.expr.bottom_k"
+    },
+    {
+      "arity": 4,
+      "name": "top_k_by",
+      "operation": "polars.expr.top_k_by"
+    },
+    {
+      "arity": 4,
+      "name": "bottom_k_by",
+      "operation": "polars.expr.bottom_k_by"
+    },
+    {
+      "arity": 3,
+      "name": "replace",
+      "operation": "polars.expr.replace"
+    },
+    {
+      "arity": 3,
+      "name": "replace_strict",
+      "operation": "polars.expr.replace_strict"
+    },
+    {
+      "arity": 4,
+      "name": "replace_or_default",
+      "operation": "polars.expr.replace_or_default"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals",
+      "operation": "polars.expr.bin_intervals"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_count",
+      "operation": "polars.expr.bin_intervals_count"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_series",
+      "operation": "polars.expr.bin_intervals_series"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_ints",
+      "operation": "polars.expr.bin_intervals_ints"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_strings",
+      "operation": "polars.expr.bin_intervals_strings"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_bools",
+      "operation": "polars.expr.bin_intervals_bools"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled",
+      "operation": "polars.expr.bin_intervals_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_count",
+      "operation": "polars.expr.bin_intervals_labeled_count"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_series",
+      "operation": "polars.expr.bin_intervals_labeled_series"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_ints",
+      "operation": "polars.expr.bin_intervals_labeled_ints"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_strings",
+      "operation": "polars.expr.bin_intervals_labeled_strings"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_bools",
+      "operation": "polars.expr.bin_intervals_labeled_bools"
+    },
+    {
+      "arity": 4,
+      "name": "bin_quantiles",
+      "operation": "polars.expr.bin_quantiles"
+    },
+    {
+      "arity": 4,
+      "name": "bin_quantiles_count",
+      "operation": "polars.expr.bin_quantiles_count"
+    },
+    {
+      "arity": 5,
+      "name": "bin_quantiles_labeled",
+      "operation": "polars.expr.bin_quantiles_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "bin_quantiles_labeled_count",
+      "operation": "polars.expr.bin_quantiles_labeled_count"
+    },
+    {
+      "arity": 3,
+      "name": "bin_ranks",
+      "operation": "polars.expr.bin_ranks"
+    },
+    {
+      "arity": 3,
+      "name": "bin_ranks_count",
+      "operation": "polars.expr.bin_ranks_count"
+    },
+    {
+      "arity": 4,
+      "name": "bin_ranks_labeled",
+      "operation": "polars.expr.bin_ranks_labeled"
+    },
+    {
+      "arity": 4,
+      "name": "bin_ranks_labeled_count",
+      "operation": "polars.expr.bin_ranks_labeled_count"
+    },
+    {
+      "arity": 4,
+      "name": "cut",
+      "operation": "polars.expr.cut"
+    },
+    {
+      "arity": 5,
+      "name": "cut_labeled",
+      "operation": "polars.expr.cut_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "qcut",
+      "operation": "polars.expr.qcut"
+    },
+    {
+      "arity": 6,
+      "name": "qcut_labeled",
+      "operation": "polars.expr.qcut_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "qcut_equal_frequency",
+      "operation": "polars.expr.qcut_equal_frequency"
+    },
+    {
+      "arity": 6,
+      "name": "qcut_equal_frequency_labeled",
+      "operation": "polars.expr.qcut_equal_frequency_labeled"
+    },
+    {
+      "arity": 1,
+      "name": "explode",
+      "operation": "polars.expr.explode"
+    },
+    {
+      "arity": 1,
+      "name": "shuffle",
+      "operation": "polars.expr.shuffle"
+    },
+    {
+      "arity": 2,
+      "name": "shuffle_seeded",
+      "operation": "polars.expr.shuffle_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "sample_n",
+      "operation": "polars.expr.sample_n"
+    },
+    {
+      "arity": 5,
+      "name": "sample_n_seeded",
+      "operation": "polars.expr.sample_n_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "sample_fraction",
+      "operation": "polars.expr.sample_fraction"
+    },
+    {
+      "arity": 5,
+      "name": "sample_fraction_seeded",
+      "operation": "polars.expr.sample_fraction_seeded"
+    },
+    {
+      "arity": 2,
+      "name": "hash",
+      "operation": "polars.expr.hash"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_count_ones",
+      "operation": "polars.expr.bitwise_count_ones"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_count_zeros",
+      "operation": "polars.expr.bitwise_count_zeros"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_leading_ones",
+      "operation": "polars.expr.bitwise_leading_ones"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_leading_zeros",
+      "operation": "polars.expr.bitwise_leading_zeros"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_trailing_ones",
+      "operation": "polars.expr.bitwise_trailing_ones"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_trailing_zeros",
+      "operation": "polars.expr.bitwise_trailing_zeros"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_and",
+      "operation": "polars.expr.bitwise_and"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_or",
+      "operation": "polars.expr.bitwise_or"
+    },
+    {
+      "arity": 1,
+      "name": "bitwise_xor",
+      "operation": "polars.expr.bitwise_xor"
+    },
+    {
+      "arity": 1,
+      "name": "list_len",
+      "operation": "polars.expr.list_len"
+    },
+    {
+      "arity": 1,
+      "name": "list_to_map",
+      "operation": "polars.expr.list_to_map"
+    },
+    {
+      "arity": 1,
+      "name": "map_entries",
+      "operation": "polars.expr.map_entries"
+    },
+    {
+      "arity": 1,
+      "name": "map_keys",
+      "operation": "polars.expr.map_keys"
+    },
+    {
+      "arity": 1,
+      "name": "map_values",
+      "operation": "polars.expr.map_values"
+    },
+    {
+      "arity": 1,
+      "name": "map_len",
+      "operation": "polars.expr.map_len"
+    },
+    {
+      "arity": 2,
+      "name": "map_contains_key",
+      "operation": "polars.expr.map_contains_key"
+    },
+    {
+      "arity": 2,
+      "name": "map_get",
+      "operation": "polars.expr.map_get"
+    },
+    {
+      "arity": 1,
+      "name": "list_sum",
+      "operation": "polars.expr.list_sum"
+    },
+    {
+      "arity": 1,
+      "name": "list_mean",
+      "operation": "polars.expr.list_mean"
+    },
+    {
+      "arity": 1,
+      "name": "list_min",
+      "operation": "polars.expr.list_min"
+    },
+    {
+      "arity": 1,
+      "name": "list_max",
+      "operation": "polars.expr.list_max"
+    },
+    {
+      "arity": 1,
+      "name": "list_sort",
+      "operation": "polars.expr.list_sort"
+    },
+    {
+      "arity": 2,
+      "name": "list_get",
+      "operation": "polars.expr.list_get"
+    },
+    {
+      "arity": 2,
+      "name": "list_contains",
+      "operation": "polars.expr.list_contains"
+    },
+    {
+      "arity": 2,
+      "name": "list_std",
+      "operation": "polars.expr.list_std"
+    },
+    {
+      "arity": 2,
+      "name": "list_var",
+      "operation": "polars.expr.list_var"
+    },
+    {
+      "arity": 1,
+      "name": "list_median",
+      "operation": "polars.expr.list_median"
+    },
+    {
+      "arity": 1,
+      "name": "list_first",
+      "operation": "polars.expr.list_first"
+    },
+    {
+      "arity": 1,
+      "name": "list_last",
+      "operation": "polars.expr.list_last"
+    },
+    {
+      "arity": 1,
+      "name": "list_arg_min",
+      "operation": "polars.expr.list_arg_min"
+    },
+    {
+      "arity": 1,
+      "name": "list_arg_max",
+      "operation": "polars.expr.list_arg_max"
+    },
+    {
+      "arity": 3,
+      "name": "list_join",
+      "operation": "polars.expr.list_join"
+    },
+    {
+      "arity": 2,
+      "name": "list_shift",
+      "operation": "polars.expr.list_shift"
+    },
+    {
+      "arity": 3,
+      "name": "list_slice",
+      "operation": "polars.expr.list_slice"
+    },
+    {
+      "arity": 2,
+      "name": "list_head",
+      "operation": "polars.expr.list_head"
+    },
+    {
+      "arity": 2,
+      "name": "list_tail",
+      "operation": "polars.expr.list_tail"
+    },
+    {
+      "arity": 2,
+      "name": "list_to_array",
+      "operation": "polars.expr.list_to_array"
+    },
+    {
+      "arity": 2,
+      "name": "list_eval",
+      "operation": "polars.expr.list_eval"
+    },
+    {
+      "arity": 2,
+      "name": "list_agg",
+      "operation": "polars.expr.list_agg"
+    },
+    {
+      "arity": 4,
+      "name": "list_sort_with",
+      "operation": "polars.expr.list_sort_with"
+    },
+    {
+      "arity": 3,
+      "name": "list_get_with",
+      "operation": "polars.expr.list_get_with"
+    },
+    {
+      "arity": 3,
+      "name": "list_contains_with",
+      "operation": "polars.expr.list_contains_with"
+    },
+    {
+      "arity": 1,
+      "name": "list_drop_nulls",
+      "operation": "polars.expr.list_drop_nulls"
+    },
+    {
+      "arity": 4,
+      "name": "list_sample_n",
+      "operation": "polars.expr.list_sample_n"
+    },
+    {
+      "arity": 5,
+      "name": "list_sample_n_seeded",
+      "operation": "polars.expr.list_sample_n_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "list_sample_fraction",
+      "operation": "polars.expr.list_sample_fraction"
+    },
+    {
+      "arity": 5,
+      "name": "list_sample_fraction_seeded",
+      "operation": "polars.expr.list_sample_fraction_seeded"
+    },
+    {
+      "arity": 3,
+      "name": "list_gather",
+      "operation": "polars.expr.list_gather"
+    },
+    {
+      "arity": 3,
+      "name": "list_gather_every",
+      "operation": "polars.expr.list_gather_every"
+    },
+    {
+      "arity": 2,
+      "name": "list_diff_drop",
+      "operation": "polars.expr.list_diff_drop"
+    },
+    {
+      "arity": 2,
+      "name": "list_diff_ignore",
+      "operation": "polars.expr.list_diff_ignore"
+    },
+    {
+      "arity": 2,
+      "name": "list_to_struct",
+      "operation": "polars.expr.list_to_struct"
+    },
+    {
+      "arity": 2,
+      "name": "list_count_matches",
+      "operation": "polars.expr.list_count_matches"
+    },
+    {
+      "arity": 2,
+      "name": "list_set_union",
+      "operation": "polars.expr.list_set_union"
+    },
+    {
+      "arity": 2,
+      "name": "list_set_difference",
+      "operation": "polars.expr.list_set_difference"
+    },
+    {
+      "arity": 2,
+      "name": "list_set_intersection",
+      "operation": "polars.expr.list_set_intersection"
+    },
+    {
+      "arity": 2,
+      "name": "list_set_symmetric_difference",
+      "operation": "polars.expr.list_set_symmetric_difference"
+    },
+    {
+      "arity": 1,
+      "name": "array_len",
+      "operation": "polars.expr.array_len"
+    },
+    {
+      "arity": 1,
+      "name": "array_sum",
+      "operation": "polars.expr.array_sum"
+    },
+    {
+      "arity": 1,
+      "name": "array_mean",
+      "operation": "polars.expr.array_mean"
+    },
+    {
+      "arity": 1,
+      "name": "array_min",
+      "operation": "polars.expr.array_min"
+    },
+    {
+      "arity": 1,
+      "name": "array_max",
+      "operation": "polars.expr.array_max"
+    },
+    {
+      "arity": 1,
+      "name": "array_sort",
+      "operation": "polars.expr.array_sort"
+    },
+    {
+      "arity": 1,
+      "name": "array_to_list",
+      "operation": "polars.expr.array_to_list"
+    },
+    {
+      "arity": 2,
+      "name": "array_get",
+      "operation": "polars.expr.array_get"
+    },
+    {
+      "arity": 2,
+      "name": "array_contains",
+      "operation": "polars.expr.array_contains"
+    },
+    {
+      "arity": 2,
+      "name": "array_std",
+      "operation": "polars.expr.array_std"
+    },
+    {
+      "arity": 2,
+      "name": "array_var",
+      "operation": "polars.expr.array_var"
+    },
+    {
+      "arity": 1,
+      "name": "array_median",
+      "operation": "polars.expr.array_median"
+    },
+    {
+      "arity": 1,
+      "name": "array_arg_min",
+      "operation": "polars.expr.array_arg_min"
+    },
+    {
+      "arity": 1,
+      "name": "array_arg_max",
+      "operation": "polars.expr.array_arg_max"
+    },
+    {
+      "arity": 3,
+      "name": "array_join",
+      "operation": "polars.expr.array_join"
+    },
+    {
+      "arity": 2,
+      "name": "array_count_matches",
+      "operation": "polars.expr.array_count_matches"
+    },
+    {
+      "arity": 1,
+      "name": "array_to_struct",
+      "operation": "polars.expr.array_to_struct"
+    },
+    {
+      "arity": 4,
+      "name": "array_slice",
+      "operation": "polars.expr.array_slice"
+    },
+    {
+      "arity": 3,
+      "name": "array_head",
+      "operation": "polars.expr.array_head"
+    },
+    {
+      "arity": 3,
+      "name": "array_tail",
+      "operation": "polars.expr.array_tail"
+    },
+    {
+      "arity": 2,
+      "name": "array_shift",
+      "operation": "polars.expr.array_shift"
+    },
+    {
+      "arity": 3,
+      "name": "array_explode",
+      "operation": "polars.expr.array_explode"
+    },
+    {
+      "arity": 3,
+      "name": "array_eval",
+      "operation": "polars.expr.array_eval"
+    },
+    {
+      "arity": 2,
+      "name": "array_agg",
+      "operation": "polars.expr.array_agg"
+    },
+    {
+      "arity": 4,
+      "name": "array_sort_with",
+      "operation": "polars.expr.array_sort_with"
+    },
+    {
+      "arity": 3,
+      "name": "array_get_with",
+      "operation": "polars.expr.array_get_with"
+    },
+    {
+      "arity": 3,
+      "name": "array_contains_with",
+      "operation": "polars.expr.array_contains_with"
+    },
+    {
+      "arity": 1,
+      "name": "categorical_categories",
+      "operation": "polars.expr.categorical_categories"
+    },
+    {
+      "arity": 1,
+      "name": "categorical_len_bytes",
+      "operation": "polars.expr.categorical_len_bytes"
+    },
+    {
+      "arity": 1,
+      "name": "categorical_len_chars",
+      "operation": "polars.expr.categorical_len_chars"
+    },
+    {
+      "arity": 2,
+      "name": "categorical_starts_with",
+      "operation": "polars.expr.categorical_starts_with"
+    },
+    {
+      "arity": 2,
+      "name": "categorical_ends_with",
+      "operation": "polars.expr.categorical_ends_with"
+    },
+    {
+      "arity": 3,
+      "name": "categorical_slice",
+      "operation": "polars.expr.categorical_slice"
+    },
+    {
+      "arity": 2,
+      "name": "categorical_slice_to_end",
+      "operation": "polars.expr.categorical_slice_to_end"
+    },
+    {
+      "arity": 2,
+      "name": "binary_contains",
+      "operation": "polars.expr.binary_contains"
+    },
+    {
+      "arity": 2,
+      "name": "binary_starts_with",
+      "operation": "polars.expr.binary_starts_with"
+    },
+    {
+      "arity": 2,
+      "name": "binary_ends_with",
+      "operation": "polars.expr.binary_ends_with"
+    },
+    {
+      "arity": 1,
+      "name": "binary_size_bytes",
+      "operation": "polars.expr.binary_size_bytes"
+    },
+    {
+      "arity": 2,
+      "name": "binary_get",
+      "operation": "polars.expr.binary_get"
+    },
+    {
+      "arity": 2,
+      "name": "binary_head",
+      "operation": "polars.expr.binary_head"
+    },
+    {
+      "arity": 2,
+      "name": "binary_tail",
+      "operation": "polars.expr.binary_tail"
+    },
+    {
+      "arity": 3,
+      "name": "binary_slice",
+      "operation": "polars.expr.binary_slice"
+    },
+    {
+      "arity": 2,
+      "name": "binary_hex_decode",
+      "operation": "polars.expr.binary_hex_decode"
+    },
+    {
+      "arity": 1,
+      "name": "binary_hex_encode",
+      "operation": "polars.expr.binary_hex_encode"
+    },
+    {
+      "arity": 2,
+      "name": "binary_base64_decode",
+      "operation": "polars.expr.binary_base64_decode"
+    },
+    {
+      "arity": 1,
+      "name": "binary_base64_encode",
+      "operation": "polars.expr.binary_base64_encode"
+    },
+    {
+      "arity": 3,
+      "name": "binary_reinterpret",
+      "operation": "polars.expr.binary_reinterpret_typed"
+    },
+    {
+      "arity": 3,
+      "name": "binary_reinterpret_nested",
+      "operation": "polars.expr.binary_reinterpret_nested"
+    },
+    {
+      "arity": 2,
+      "name": "filter_expression",
+      "operation": "polars.expr.filter_expression"
+    },
+    {
+      "arity": 3,
+      "name": "slice_expression",
+      "operation": "polars.expr.slice_expression"
+    },
+    {
+      "arity": 3,
+      "name": "append_expression",
+      "operation": "polars.expr.append"
+    },
+    {
+      "arity": 1,
+      "name": "rechunk",
+      "operation": "polars.expr.rechunk"
+    },
+    {
+      "arity": 3,
+      "name": "arg_sort",
+      "operation": "polars.expr.arg_sort"
+    },
+    {
+      "arity": 2,
+      "name": "index_of",
+      "operation": "polars.expr.index_of"
+    },
+    {
+      "arity": 4,
+      "name": "search_sorted",
+      "operation": "polars.expr.search_sorted"
+    },
+    {
+      "arity": 3,
+      "name": "gather",
+      "operation": "polars.expr.gather"
+    },
+    {
+      "arity": 3,
+      "name": "get_expression",
+      "operation": "polars.expr.get_expression"
+    },
+    {
+      "arity": 3,
+      "name": "sort_with",
+      "operation": "polars.expr.sort_with"
+    },
+    {
+      "arity": 4,
+      "name": "sort_with",
+      "operation": "polars.expr.sort_with_stability"
+    },
+    {
+      "arity": 1,
+      "name": "reverse",
+      "operation": "polars.expr.reverse"
+    },
+    {
+      "arity": 2,
+      "name": "shift",
+      "operation": "polars.expr.shift"
+    },
+    {
+      "arity": 3,
+      "name": "shift_and_fill",
+      "operation": "polars.expr.shift_and_fill"
+    },
+    {
+      "arity": 2,
+      "name": "repeat_by",
+      "operation": "polars.expr.repeat_by"
+    },
+    {
+      "arity": 3,
+      "name": "diff",
+      "operation": "polars.expr.diff"
+    },
+    {
+      "arity": 2,
+      "name": "pct_change",
+      "operation": "polars.expr.pct_change"
+    },
+    {
+      "arity": 3,
+      "name": "gather_every",
+      "operation": "polars.expr.gather_every"
+    },
+    {
+      "arity": 3,
+      "name": "extend_constant",
+      "operation": "polars.expr.extend_constant"
+    },
+    {
+      "arity": 2,
+      "name": "sort_by_ascending",
+      "operation": "polars.expr.sort_by_ascending"
+    },
+    {
+      "arity": 2,
+      "name": "sort_by_descending",
+      "operation": "polars.expr.sort_by_descending"
+    },
+    {
+      "arity": 5,
+      "name": "sort_by",
+      "operation": "polars.expr.sort_by"
+    },
+    {
+      "arity": 2,
+      "name": "over",
+      "operation": "polars.expr.over"
+    },
+    {
+      "arity": 2,
+      "name": "over_explode",
+      "operation": "polars.expr.over_explode"
+    },
+    {
+      "arity": 2,
+      "name": "over_join",
+      "operation": "polars.expr.over_join"
+    },
+    {
+      "arity": 6,
+      "name": "over_ordered",
+      "operation": "polars.expr.over_ordered"
+    },
+    {
+      "arity": 6,
+      "name": "over_with_options",
+      "operation": "polars.expr.over_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "agg_groups",
+      "operation": "polars.expr.agg_groups"
+    },
+    {
+      "arity": 3,
+      "name": "cumulative_eval",
+      "operation": "polars.expr.cumulative_eval"
+    },
+    {
+      "arity": 2,
+      "name": "head_expression",
+      "operation": "polars.expr.head_expression"
+    },
+    {
+      "arity": 2,
+      "name": "tail_expression",
+      "operation": "polars.expr.tail_expression"
+    },
+    {
+      "arity": 1,
+      "name": "as_struct",
+      "operation": "polars.expr.as_struct"
+    },
+    {
+      "arity": 2,
+      "name": "struct_field",
+      "operation": "polars.expr.struct_field"
+    },
+    {
+      "arity": 2,
+      "name": "struct_field_at",
+      "operation": "polars.expr.struct_field_at"
+    },
+    {
+      "arity": 2,
+      "name": "struct_fields",
+      "operation": "polars.expr.struct_fields"
+    },
+    {
+      "arity": 2,
+      "name": "struct_rename_fields",
+      "operation": "polars.expr.struct_rename_fields"
+    },
+    {
+      "arity": 1,
+      "name": "struct_json_encode",
+      "operation": "polars.expr.struct_json_encode"
+    },
+    {
+      "arity": 2,
+      "name": "struct_with_fields",
+      "operation": "polars.expr.struct_with_fields"
+    },
+    {
+      "arity": 3,
+      "name": "to_field",
+      "operation": "polars.expr.to_field"
+    },
+    {
+      "arity": 1,
+      "name": "meta_root_names",
+      "operation": "polars.expr.meta_root_names"
+    },
+    {
+      "arity": 1,
+      "name": "meta_nodes",
+      "operation": "polars.expr.meta_nodes"
+    },
+    {
+      "arity": 1,
+      "name": "meta_children",
+      "operation": "polars.expr.meta_children"
+    },
+    {
+      "arity": 2,
+      "name": "rewrite",
+      "operation": "polars.expr.rewrite"
+    },
+    {
+      "arity": 2,
+      "name": "map_children",
+      "operation": "polars.expr.map_children"
+    },
+    {
+      "arity": 1,
+      "name": "meta_output_name",
+      "operation": "polars.expr.meta_output_name"
+    },
+    {
+      "arity": 1,
+      "name": "meta_has_multiple_outputs",
+      "operation": "polars.expr.meta_has_multiple_outputs"
+    },
+    {
+      "arity": 1,
+      "name": "meta_is_column",
+      "operation": "polars.expr.meta_is_column"
+    },
+    {
+      "arity": 1,
+      "name": "meta_is_simple_projection",
+      "operation": "polars.expr.meta_is_simple_projection"
+    },
+    {
+      "arity": 2,
+      "name": "meta_is_column_selection",
+      "operation": "polars.expr.meta_is_column_selection"
+    },
+    {
+      "arity": 2,
+      "name": "meta_is_literal",
+      "operation": "polars.expr.meta_is_literal"
+    },
+    {
+      "arity": 1,
+      "name": "meta_is_regex_projection",
+      "operation": "polars.expr.meta_is_regex_projection"
+    },
+    {
+      "arity": 2,
+      "name": "meta_format_tree",
+      "operation": "polars.expr.meta_format_tree"
+    },
+    {
+      "arity": 1,
+      "name": "read_csv",
+      "operation": "polars.dataframe.read_csv"
+    },
+    {
+      "arity": 1,
+      "name": "read_csv_dates",
+      "operation": "polars.dataframe.read_csv_dates"
+    },
+    {
+      "arity": 33,
+      "name": "csv_read_options",
+      "operation": "polars.io.csv_read_options"
+    },
+    {
+      "arity": 2,
+      "name": "with_column_names_overwrite",
+      "operation": "polars.io.csv_read_options_with_column_names"
+    },
+    {
+      "arity": 2,
+      "name": "with_infer_schema_files",
+      "operation": "polars.io.csv_read_options_with_infer_schema_files"
+    },
+    {
+      "arity": 3,
+      "name": "with_column_policies",
+      "operation": "polars.io.csv_read_options_with_column_policies"
+    },
+    {
+      "arity": 2,
+      "name": "read_csv_with",
+      "operation": "polars.dataframe.read_csv_with_options"
+    },
+    {
+      "arity": 2,
+      "name": "write_csv",
+      "operation": "polars.dataframe.write_csv"
+    },
+    {
+      "arity": 15,
+      "name": "csv_write_options",
+      "operation": "polars.io.csv_write_options"
+    },
+    {
+      "arity": 3,
+      "name": "write_csv_with",
+      "operation": "polars.dataframe.write_csv_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "read_parquet",
+      "operation": "polars.dataframe.read_parquet"
+    },
+    {
+      "arity": 10,
+      "name": "parquet_read_options",
+      "operation": "polars.io.parquet_read_options"
+    },
+    {
+      "arity": 2,
+      "name": "read_parquet_with",
+      "operation": "polars.dataframe.read_parquet_with_options"
+    },
+    {
+      "arity": 2,
+      "name": "write_parquet",
+      "operation": "polars.dataframe.write_parquet"
+    },
+    {
+      "arity": 8,
+      "name": "parquet_write_options",
+      "operation": "polars.io.parquet_write_options"
+    },
+    {
+      "arity": 3,
+      "name": "write_parquet_with",
+      "operation": "polars.dataframe.write_parquet_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "read_json",
+      "operation": "polars.dataframe.read_json"
+    },
+    {
+      "arity": 10,
+      "name": "json_read_options",
+      "operation": "polars.io.json_read_options"
+    },
+    {
+      "arity": 2,
+      "name": "read_json_with",
+      "operation": "polars.dataframe.read_json_with_options"
+    },
+    {
+      "arity": 2,
+      "name": "write_json",
+      "operation": "polars.dataframe.write_json"
+    },
+    {
+      "arity": 1,
+      "name": "read_ndjson",
+      "operation": "polars.dataframe.read_ndjson"
+    },
+    {
+      "arity": 2,
+      "name": "write_ndjson",
+      "operation": "polars.dataframe.write_ndjson"
+    },
+    {
+      "arity": 1,
+      "name": "read_ipc",
+      "operation": "polars.dataframe.read_ipc"
+    },
+    {
+      "arity": 8,
+      "name": "ipc_read_options",
+      "operation": "polars.io.ipc_read_options"
+    },
+    {
+      "arity": 2,
+      "name": "read_ipc_with",
+      "operation": "polars.dataframe.read_ipc_with_options"
+    },
+    {
+      "arity": 2,
+      "name": "write_ipc",
+      "operation": "polars.dataframe.write_ipc"
+    },
+    {
+      "arity": 7,
+      "name": "ipc_write_options",
+      "operation": "polars.io.ipc_write_options"
+    },
+    {
+      "arity": 3,
+      "name": "write_ipc_with",
+      "operation": "polars.dataframe.write_ipc_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "ipc_custom_metadata",
+      "operation": "polars.io.ipc_custom_metadata"
+    },
+    {
+      "arity": 1,
+      "name": "parquet_metadata",
+      "operation": "polars.io.parquet_metadata"
+    },
+    {
+      "arity": 1,
+      "name": "parquet_row_count",
+      "operation": "polars.io.parquet_row_count"
+    },
+    {
+      "arity": 1,
+      "name": "from_arrow_ipc",
+      "operation": "polars.dataframe.from_arrow_ipc"
+    },
+    {
+      "arity": 1,
+      "name": "to_arrow_ipc",
+      "operation": "polars.dataframe.to_arrow_ipc"
+    },
+    {
+      "arity": 2,
+      "name": "read_database_uri",
+      "operation": "polars.dataframe.read_database_uri"
+    },
+    {
+      "arity": 2,
+      "name": "read_database_env",
+      "operation": "polars.dataframe.read_database_env"
+    },
+    {
+      "arity": 2,
+      "name": "from_rows",
+      "operation": "polars.dataframe.from_rows"
+    },
+    {
+      "arity": 1,
+      "name": "height",
+      "operation": "polars.dataframe.height"
+    },
+    {
+      "arity": 1,
+      "name": "width",
+      "operation": "polars.dataframe.width"
+    },
+    {
+      "arity": 1,
+      "name": "estimated_size",
+      "operation": "polars.dataframe.estimated_size"
+    },
+    {
+      "arity": 2,
+      "name": "estimated_size",
+      "operation": "polars.dataframe.estimated_size_with_unit"
+    },
+    {
+      "arity": 1,
+      "name": "glimpse",
+      "operation": "polars.dataframe.glimpse"
+    },
+    {
+      "arity": 1,
+      "name": "describe",
+      "operation": "polars.dataframe.describe"
+    },
+    {
+      "arity": 2,
+      "name": "frames_equal",
+      "operation": "polars.dataframe.frames_equal"
+    },
+    {
+      "arity": 2,
+      "name": "frames_equal_missing",
+      "operation": "polars.dataframe.frames_equal_missing"
+    },
+    {
+      "arity": 4,
+      "name": "sample_rows_n",
+      "operation": "polars.dataframe.sample_rows_n"
+    },
+    {
+      "arity": 5,
+      "name": "sample_rows_n_seeded",
+      "operation": "polars.dataframe.sample_rows_n_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "sample_rows_fraction",
+      "operation": "polars.dataframe.sample_rows_fraction"
+    },
+    {
+      "arity": 5,
+      "name": "sample_rows_fraction_seeded",
+      "operation": "polars.dataframe.sample_rows_fraction_seeded"
+    },
+    {
+      "arity": 1,
+      "name": "row_is_unique",
+      "operation": "polars.dataframe.row_is_unique"
+    },
+    {
+      "arity": 1,
+      "name": "row_is_duplicated",
+      "operation": "polars.dataframe.row_is_duplicated"
+    },
+    {
+      "arity": 1,
+      "name": "row_hashes",
+      "operation": "polars.dataframe.row_hashes"
+    },
+    {
+      "arity": 2,
+      "name": "row_hashes_seeded",
+      "operation": "polars.dataframe.row_hashes_seeded"
+    },
+    {
+      "arity": 1,
+      "name": "columns",
+      "operation": "polars.dataframe.columns"
+    },
+    {
+      "arity": 2,
+      "name": "rows",
+      "operation": "polars.dataframe.rows"
+    },
+    {
+      "arity": 1,
+      "name": "schema",
+      "operation": "polars.dataframe.schema"
+    },
+    {
+      "arity": 1,
+      "name": "dtypes",
+      "operation": "polars.dataframe.dtypes"
+    },
+    {
+      "arity": 5,
+      "name": "export_tensor_packet",
+      "operation": "polars.dataframe.export_tensor_packet"
+    },
+    {
+      "arity": 3,
+      "name": "series_export_tensor_packet",
+      "operation": "polars.series.export_tensor_packet"
+    },
+    {
+      "arity": 0,
+      "name": "sql_context",
+      "operation": "polars.sql_context.new"
+    },
+    {
+      "arity": 3,
+      "name": "register_table",
+      "operation": "polars.sql_context.register"
+    },
+    {
+      "arity": 2,
+      "name": "unregister_table",
+      "operation": "polars.sql_context.unregister"
+    },
+    {
+      "arity": 1,
+      "name": "sql_tables",
+      "operation": "polars.sql_context.tables"
+    },
+    {
+      "arity": 2,
+      "name": "sql_query",
+      "operation": "polars.sql_context.execute"
+    },
+    {
+      "arity": 0,
+      "name": "sql_keywords",
+      "operation": "polars.sql.keywords"
+    },
+    {
+      "arity": 0,
+      "name": "sql_functions",
+      "operation": "polars.sql.functions"
+    },
+    {
+      "arity": 3,
+      "name": "sql_table_identifiers",
+      "operation": "polars.sql.table_identifiers"
+    },
+    {
+      "arity": 1,
+      "name": "dispose_sql_context",
+      "operation": "polars.sql_context.dispose"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_empty_with_height",
+      "operation": "polars.dataframe.empty_with_height"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_empty_with_schema",
+      "operation": "polars.dataframe.empty_with_schema"
+    },
+    {
+      "arity": 3,
+      "name": "dataframe_full_null",
+      "operation": "polars.dataframe.full_null"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_chunk_lengths",
+      "operation": "polars.dataframe.chunk_lengths"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_shape",
+      "operation": "polars.dataframe.shape"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_first_col_n_chunks",
+      "operation": "polars.dataframe.first_col_n_chunks"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_max_chunk_count",
+      "operation": "polars.dataframe.max_chunk_count"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_should_rechunk",
+      "operation": "polars.dataframe.should_rechunk"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_shape_has_zero",
+      "operation": "polars.dataframe.shape_has_zero"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_shrink_to_fit",
+      "operation": "polars.dataframe.shrink_to_fit"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_schema_equal",
+      "operation": "polars.dataframe.schema_equal"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_column_index",
+      "operation": "polars.dataframe.column_index"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_column_at_index",
+      "operation": "polars.dataframe.column_at_index"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_row",
+      "operation": "polars.dataframe.row"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_split_before",
+      "operation": "polars.dataframe.split_before"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_split_after",
+      "operation": "polars.dataframe.split_after"
+    },
+    {
+      "arity": 3,
+      "name": "dataframe_insert_column",
+      "operation": "polars.dataframe.insert_column"
+    },
+    {
+      "arity": 3,
+      "name": "dataframe_replace_column",
+      "operation": "polars.dataframe.replace_column"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_with_column",
+      "operation": "polars.dataframe.with_column"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_to_struct",
+      "operation": "polars.dataframe.to_struct"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_serialize",
+      "operation": "polars.dataframe.serialize"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_deserialize",
+      "operation": "polars.dataframe.deserialize"
+    },
+    {
+      "arity": 4,
+      "name": "partition_by",
+      "operation": "polars.dataframe.partition_by"
+    },
+    {
+      "arity": 1,
+      "name": "split_chunks",
+      "operation": "polars.dataframe.split_chunks"
+    },
+    {
+      "arity": 1,
+      "name": "iter_chunks",
+      "operation": "polars.dataframe.iter_chunks"
+    },
+    {
+      "arity": 1,
+      "name": "iter_physical_chunks",
+      "operation": "polars.dataframe.iter_chunks_physical"
+    },
+    {
+      "arity": 3,
+      "name": "split_chunks_by_n",
+      "operation": "polars.dataframe.split_chunks_by_n"
+    },
+    {
+      "arity": 1,
+      "name": "dataframe_set_len",
+      "operation": "polars.dataframe_set.len"
+    },
+    {
+      "arity": 2,
+      "name": "dataframe_set_get",
+      "operation": "polars.dataframe_set.get"
+    },
+    {
+      "arity": 1,
+      "name": "dispose_dataframe_set",
+      "operation": "polars.dataframe_set.dispose"
+    },
+    {
+      "arity": 2,
+      "name": "column_series",
+      "operation": "polars.dataframe.column_series"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_strings",
+      "operation": "polars.series.from_strings"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_ints",
+      "operation": "polars.series.from_ints"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_floats",
+      "operation": "polars.series.from_floats"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_bools",
+      "operation": "polars.series.from_bools"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_int128_strings",
+      "operation": "polars.series.from_int128_strings"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_uint128_strings",
+      "operation": "polars.series.from_uint128_strings"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_strings",
+      "operation": "polars.series.from_nullable_strings"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_ints",
+      "operation": "polars.series.from_nullable_ints"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_floats",
+      "operation": "polars.series.from_nullable_floats"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_bools",
+      "operation": "polars.series.from_nullable_bools"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_dates",
+      "operation": "polars.series.from_dates"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_dates",
+      "operation": "polars.series.from_nullable_dates"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_datetimes",
+      "operation": "polars.series.from_datetimes"
+    },
+    {
+      "arity": 2,
+      "name": "series_from_nullable_datetimes",
+      "operation": "polars.series.from_nullable_datetimes"
+    },
+    {
+      "arity": 1,
+      "name": "series_int128_strings",
+      "operation": "polars.series.int128_strings"
+    },
+    {
+      "arity": 1,
+      "name": "series_uint128_strings",
+      "operation": "polars.series.uint128_strings"
+    },
+    {
+      "arity": 2,
+      "name": "series_empty",
+      "operation": "polars.series.empty"
+    },
+    {
+      "arity": 2,
+      "name": "series_empty_typed",
+      "operation": "polars.series.empty_typed"
+    },
+    {
+      "arity": 2,
+      "name": "series_empty_typed",
+      "operation": "polars.series.empty_nested"
+    },
+    {
+      "arity": 1,
+      "name": "series_name",
+      "operation": "polars.series.name"
+    },
+    {
+      "arity": 1,
+      "name": "series_len",
+      "operation": "polars.series.len"
+    },
+    {
+      "arity": 1,
+      "name": "series_null_count",
+      "operation": "polars.series.null_count"
+    },
+    {
+      "arity": 2,
+      "name": "series_equal",
+      "operation": "polars.series.equal"
+    },
+    {
+      "arity": 2,
+      "name": "series_equal_missing",
+      "operation": "polars.series.equal_missing"
+    },
+    {
+      "arity": 1,
+      "name": "series_data_type",
+      "operation": "polars.series.data_type"
+    },
+    {
+      "arity": 2,
+      "name": "series_values",
+      "operation": "polars.series.values"
+    },
+    {
+      "arity": 2,
+      "name": "series_cast",
+      "operation": "polars.series.cast"
+    },
+    {
+      "arity": 2,
+      "name": "series_cast_to",
+      "operation": "polars.series.cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "series_cast_nested",
+      "operation": "polars.series.cast_nested"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_frame",
+      "operation": "polars.series.to_frame"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_expr",
+      "operation": "polars.series.to_expr"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals",
+      "operation": "polars.series.bin_intervals"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_count",
+      "operation": "polars.series.bin_intervals_count"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_series",
+      "operation": "polars.series.bin_intervals_series"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_ints",
+      "operation": "polars.series.bin_intervals_ints"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_strings",
+      "operation": "polars.series.bin_intervals_strings"
+    },
+    {
+      "arity": 4,
+      "name": "bin_intervals_bools",
+      "operation": "polars.series.bin_intervals_bools"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled",
+      "operation": "polars.series.bin_intervals_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_count",
+      "operation": "polars.series.bin_intervals_labeled_count"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_series",
+      "operation": "polars.series.bin_intervals_labeled_series"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_ints",
+      "operation": "polars.series.bin_intervals_labeled_ints"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_strings",
+      "operation": "polars.series.bin_intervals_labeled_strings"
+    },
+    {
+      "arity": 5,
+      "name": "bin_intervals_labeled_bools",
+      "operation": "polars.series.bin_intervals_labeled_bools"
+    },
+    {
+      "arity": 4,
+      "name": "bin_quantiles",
+      "operation": "polars.series.bin_quantiles"
+    },
+    {
+      "arity": 4,
+      "name": "bin_quantiles_count",
+      "operation": "polars.series.bin_quantiles_count"
+    },
+    {
+      "arity": 5,
+      "name": "bin_quantiles_labeled",
+      "operation": "polars.series.bin_quantiles_labeled"
+    },
+    {
+      "arity": 5,
+      "name": "bin_quantiles_labeled_count",
+      "operation": "polars.series.bin_quantiles_labeled_count"
+    },
+    {
+      "arity": 3,
+      "name": "bin_ranks",
+      "operation": "polars.series.bin_ranks"
+    },
+    {
+      "arity": 3,
+      "name": "bin_ranks_count",
+      "operation": "polars.series.bin_ranks_count"
+    },
+    {
+      "arity": 4,
+      "name": "bin_ranks_labeled",
+      "operation": "polars.series.bin_ranks_labeled"
+    },
+    {
+      "arity": 4,
+      "name": "bin_ranks_labeled_count",
+      "operation": "polars.series.bin_ranks_labeled_count"
+    },
+    {
+      "arity": 1,
+      "name": "dispose_series",
+      "operation": "polars.series.dispose"
+    },
+    {
+      "arity": 2,
+      "name": "series_rename",
+      "operation": "polars.series.rename"
+    },
+    {
+      "arity": 1,
+      "name": "series_estimated_size",
+      "operation": "polars.series.estimated_size"
+    },
+    {
+      "arity": 2,
+      "name": "series_estimated_size",
+      "operation": "polars.series.estimated_size_with_unit"
+    },
+    {
+      "arity": 1,
+      "name": "series_chunk_count",
+      "operation": "polars.series.chunk_count"
+    },
+    {
+      "arity": 1,
+      "name": "series_chunk_lengths",
+      "operation": "polars.series.chunk_lengths"
+    },
+    {
+      "arity": 1,
+      "name": "series_sorted_flag",
+      "operation": "polars.series.sorted_flag"
+    },
+    {
+      "arity": 1,
+      "name": "series_clear",
+      "operation": "polars.series.clear"
+    },
+    {
+      "arity": 2,
+      "name": "series_head",
+      "operation": "polars.series.head"
+    },
+    {
+      "arity": 2,
+      "name": "series_tail",
+      "operation": "polars.series.tail"
+    },
+    {
+      "arity": 3,
+      "name": "series_slice",
+      "operation": "polars.series.slice"
+    },
+    {
+      "arity": 2,
+      "name": "series_split_before",
+      "operation": "polars.series.split_before"
+    },
+    {
+      "arity": 2,
+      "name": "series_split_after",
+      "operation": "polars.series.split_after"
+    },
+    {
+      "arity": 1,
+      "name": "series_rechunk",
+      "operation": "polars.series.rechunk"
+    },
+    {
+      "arity": 1,
+      "name": "series_shrink_to_fit",
+      "operation": "polars.series.shrink_to_fit"
+    },
+    {
+      "arity": 1,
+      "name": "series_reverse",
+      "operation": "polars.series.reverse"
+    },
+    {
+      "arity": 4,
+      "name": "series_sort",
+      "operation": "polars.series.sort"
+    },
+    {
+      "arity": 1,
+      "name": "series_unique_stable",
+      "operation": "polars.series.unique_stable"
+    },
+    {
+      "arity": 3,
+      "name": "series_explode",
+      "operation": "polars.series.explode"
+    },
+    {
+      "arity": 2,
+      "name": "series_fill_null",
+      "operation": "polars.series.fill_null"
+    },
+    {
+      "arity": 3,
+      "name": "series_fill_null",
+      "operation": "polars.series.fill_null_limited"
+    },
+    {
+      "arity": 3,
+      "name": "series_gather_every",
+      "operation": "polars.series.gather_every"
+    },
+    {
+      "arity": 1,
+      "name": "series_shuffle",
+      "operation": "polars.series.shuffle"
+    },
+    {
+      "arity": 2,
+      "name": "series_shuffle_seeded",
+      "operation": "polars.series.shuffle_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "series_sample_n",
+      "operation": "polars.series.sample_n"
+    },
+    {
+      "arity": 5,
+      "name": "series_sample_n_seeded",
+      "operation": "polars.series.sample_n_seeded"
+    },
+    {
+      "arity": 4,
+      "name": "series_sample_fraction",
+      "operation": "polars.series.sample_fraction"
+    },
+    {
+      "arity": 5,
+      "name": "series_sample_fraction_seeded",
+      "operation": "polars.series.sample_fraction_seeded"
+    },
+    {
+      "arity": 2,
+      "name": "series_append",
+      "operation": "polars.series.append"
+    },
+    {
+      "arity": 2,
+      "name": "series_extend",
+      "operation": "polars.series.extend"
+    },
+    {
+      "arity": 1,
+      "name": "series_sum",
+      "operation": "polars.series.sum"
+    },
+    {
+      "arity": 1,
+      "name": "series_min",
+      "operation": "polars.series.min"
+    },
+    {
+      "arity": 1,
+      "name": "series_max",
+      "operation": "polars.series.max"
+    },
+    {
+      "arity": 1,
+      "name": "series_product",
+      "operation": "polars.series.product"
+    },
+    {
+      "arity": 1,
+      "name": "series_mean",
+      "operation": "polars.series.mean"
+    },
+    {
+      "arity": 2,
+      "name": "series_add",
+      "operation": "polars.series.add"
+    },
+    {
+      "arity": 2,
+      "name": "series_subtract",
+      "operation": "polars.series.subtract"
+    },
+    {
+      "arity": 2,
+      "name": "series_multiply",
+      "operation": "polars.series.multiply"
+    },
+    {
+      "arity": 2,
+      "name": "series_divide",
+      "operation": "polars.series.divide"
+    },
+    {
+      "arity": 2,
+      "name": "series_remainder",
+      "operation": "polars.series.remainder"
+    },
+    {
+      "arity": 2,
+      "name": "series_bit_and",
+      "operation": "polars.series.bit_and"
+    },
+    {
+      "arity": 2,
+      "name": "series_bit_or",
+      "operation": "polars.series.bit_or"
+    },
+    {
+      "arity": 2,
+      "name": "series_bit_xor",
+      "operation": "polars.series.bit_xor"
+    },
+    {
+      "arity": 2,
+      "name": "series_equal_values",
+      "operation": "polars.series.equal_values"
+    },
+    {
+      "arity": 2,
+      "name": "series_not_equal_values",
+      "operation": "polars.series.not_equal_values"
+    },
+    {
+      "arity": 2,
+      "name": "series_less_than",
+      "operation": "polars.series.less_than"
+    },
+    {
+      "arity": 2,
+      "name": "series_less_than_or_equal",
+      "operation": "polars.series.less_than_or_equal"
+    },
+    {
+      "arity": 2,
+      "name": "series_greater_than",
+      "operation": "polars.series.greater_than"
+    },
+    {
+      "arity": 2,
+      "name": "series_greater_than_or_equal",
+      "operation": "polars.series.greater_than_or_equal"
+    },
+    {
+      "arity": 1,
+      "name": "series_is_nan",
+      "operation": "polars.series.is_nan"
+    },
+    {
+      "arity": 1,
+      "name": "series_is_not_nan",
+      "operation": "polars.series.is_not_nan"
+    },
+    {
+      "arity": 1,
+      "name": "series_is_finite",
+      "operation": "polars.series.is_finite"
+    },
+    {
+      "arity": 1,
+      "name": "series_is_infinite",
+      "operation": "polars.series.is_infinite"
+    },
+    {
+      "arity": 3,
+      "name": "series_full_null_named",
+      "operation": "polars.series.full_null"
+    },
+    {
+      "arity": 3,
+      "name": "series_full_null",
+      "operation": "polars.series.full_null_typed"
+    },
+    {
+      "arity": 3,
+      "name": "series_full_null_nested",
+      "operation": "polars.series.full_null_nested"
+    },
+    {
+      "arity": 2,
+      "name": "series_new_null",
+      "operation": "polars.series.new_null"
+    },
+    {
+      "arity": 2,
+      "name": "series_set_sorted_flag",
+      "operation": "polars.series.set_sorted_flag"
+    },
+    {
+      "arity": 1,
+      "name": "series_should_rechunk",
+      "operation": "polars.series.should_rechunk"
+    },
+    {
+      "arity": 2,
+      "name": "series_strict_cast_named",
+      "operation": "polars.series.strict_cast"
+    },
+    {
+      "arity": 2,
+      "name": "series_strict_cast",
+      "operation": "polars.series.strict_cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "series_strict_cast_nested",
+      "operation": "polars.series.strict_cast_nested"
+    },
+    {
+      "arity": 2,
+      "name": "series_non_strict_cast_named",
+      "operation": "polars.series.non_strict_cast"
+    },
+    {
+      "arity": 2,
+      "name": "series_non_strict_cast",
+      "operation": "polars.series.non_strict_cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "series_non_strict_cast_nested",
+      "operation": "polars.series.non_strict_cast_nested"
+    },
+    {
+      "arity": 2,
+      "name": "series_overflowing_cast_named",
+      "operation": "polars.series.overflowing_cast"
+    },
+    {
+      "arity": 2,
+      "name": "series_overflowing_cast",
+      "operation": "polars.series.overflowing_cast_typed"
+    },
+    {
+      "arity": 2,
+      "name": "series_overflowing_cast_nested",
+      "operation": "polars.series.overflowing_cast_nested"
+    },
+    {
+      "arity": 3,
+      "name": "series_cast_with_options",
+      "operation": "polars.series.cast_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_physical",
+      "operation": "polars.series.to_physical"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_storage",
+      "operation": "polars.series.to_storage"
+    },
+    {
+      "arity": 1,
+      "name": "series_implode",
+      "operation": "polars.series.implode"
+    },
+    {
+      "arity": 1,
+      "name": "series_as_list",
+      "operation": "polars.series.as_list"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_unit_list",
+      "operation": "polars.series.to_unit_list"
+    },
+    {
+      "arity": 3,
+      "name": "series_from_cats_and_dtype",
+      "operation": "polars.series.from_cats_and_dtype"
+    },
+    {
+      "arity": 2,
+      "name": "series_reshape_list",
+      "operation": "polars.series.reshape_list"
+    },
+    {
+      "arity": 2,
+      "name": "series_reshape_array",
+      "operation": "polars.series.reshape_array"
+    },
+    {
+      "arity": 3,
+      "name": "series_extend_string",
+      "operation": "polars.series.extend_string"
+    },
+    {
+      "arity": 3,
+      "name": "series_extend_int",
+      "operation": "polars.series.extend_int"
+    },
+    {
+      "arity": 3,
+      "name": "series_extend_float",
+      "operation": "polars.series.extend_float"
+    },
+    {
+      "arity": 3,
+      "name": "series_extend_bool",
+      "operation": "polars.series.extend_bool"
+    },
+    {
+      "arity": 2,
+      "name": "series_extend_null",
+      "operation": "polars.series.extend_null"
+    },
+    {
+      "arity": 3,
+      "name": "series_zip_with",
+      "operation": "polars.series.zip_with"
+    },
+    {
+      "arity": 1,
+      "name": "series_serialize",
+      "operation": "polars.series.serialize"
+    },
+    {
+      "arity": 1,
+      "name": "series_deserialize",
+      "operation": "polars.series.deserialize"
+    },
+    {
+      "arity": 2,
+      "name": "series_not_equal_missing",
+      "operation": "polars.series.not_equal_missing"
+    },
+    {
+      "arity": 2,
+      "name": "series_select_chunk",
+      "operation": "polars.series.select_chunk"
+    },
+    {
+      "arity": 1,
+      "name": "series_leaf_values",
+      "operation": "polars.series.leaf_values"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_float",
+      "operation": "polars.series.to_float"
+    },
+    {
+      "arity": 1,
+      "name": "series_integer_values",
+      "operation": "polars.series.integer_values"
+    },
+    {
+      "arity": 1,
+      "name": "series_float_values",
+      "operation": "polars.series.float_values"
+    },
+    {
+      "arity": 1,
+      "name": "series_boolean_values",
+      "operation": "polars.series.boolean_values"
+    },
+    {
+      "arity": 1,
+      "name": "series_string_values",
+      "operation": "polars.series.string_values"
+    },
+    {
+      "arity": 1,
+      "name": "series_to_arrow_ipc",
+      "operation": "polars.series.to_arrow_ipc"
+    },
+    {
+      "arity": 1,
+      "name": "series_from_arrow_ipc",
+      "operation": "polars.series.from_arrow_ipc"
+    },
+    {
+      "arity": 1,
+      "name": "clone_series",
+      "operation": "polars.series.clone"
+    },
+    {
+      "arity": 4,
+      "name": "row_encode",
+      "operation": "polars.series.row_encode"
+    },
+    {
+      "arity": 3,
+      "name": "filter_eq",
+      "operation": "polars.dataframe.filter_eq"
+    },
+    {
+      "arity": 3,
+      "name": "sort_by",
+      "operation": "polars.dataframe.sort_by"
+    },
+    {
+      "arity": 5,
+      "name": "sort_rows_by",
+      "operation": "polars.dataframe.sort_rows_by"
+    },
+    {
+      "arity": 5,
+      "name": "top_rows_by",
+      "operation": "polars.dataframe.top_rows_by"
+    },
+    {
+      "arity": 5,
+      "name": "bottom_rows_by",
+      "operation": "polars.dataframe.bottom_rows_by"
+    },
+    {
+      "arity": 2,
+      "name": "group_count",
+      "operation": "polars.dataframe.group_count"
+    },
+    {
+      "arity": 1,
+      "name": "lazy",
+      "operation": "polars.dataframe.lazy"
+    },
+    {
+      "arity": 2,
+      "name": "scan_csv",
+      "operation": "polars.lazy_frame.scan_csv"
+    },
+    {
+      "arity": 4,
+      "name": "scan_csv_with_storage_options",
+      "operation": "polars.lazy_frame.scan_csv_with_storage_options"
+    },
+    {
+      "arity": 1,
+      "name": "scan_parquet",
+      "operation": "polars.lazy_frame.scan_parquet"
+    },
+    {
+      "arity": 3,
+      "name": "scan_parquet_with_storage_options",
+      "operation": "polars.lazy_frame.scan_parquet_with_storage_options"
+    },
+    {
+      "arity": 1,
+      "name": "scan_ndjson",
+      "operation": "polars.lazy_frame.scan_ndjson"
+    },
+    {
+      "arity": 3,
+      "name": "scan_ndjson_with_storage_options",
+      "operation": "polars.lazy_frame.scan_ndjson_with_storage_options"
+    },
+    {
+      "arity": 1,
+      "name": "scan_ipc",
+      "operation": "polars.lazy_frame.scan_ipc"
+    },
+    {
+      "arity": 3,
+      "name": "scan_ipc_with_storage_options",
+      "operation": "polars.lazy_frame.scan_ipc_with_storage_options"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_write_csv",
+      "operation": "polars.lazy_frame.write_csv"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_write_parquet",
+      "operation": "polars.lazy_frame.write_parquet"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_write_ndjson",
+      "operation": "polars.lazy_frame.write_ndjson"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_write_ipc",
+      "operation": "polars.lazy_frame.write_ipc"
+    },
+    {
+      "arity": 6,
+      "name": "lazy_write_csv_partitioned",
+      "operation": "polars.lazy_frame.write_csv_partitioned"
+    },
+    {
+      "arity": 6,
+      "name": "lazy_write_parquet_partitioned",
+      "operation": "polars.lazy_frame.write_parquet_partitioned"
+    },
+    {
+      "arity": 6,
+      "name": "lazy_write_ndjson_partitioned",
+      "operation": "polars.lazy_frame.write_ndjson_partitioned"
+    },
+    {
+      "arity": 6,
+      "name": "lazy_write_ipc_partitioned",
+      "operation": "polars.lazy_frame.write_ipc_partitioned"
+    },
+    {
+      "arity": 3,
+      "name": "where_eq",
+      "operation": "polars.lazy_frame.filter_eq"
+    },
+    {
+      "arity": 2,
+      "name": "project",
+      "operation": "polars.lazy_frame.select"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_select_exprs",
+      "operation": "polars.lazy_frame.select_exprs"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_select_exprs_sequential",
+      "operation": "polars.lazy_frame.select_exprs_sequential"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_with_columns",
+      "operation": "polars.lazy_frame.with_columns"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_with_columns_sequential",
+      "operation": "polars.lazy_frame.with_columns_sequential"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_filter",
+      "operation": "polars.lazy_frame.filter_expr"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_remove_where",
+      "operation": "polars.lazy_frame.remove_where"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_group_agg",
+      "operation": "polars.lazy_frame.group_agg"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_sort",
+      "operation": "polars.lazy_frame.sort"
+    },
+    {
+      "arity": 5,
+      "name": "lazy_sort_rows_by",
+      "operation": "polars.lazy_frame.sort_rows_by"
+    },
+    {
+      "arity": 5,
+      "name": "lazy_top_rows_by",
+      "operation": "polars.lazy_frame.top_rows_by"
+    },
+    {
+      "arity": 5,
+      "name": "lazy_bottom_rows_by",
+      "operation": "polars.lazy_frame.bottom_rows_by"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_limit",
+      "operation": "polars.lazy_frame.limit"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_tail",
+      "operation": "polars.lazy_frame.tail"
+    },
+    {
+      "arity": 4,
+      "name": "lazy_unique_rows",
+      "operation": "polars.lazy_frame.unique_rows"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_drop_null_rows",
+      "operation": "polars.lazy_frame.drop_null_rows"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_slice_rows",
+      "operation": "polars.lazy_frame.slice_rows"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_gather_rows",
+      "operation": "polars.lazy_frame.gather_rows"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_clear_rows",
+      "operation": "polars.lazy_frame.clear_rows"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_first_row",
+      "operation": "polars.lazy_frame.first_row"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_last_row",
+      "operation": "polars.lazy_frame.last_row"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_sums",
+      "operation": "polars.lazy_frame.column_sums"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_means",
+      "operation": "polars.lazy_frame.column_means"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_medians",
+      "operation": "polars.lazy_frame.column_medians"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_minima",
+      "operation": "polars.lazy_frame.column_minima"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_maxima",
+      "operation": "polars.lazy_frame.column_maxima"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_products",
+      "operation": "polars.lazy_frame.column_products"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_column_variances",
+      "operation": "polars.lazy_frame.column_variances"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_column_stddevs",
+      "operation": "polars.lazy_frame.column_stddevs"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_column_quantiles",
+      "operation": "polars.lazy_frame.column_quantiles"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_non_null_counts",
+      "operation": "polars.lazy_frame.column_non_null_counts"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_lengths",
+      "operation": "polars.lazy_frame.column_lengths"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_unique_counts",
+      "operation": "polars.lazy_frame.column_unique_counts"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_column_approx_unique_counts",
+      "operation": "polars.lazy_frame.column_approx_unique_counts"
+    },
+    {
+      "arity": 4,
+      "name": "lazy_rename_columns",
+      "operation": "polars.lazy_frame.rename_columns"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_drop_columns",
+      "operation": "polars.lazy_frame.drop_columns"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_reverse_rows",
+      "operation": "polars.lazy_frame.reverse_rows"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_with_row_index",
+      "operation": "polars.lazy_frame.with_row_index"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_fill_null_values",
+      "operation": "polars.lazy_frame.fill_null_values"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_fill_nan_values",
+      "operation": "polars.lazy_frame.fill_nan_values"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_drop_nan_rows",
+      "operation": "polars.lazy_frame.drop_nan_rows"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_null_counts",
+      "operation": "polars.lazy_frame.null_counts"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_schema",
+      "operation": "polars.lazy_frame.schema"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_cache",
+      "operation": "polars.lazy_frame.cache"
+    },
+    {
+      "arity": 1,
+      "name": "lazy_without_optimizations",
+      "operation": "polars.lazy_frame.without_optimizations"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_set_optimization",
+      "operation": "polars.lazy_frame.set_optimization"
+    },
+    {
+      "arity": 2,
+      "name": "lazy_shift_rows",
+      "operation": "polars.lazy_frame.shift_rows"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_shift_and_fill_rows",
+      "operation": "polars.lazy_frame.shift_and_fill_rows"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_left_join",
+      "operation": "polars.lazy_frame.left_join"
+    },
+    {
+      "arity": 7,
+      "name": "lazy_join",
+      "operation": "polars.lazy_frame.join"
+    },
+    {
+      "arity": 9,
+      "name": "lazy_join_with_options",
+      "operation": "polars.lazy_frame.join_with_options"
+    },
+    {
+      "arity": 8,
+      "name": "lazy_join_with_coalesce",
+      "operation": "polars.lazy_frame.join_with_coalesce"
+    },
+    {
+      "arity": 4,
+      "name": "lazy_join_where",
+      "operation": "polars.lazy_frame.join_where"
+    },
+    {
+      "arity": 10,
+      "name": "lazy_asof_join",
+      "operation": "polars.lazy_frame.asof_join"
+    },
+    {
+      "arity": 10,
+      "name": "dynamic_group_agg",
+      "operation": "polars.lazy_frame.dynamic_group_agg"
+    },
+    {
+      "arity": 7,
+      "name": "rolling_group_agg",
+      "operation": "polars.lazy_frame.rolling_group_agg"
+    },
+    {
+      "arity": 4,
+      "name": "lazy_explode",
+      "operation": "polars.lazy_frame.explode"
+    },
+    {
+      "arity": 5,
+      "name": "lazy_unpivot",
+      "operation": "polars.lazy_frame.unpivot"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_unnest",
+      "operation": "polars.lazy_frame.unnest"
+    },
+    {
+      "arity": 2,
+      "name": "describe_plan",
+      "operation": "polars.lazy_frame.describe_plan"
+    },
+    {
+      "arity": 2,
+      "name": "describe_plan_tree",
+      "operation": "polars.lazy_frame.describe_plan_tree"
+    },
+    {
+      "arity": 2,
+      "name": "describe_plan_dot",
+      "operation": "polars.lazy_frame.describe_plan_dot"
+    },
+    {
+      "arity": 1,
+      "name": "profile_plan",
+      "operation": "polars.lazy_frame.profile_plan"
+    },
+    {
+      "arity": 1,
+      "name": "profile",
+      "operation": "polars.lazy_frame.profile"
+    },
+    {
+      "arity": 1,
+      "name": "collect",
+      "operation": "polars.lazy_frame.collect"
+    },
+    {
+      "arity": 1,
+      "name": "collect_streaming",
+      "operation": "polars.lazy_frame.collect_streaming"
+    },
+    {
+      "arity": 2,
+      "name": "collect_with_engine",
+      "operation": "polars.lazy_frame.collect_with_engine"
+    },
+    {
+      "arity": 4,
+      "name": "lazy_cast",
+      "operation": "polars.lazy_frame.cast"
+    },
+    {
+      "arity": 3,
+      "name": "lazy_cast_all",
+      "operation": "polars.lazy_frame.cast_all"
+    },
+    {
+      "arity": 1,
+      "name": "current_optimizations",
+      "operation": "polars.lazy_frame.current_optimizations"
+    },
+    {
+      "arity": 9,
+      "name": "lazy_pivot",
+      "operation": "polars.lazy_frame.pivot"
+    },
+    {
+      "arity": 1,
+      "name": "lazyframe_set_new",
+      "operation": "polars.lazy_frame_set.new"
+    },
+    {
+      "arity": 2,
+      "name": "lazyframe_set_append",
+      "operation": "polars.lazy_frame_set.append"
+    },
+    {
+      "arity": 1,
+      "name": "lazyframe_set_len",
+      "operation": "polars.lazy_frame_set.len"
+    },
+    {
+      "arity": 2,
+      "name": "with_context",
+      "operation": "polars.lazy_frame.with_context"
+    },
+    {
+      "arity": 2,
+      "name": "collect_all",
+      "operation": "polars.lazy_frame.collect_all"
+    },
+    {
+      "arity": 2,
+      "name": "collect_all_with_engine",
+      "operation": "polars.lazy_frame.collect_all_with_engine"
+    },
+    {
+      "arity": 1,
+      "name": "dispose_lazyframe_set",
+      "operation": "polars.lazy_frame_set.dispose"
+    },
+    {
+      "arity": 1,
+      "name": "release",
+      "operation": "polars.lazy_frame.dispose"
+    },
+    {
+      "arity": 2,
+      "name": "select",
+      "operation": "polars.dataframe.select"
+    },
+    {
+      "arity": 2,
+      "name": "head",
+      "operation": "polars.dataframe.head"
+    },
+    {
+      "arity": 2,
+      "name": "tail",
+      "operation": "polars.dataframe.tail"
+    },
+    {
+      "arity": 1,
+      "name": "clear_rows",
+      "operation": "polars.dataframe.clear_rows"
+    },
+    {
+      "arity": 1,
+      "name": "rechunk_frame",
+      "operation": "polars.dataframe.rechunk_frame"
+    },
+    {
+      "arity": 1,
+      "name": "column_sums",
+      "operation": "polars.dataframe.column_sums"
+    },
+    {
+      "arity": 1,
+      "name": "column_means",
+      "operation": "polars.dataframe.column_means"
+    },
+    {
+      "arity": 1,
+      "name": "column_medians",
+      "operation": "polars.dataframe.column_medians"
+    },
+    {
+      "arity": 1,
+      "name": "column_minima",
+      "operation": "polars.dataframe.column_minima"
+    },
+    {
+      "arity": 1,
+      "name": "column_maxima",
+      "operation": "polars.dataframe.column_maxima"
+    },
+    {
+      "arity": 1,
+      "name": "column_products",
+      "operation": "polars.dataframe.column_products"
+    },
+    {
+      "arity": 2,
+      "name": "column_variances",
+      "operation": "polars.dataframe.column_variances"
+    },
+    {
+      "arity": 2,
+      "name": "column_stddevs",
+      "operation": "polars.dataframe.column_stddevs"
+    },
+    {
+      "arity": 3,
+      "name": "column_quantiles",
+      "operation": "polars.dataframe.column_quantiles"
+    },
+    {
+      "arity": 1,
+      "name": "column_non_null_counts",
+      "operation": "polars.dataframe.column_non_null_counts"
+    },
+    {
+      "arity": 1,
+      "name": "column_lengths",
+      "operation": "polars.dataframe.column_lengths"
+    },
+    {
+      "arity": 1,
+      "name": "column_unique_counts",
+      "operation": "polars.dataframe.column_unique_counts"
+    },
+    {
+      "arity": 1,
+      "name": "column_approx_unique_counts",
+      "operation": "polars.dataframe.column_approx_unique_counts"
+    },
+    {
+      "arity": 4,
+      "name": "unique_rows",
+      "operation": "polars.dataframe.unique_rows"
+    },
+    {
+      "arity": 2,
+      "name": "drop_null_rows",
+      "operation": "polars.dataframe.drop_null_rows"
+    },
+    {
+      "arity": 3,
+      "name": "slice_rows",
+      "operation": "polars.dataframe.slice_rows"
+    },
+    {
+      "arity": 3,
+      "name": "gather_rows",
+      "operation": "polars.dataframe.gather_rows"
+    },
+    {
+      "arity": 3,
+      "name": "gather_every",
+      "operation": "polars.dataframe.gather_every"
+    },
+    {
+      "arity": 4,
+      "name": "rename_columns",
+      "operation": "polars.dataframe.rename_columns"
+    },
+    {
+      "arity": 2,
+      "name": "drop_columns",
+      "operation": "polars.dataframe.drop_columns"
+    },
+    {
+      "arity": 3,
+      "name": "drop_columns",
+      "operation": "polars.dataframe.drop_columns_with_options"
+    },
+    {
+      "arity": 1,
+      "name": "reverse_rows",
+      "operation": "polars.dataframe.reverse_rows"
+    },
+    {
+      "arity": 3,
+      "name": "with_row_index",
+      "operation": "polars.dataframe.with_row_index"
+    },
+    {
+      "arity": 2,
+      "name": "fill_null_values",
+      "operation": "polars.dataframe.fill_null_values"
+    },
+    {
+      "arity": 3,
+      "name": "fill_null_with_strategy",
+      "operation": "polars.dataframe.fill_null"
+    },
+    {
+      "arity": 2,
+      "name": "fill_nan_values",
+      "operation": "polars.dataframe.fill_nan_values"
+    },
+    {
+      "arity": 2,
+      "name": "drop_nan_rows",
+      "operation": "polars.dataframe.drop_nan_rows"
+    },
+    {
+      "arity": 1,
+      "name": "null_counts",
+      "operation": "polars.dataframe.null_counts"
+    },
+    {
+      "arity": 2,
+      "name": "shift_rows",
+      "operation": "polars.dataframe.shift_rows"
+    },
+    {
+      "arity": 3,
+      "name": "shift_and_fill_rows",
+      "operation": "polars.dataframe.shift_and_fill_rows"
+    },
+    {
+      "arity": 2,
+      "name": "select_exprs",
+      "operation": "polars.dataframe.select_exprs"
+    },
+    {
+      "arity": 2,
+      "name": "select_exprs_sequential",
+      "operation": "polars.dataframe.select_exprs_sequential"
+    },
+    {
+      "arity": 2,
+      "name": "with_columns",
+      "operation": "polars.dataframe.with_columns_exprs"
+    },
+    {
+      "arity": 2,
+      "name": "with_columns_sequential",
+      "operation": "polars.dataframe.with_columns_sequential"
+    },
+    {
+      "arity": 2,
+      "name": "filter",
+      "operation": "polars.dataframe.filter_expr"
+    },
+    {
+      "arity": 2,
+      "name": "filter_all",
+      "operation": "polars.dataframe.filter_all"
+    },
+    {
+      "arity": 3,
+      "name": "filter_constraints",
+      "operation": "polars.dataframe.filter_constraints"
+    },
+    {
+      "arity": 2,
+      "name": "remove_where",
+      "operation": "polars.dataframe.remove_where"
+    },
+    {
+      "arity": 3,
+      "name": "group_agg",
+      "operation": "polars.dataframe.group_agg"
+    },
+    {
+      "arity": 3,
+      "name": "map_groups",
+      "operation": "polars.dataframe.map_groups"
+    },
+    {
+      "arity": 3,
+      "name": "left_join",
+      "operation": "polars.dataframe.left_join"
+    },
+    {
+      "arity": 7,
+      "name": "join",
+      "operation": "polars.dataframe.join"
+    },
+    {
+      "arity": 9,
+      "name": "join_with_options",
+      "operation": "polars.dataframe.join_with_options"
+    },
+    {
+      "arity": 8,
+      "name": "join_with_coalesce",
+      "operation": "polars.dataframe.join_with_coalesce"
+    },
+    {
+      "arity": 4,
+      "name": "join_where",
+      "operation": "polars.dataframe.join_where"
+    },
+    {
+      "arity": 10,
+      "name": "asof_join",
+      "operation": "polars.dataframe.asof_join"
+    },
+    {
+      "arity": 2,
+      "name": "concat_vertical",
+      "operation": "polars.dataframe.concat_vertical"
+    },
+    {
+      "arity": 2,
+      "name": "concat_vertical_relaxed",
+      "operation": "polars.dataframe.concat_vertical_relaxed"
+    },
+    {
+      "arity": 3,
+      "name": "concat_horizontal",
+      "operation": "polars.dataframe.concat_horizontal"
+    },
+    {
+      "arity": 2,
+      "name": "concat_horizontal_extend",
+      "operation": "polars.dataframe.concat_horizontal_extend"
+    },
+    {
+      "arity": 2,
+      "name": "concat_diagonal",
+      "operation": "polars.dataframe.concat_diagonal"
+    },
+    {
+      "arity": 5,
+      "name": "upsample",
+      "operation": "polars.dataframe.upsample"
+    },
+    {
+      "arity": 5,
+      "name": "update",
+      "operation": "polars.dataframe.update"
+    },
+    {
+      "arity": 4,
+      "name": "explode_columns",
+      "operation": "polars.dataframe.explode"
+    },
+    {
+      "arity": 5,
+      "name": "unpivot",
+      "operation": "polars.dataframe.unpivot"
+    },
+    {
+      "arity": 6,
+      "name": "pivot",
+      "operation": "polars.dataframe.pivot"
+    },
+    {
+      "arity": 3,
+      "name": "unnest_columns",
+      "operation": "polars.dataframe.unnest"
+    },
+    {
+      "arity": 2,
+      "name": "transpose",
+      "operation": "polars.dataframe.transpose"
+    },
+    {
+      "arity": 5,
+      "name": "plot_scatter_svg",
+      "operation": "polars.visualization.scatter_svg"
+    },
+    {
+      "arity": 4,
+      "name": "plot_line_svg",
+      "operation": "polars.visualization.line_svg"
+    },
+    {
+      "arity": 5,
+      "name": "plot_bar_svg",
+      "operation": "polars.visualization.bar_svg"
+    },
+    {
+      "arity": 4,
+      "name": "plot_histogram_svg",
+      "operation": "polars.visualization.histogram_svg"
+    },
+    {
+      "arity": 5,
+      "name": "plot_box_svg",
+      "operation": "polars.visualization.box_svg"
+    },
+    {
+      "arity": 5,
+      "name": "plot_scatter_html",
+      "operation": "polars.visualization.scatter_html"
+    },
+    {
+      "arity": 4,
+      "name": "plot_line_html",
+      "operation": "polars.visualization.line_html"
+    },
+    {
+      "arity": 5,
+      "name": "plot_bar_html",
+      "operation": "polars.visualization.bar_html"
+    },
+    {
+      "arity": 4,
+      "name": "plot_histogram_html",
+      "operation": "polars.visualization.histogram_html"
+    },
+    {
+      "arity": 5,
+      "name": "plot_box_html",
+      "operation": "polars.visualization.box_html"
+    },
+    {
+      "arity": 5,
+      "name": "plot_scatter_png",
+      "operation": "polars.visualization.scatter_png"
+    },
+    {
+      "arity": 4,
+      "name": "plot_line_png",
+      "operation": "polars.visualization.line_png"
+    },
+    {
+      "arity": 5,
+      "name": "plot_bar_png",
+      "operation": "polars.visualization.bar_png"
+    },
+    {
+      "arity": 4,
+      "name": "plot_histogram_png",
+      "operation": "polars.visualization.histogram_png"
+    },
+    {
+      "arity": 5,
+      "name": "plot_box_png",
+      "operation": "polars.visualization.box_png"
+    },
+    {
+      "arity": 0,
+      "name": "gt",
+      "operation": "polars.table.gt"
+    },
+    {
+      "arity": 2,
+      "name": "tab_stub",
+      "operation": "polars.table.tab_stub"
+    },
+    {
+      "arity": 3,
+      "name": "cols_label",
+      "operation": "polars.table.cols_label"
+    },
+    {
+      "arity": 3,
+      "name": "tab_header",
+      "operation": "polars.table.tab_header"
+    },
+    {
+      "arity": 4,
+      "name": "fmt_number",
+      "operation": "polars.table.fmt_number"
+    },
+    {
+      "arity": 2,
+      "name": "fmt_nanoplot",
+      "operation": "polars.table.fmt_nanoplot"
+    },
+    {
+      "arity": 4,
+      "name": "data_color",
+      "operation": "polars.table.data_color"
+    },
+    {
+      "arity": 3,
+      "name": "table_html",
+      "operation": "polars.table.to_html"
+    },
+    {
+      "arity": 1,
+      "name": "dispose",
+      "operation": "polars.dataframe.dispose"
+    }
+  ],
+  "module": "polars_data_frame_native_boundary",
+  "native_policy": "native_boundary_optional",
+  "scheduler": "normal",
+  "source_module": "polars.DataFrame"
+}

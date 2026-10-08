@@ -1,0 +1,49 @@
+module polars.DataFrameConstructionTest.
+
+import polars.DataFrame.{dispose, from_rows, height, width}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+pub strings(value: List[String]): List[String] ->
+    value.
+
+pub string_rows(value: List[List[String]]): List[List[String]] ->
+    value.
+
+@test
+pub from_rows_constructs_data_and_validates_row_widths(): Bool ->
+    let columns = strings(List.new());
+    columns.push("name");
+    columns.push("city");
+    let first = strings(List.new());
+    (first.push("Ada"); first.push("London"); let second = strings(List.new());
+(second.push("Grace"); second.push("Arlington"); let rows = string_rows(List.new());
+(rows.push(first); rows.push(second); let constructed =
+    case from_rows(columns, rows) {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 2 and width(df) == 2;
+            let _disposed_at_2387 = dispose(df);
+            valid
+    };
+let empty_columns = strings(List.new());
+(empty_columns.push("name"); empty_columns.push("city"); let empty_rows = string_rows(List.new());
+let empty_is_valid =
+    case from_rows(empty_columns, empty_rows) {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 0 and width(df) == 2;
+            let _disposed_at_2400 = dispose(df);
+            valid
+    };
+let ragged_columns = strings(List.new());
+(ragged_columns.push("name"); ragged_columns.push("city"); let ragged_row = strings(List.new());
+(ragged_row.push("Ada"); let ragged_rows = string_rows(List.new());
+(ragged_rows.push(ragged_row); let ragged_fails =
+    case from_rows(ragged_columns, ragged_rows) {
+        Err(_error) -> true;
+        Ok(unexpected) ->
+            let _disposed = dispose(unexpected);
+            false
+    };
+constructed and empty_is_valid and ragged_fails))))))).

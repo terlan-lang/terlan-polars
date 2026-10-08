@@ -1,0 +1,82 @@
+module polars_expressions.Aggregation.
+
+import polars.DataFrame.{add, alias, col, dispose, equal, filter, filter_expression, first, group_agg, head, height, last, len_expr, lit, mean, or_predicate, read_csv_dates, sort_ascending, sort_by, sort_by_ascending, subtract, sum, width, year}.
+import type polars.DataFrame.{DataFrame, Expr}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+pub expressions(): List[Expr] -> List.new().
+pub append(values: List[Expr], value: Expr): List[Expr] -> values.push(value); values.
+pub one(value: Expr): List[Expr] -> append(expressions(), value).
+pub two(first_value: Expr, second: Expr): List[Expr] -> append(one(first_value), second).
+
+pub basic(df: DataFrame): Bool ->
+    let aggs = expressions();
+    let aggs = append(aggs, len_expr());
+    let aggs = append(aggs, col("gender"));
+    let aggs = append(aggs, first(col("last_name")));
+    case group_agg(df, one(col("first_name")), aggs) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let valid = case sort_by(grouped, "len", true) { Err(_error) -> false; Ok(sorted) -> let ok = case head(sorted, 5) { Err(_error) -> false; Ok(top) -> let x = width(top) == 4; dispose(top); x }; dispose(sorted); ok };
+            let _disposed_at_2943 = dispose(grouped);
+            valid
+    }.
+
+pub conditional(df: DataFrame): Bool ->
+    let aggs = expressions();
+    let aggs = append(aggs, alias(sum(equal(col("party"), lit("Anti-Administration"))), "anti"));
+    let aggs = append(aggs, alias(sum(equal(col("party"), lit("Pro-Administration"))), "pro"));
+    case group_agg(df, one(col("state")), aggs) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 3; dispose(result); valid }.
+
+pub nested(df: DataFrame): Bool ->
+    case group_agg(df, two(col("state"), col("party")), one(alias(len_expr(), "count"))) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let parties = or_predicate(equal(col("party"), lit("Anti-Administration")), equal(col("party"), lit("Pro-Administration")));
+            let valid = case filter(grouped, parties) { Err(_error) -> false; Ok(result) -> let ok = width(result) == 3; dispose(result); ok };
+            let _disposed_at_2959 = dispose(grouped);
+            valid
+    }.
+
+pub age(): Expr -> subtract(lit(2024), year(col("birthday"))).
+
+pub filtered_aggregation(df: DataFrame): Bool ->
+    let aggs = expressions();
+    let aggs = append(aggs, alias(mean(filter_expression(age(), equal(col("gender"), lit("M")))), "avg M birthday"));
+    let aggs = append(aggs, alias(mean(filter_expression(age(), equal(col("gender"), lit("F")))), "avg F birthday"));
+    let aggs = append(aggs, alias(sum(equal(col("gender"), lit("M"))), "# male"));
+    let aggs = append(aggs, alias(sum(equal(col("gender"), lit("F"))), "# female"));
+    case group_agg(df, one(col("state")), aggs) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 5; dispose(result); valid }.
+
+pub nested_filter(df: DataFrame): Bool ->
+    let aggs = two(alias(mean(age()), "avg birthday"), alias(len_expr(), "#"));
+    case group_agg(df, two(col("state"), col("gender")), aggs) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 4; dispose(result); valid }.
+
+pub full_name(): Expr -> add(add(col("first_name"), lit(" ")), col("last_name")).
+
+pub sorted_examples(df: DataFrame): Bool ->
+    case sort_by(df, "birthday", true) {
+        Err(_error) -> false;
+        Ok(sorted) ->
+            let base = two(alias(first(full_name()), "youngest"), alias(last(full_name()), "oldest"));
+            let first_result = case group_agg(sorted, one(col("state")), base) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 3; dispose(result); valid };
+            let extended = append(base, alias(first(sort_ascending(full_name())), "alphabetical_first"));
+            let second_result = case group_agg(sorted, one(col("state")), extended) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 4; dispose(result); valid };
+            let gender = first(sort_by_ascending(col("gender"), one(col("first_name"))));
+            let third_result = case group_agg(sorted, one(col("state")), append(extended, gender)) { Err(_error) -> false; Ok(result) -> let valid = width(result) == 5; dispose(result); valid };
+            let _disposed_at_2989 = dispose(sorted);
+            first_result and second_result and third_result
+    }.
+
+/** Covers all nine executable regions in upstream aggregation.rs. */
+pub run(): Bool ->
+    case read_csv_dates("examples/polars_expressions/data/aggregation_legislators.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 12 and width(df) == 8 and basic(df) and conditional(df) and
+                nested(df) and filtered_aggregation(df) and nested_filter(df) and sorted_examples(df);
+            let _disposed_at_3000 = dispose(df);
+            valid
+    }.

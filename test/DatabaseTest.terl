@@ -1,0 +1,22 @@
+module polars.DatabaseTest.
+
+import polars.DataFrame.{dispose, read_database_env, read_database_uri}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub database_rejects_uncompiled_schemes(): Bool ->
+    case read_database_uri("mysql://user:secret@localhost/data", "SELECT 1") {
+        Err(_error) -> true;
+        Ok(unexpected) ->
+            let _disposed = dispose(unexpected);
+            false
+    }.
+
+@test
+pub database_environment_lookup_reports_missing_configuration(): Bool ->
+    case read_database_env("TERLAN_POLARS_TEST_DATABASE_URL_MUST_NOT_EXIST", "SELECT 1") {
+        Err(_error) -> true;
+        Ok(unexpected) ->
+            let _disposed = dispose(unexpected);
+            false
+    }.

@@ -1,0 +1,37 @@
+module polars.TableStyleTest.
+
+import polars.DataFrame.{cols_label, data_color, dispose, fmt_nanoplot, fmt_number, gt, read_csv, tab_header, tab_stub, table_html}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+pub columns(value: String): List[String] ->
+    let result = List.new();
+    result.push(value);
+    result.
+
+@test
+pub declarative_table_style_renders_through_helper(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let {
+                Ok(with_stub) <- tab_stub(gt(), "name");
+                Ok(with_labels) <- cols_label(with_stub, columns("age"), columns("Age <years>"));
+                Ok(with_header) <- tab_header(with_labels, "People <table>", "A & B");
+                Ok(with_numbers) <- fmt_number(with_header, columns("age"), 2, true);
+                Ok(with_colors) <- data_color(with_numbers, columns("age"), "#fff", "#369");
+                Ok(with_nanoplot) <- fmt_nanoplot(with_colors, columns("age"));
+                Ok(_html) <- table_html(df, with_nanoplot, 1)
+            } else {
+                _ ->
+                    let _disposed = dispose(df);
+                    false
+            };
+            (let invalid_color_fails =
+    case data_color(gt(), columns("age"), "red;display:none", "#fff") {
+        Err(_error) -> true;
+        Ok(_style) -> false
+    };
+let _disposed = dispose(df);
+invalid_color_fails)
+    }.

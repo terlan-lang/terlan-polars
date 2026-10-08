@@ -1,0 +1,136 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Builds a temporary path-dependent Polars/PyTorch consumer and executes the
+ * direct TNXP interop assertion without host-language orchestration.
+ */
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File}.
+import std.system.{Arguments, Process}.
+
+import type std.core.Result.
+import type std.io.Directory.DirectoryError.
+import type std.io.File.FileError.
+import type std.system.Process.Command.
+
+directory_result(result: Result[Unit, DirectoryError]): Result[Unit, String] ->
+    case result {
+        Ok(Unit) -> Ok(Unit);
+        Err(reason) -> Err(Directory.message(reason))
+    }.
+
+file_result(result: Result[Unit, FileError]): Result[Unit, String] ->
+    case result {
+        Ok(Unit) -> Ok(Unit);
+        Err(reason) -> Err(File.message(reason))
+    }.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.append(parent, String.append("/", name))
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[polars_pytorch_interop]: ", message));
+    false.
+
+manifest(polars: String, pytorch: String): String ->
+    String.concat(
+        [
+            "[package]\n",
+            "name = \"terlan-polars-pytorch-interop\"\n",
+            "version = \"0.0.0\"\n",
+            "namespace = \"interop\"\n\n",
+            "[build]\n",
+            "source_roots = [\"src\"]\n",
+            "artifact = \"terlan-vm\"\n\n",
+            "[dependencies]\n",
+            "polars = { path = \"",
+            polars,
+            "\" }\n",
+            "pytorch = { path = \"",
+            pytorch,
+            "\" }\n",
+        ],
+    ).
+
+test_command(terlc: String, consumer: String, iris: String): Command ->
+    Process.with_output_limit_bytes(
+        Process.with_timeout_ms(
+            Process.with_environment(
+                Process.with_working_directory(
+                    Process.with_arguments(
+                        Process.command(terlc),
+                        ["test", child(consumer, "tests")],
+                    ),
+                    consumer,
+                ),
+                [Process.environment_entry("TERLAN_POLARS_IRIS_CSV", iris)],
+            ),
+            Process.maximum_timeout_ms(Process.limits()),
+        ),
+        16777216,
+    ).
+
+run_test(terlc: String, consumer: String, iris: String): Bool ->
+    case Process.run(test_command(terlc, consumer, iris)) {
+        Err(reason) -> failure(Process.error_message(reason));
+        Ok(output) ->
+            if {
+                Process.status(output) != 0 -> failure(String.concat([Process.stdout(output), Process.stderr(output)]));
+                true -> let _printed =
+                    println(
+                        "[terlan-polars-pytorch-interop] direct-tnxp=passed iris-shape=passed iris-maximum=passed",
+                    );
+                true
+            }
+    }.
+
+stage_and_run(
+    temporary: String,
+    terlc: String,
+    polars: String,
+    pytorch: String,
+    iris: String,
+): Bool ->
+    let consumer = child(temporary, "consumer");
+    let tests = child(consumer, "tests/interop");
+    let {
+        Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "src")));
+        Ok(Unit) <- directory_result(Directory.create_all(tests));
+        Ok(Unit) <- file_result(File.write_text(child(consumer, "terlan.toml"), manifest(polars, pytorch)));
+        Ok(Unit) <-
+            file_result(
+                File.copy(
+                    child(polars, "scripts/fixtures/IrisDirectTest.terl"),
+                    child(tests, "IrisDirectTest.terl"),
+                ),
+            )
+    } else {
+        Err(message) -> failure(message)
+    };
+    run_test(terlc, consumer, iris).
+
+run(terlc: String, polars: String, pytorch: String, iris: String): Bool ->
+    case Directory.create_temporary("terlan-polars-pytorch-interop.") {
+        Err(reason) -> failure(Directory.message(reason));
+        Ok(temporary) ->
+            let valid = stage_and_run(temporary, terlc, polars, pytorch, iris);
+            case Directory.remove_all(temporary) {
+                Err(reason) -> failure(Directory.message(reason));
+                Ok(Unit) -> valid
+            }
+    }.
+
+entry(): Bool ->
+    case {Arguments.get(0), Arguments.get(1), Arguments.get(2), Arguments.get(3), Arguments.count()} {
+        {Some(terlc), Some(polars), Some(pytorch), Some(iris), 4} ->
+            run(terlc, polars, pytorch, iris);
+        _ -> failure("expected <terlc> <polars-repository> <pytorch-repository> <iris-csv>")
+    }.
+
+assert(entry());
+Unit.

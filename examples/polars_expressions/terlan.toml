@@ -1,0 +1,11 @@
+[package]
+name = "polars-expressions"
+version = "0.1.0"
+namespace = "polars_expressions"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

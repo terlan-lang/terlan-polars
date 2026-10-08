@@ -1,0 +1,246 @@
+module polars_relational.Main.
+
+import polars.DataFrame.{KeepFirst, OneToOne, PreserveLeft, PreserveRight, bottom_rows_by, clear_rows, col, collect, column_approx_unique_counts, column_lengths, column_maxima, column_means, column_medians, column_minima, column_non_null_counts, column_products, column_quantiles, column_stddevs, column_sums, column_unique_counts, column_variances, concat_diagonal, concat_horizontal, concat_vertical, dispose, drop_columns, drop_nan_rows, drop_null_rows, fill_nan_values, fill_null_values, gather_rows, gt, height, join, join_where, join_with_options, lazy, lazy_bottom_rows_by, lazy_cache, lazy_clear_rows, lazy_column_approx_unique_counts, lazy_column_lengths, lazy_column_maxima, lazy_column_means, lazy_column_medians, lazy_column_minima, lazy_column_non_null_counts, lazy_column_products, lazy_column_quantiles, lazy_column_stddevs, lazy_column_sums, lazy_column_unique_counts, lazy_column_variances, lazy_drop_columns, lazy_drop_nan_rows, lazy_drop_null_rows, lazy_fill_nan_values, lazy_fill_null_values, lazy_first_row, lazy_gather_rows, lazy_join, lazy_join_where, lazy_join_with_options, lazy_last_row, lazy_null_counts, lazy_rename_columns, lazy_reverse_rows, lazy_schema, lazy_shift_and_fill_rows, lazy_shift_rows, lazy_slice_rows, lazy_sort_rows_by, lazy_tail, lazy_top_rows_by, lazy_unique_rows, lazy_with_row_index, lit, null_counts, read_csv, rechunk_frame, release, rename_columns, reverse_rows, select, shift_and_fill_rows, shift_rows, slice_rows, sort_rows_by, tail, top_rows_by, unique_rows, width, with_row_index}.
+import type polars.DataFrame.{DataFrame, Expr, LazyFrame}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import type std.core.Error.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub strings(value: String): List[String] -> let values = List.new(); values.push(value); values.
+pub strings2(first: String, second: String): List[String] -> let values = List.new(); values.push(first); values.push(second); values.
+pub bools(value: Bool): List[Bool] -> let values = List.new(); values.push(value); values.
+pub bools2(first: Bool, second: Bool): List[Bool] -> let values = List.new(); values.push(first); values.push(second); values.
+pub ints2(first: Int, second: Int): List[Int] -> let values = List.new(); values.push(first); values.push(second); values.
+pub no_strings(): List[String] -> List.new().
+pub expressions(value: Expr): List[Expr] -> let values = List.new(); values.push(value); values.
+
+pub matches(result: Result[DataFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == expected_height and width(df) == expected_width;
+            let _disposed_at_582 = dispose(df);
+            valid
+    }.
+
+pub lazy_matches(result: Result[LazyFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(plan) -> let valid = matches(collect(plan), expected_height, expected_width); release(plan); valid
+    }.
+
+pub plan_matches(plan: LazyFrame, expected_height: Int, expected_width: Int): Bool ->
+    let valid = matches(collect(plan), expected_height, expected_width);
+    release(plan);
+    valid.
+
+pub eager_joins(left: DataFrame, right: DataFrame): Bool ->
+    let left_on = strings("id");
+    let right_on = strings("person_id");
+    matches(join(left, right, left_on, right_on, "inner", "_team", false), 2, 3) and
+        matches(join(left, right, left_on, right_on, "left", "_team", false), 3, 3) and
+        matches(join(left, right, left_on, right_on, "right", "_team", false), 3, 3) and
+        matches(join(left, right, left_on, right_on, "full", "_team", false), 4, 4) and
+        matches(join(left, right, left_on, right_on, "semi", "_team", false), 2, 2) and
+        matches(join(left, right, left_on, right_on, "anti", "_team", false), 1, 2) and
+        matches(join(left, right, no_strings(), no_strings(), "cross", "_team", false), 9, 4).
+
+pub lazy_join_works(left: DataFrame, right: DataFrame): Bool ->
+    let left_plan = lazy(left);
+    let right_plan = lazy(right);
+    let joined = lazy_join(left_plan, right_plan, strings("id"), strings("person_id"), "inner", "_team", false);
+    let valid = case joined {
+        Err(_error) -> false;
+        Ok(plan) ->
+            let result = matches(collect(plan), 2, 3);
+            release(plan);
+            result
+    };
+    release(left_plan);
+    release(right_plan);
+    valid.
+
+pub checked_ordered_joins_work(left: DataFrame, right: DataFrame): Bool ->
+    let left_on = strings("id");
+    let right_on = strings("person_id");
+    let eager = matches(join_with_options(left, right, left_on, right_on, "inner", "_team", false, OneToOne, PreserveLeft), 2, 3);
+    let left_plan = lazy(left);
+    let right_plan = lazy(right);
+    let deferred = case lazy_join_with_options(left_plan, right_plan, left_on, right_on, "inner", "_team", false, OneToOne, PreserveRight) {
+        Err(_error) -> false;
+        Ok(plan) -> let valid = matches(collect(plan), 2, 3); release(plan); valid
+    };
+    release(left_plan);
+    release(right_plan);
+    eager and deferred.
+
+pub non_equi_joins_work(left: DataFrame, right: DataFrame): Bool ->
+    let predicates = expressions(gt(col("id"), col("person_id")));
+    let eager = matches(join_where(left, right, predicates, "_team"), 1, 4);
+    let left_plan = lazy(left);
+    let right_plan = lazy(right);
+    let deferred = case lazy_join_where(left_plan, right_plan, predicates, "_team") {
+        Err(_error) -> false;
+        Ok(plan) -> let valid = matches(collect(plan), 1, 4); release(plan); valid
+    };
+    release(left_plan);
+    release(right_plan);
+    eager and deferred.
+
+pub row_set_operations_work(frame: DataFrame): Bool ->
+    let eager = matches(unique_rows(frame, no_strings(), KeepFirst, true), 3, 2) and
+        matches(drop_null_rows(frame, no_strings()), 3, 2) and
+        matches(slice_rows(frame, 1, 1), 1, 2) and
+        matches(gather_rows(frame, ints2(2, 0), false), 2, 2) and
+        matches(gather_rows(frame, ints2(0, 5), true), 2, 2);
+    let plan = lazy(frame);
+    let deferred = lazy_matches(lazy_unique_rows(plan, no_strings(), KeepFirst, true), 3, 2) and
+        lazy_matches(lazy_drop_null_rows(plan, no_strings()), 3, 2) and
+        lazy_matches(lazy_slice_rows(plan, -2, 1), 1, 2) and
+        lazy_matches(lazy_gather_rows(plan, ints2(2, 0), false), 2, 2) and
+        lazy_matches(lazy_gather_rows(plan, ints2(0, 5), true), 2, 2);
+    release(plan);
+    eager and deferred.
+
+pub multi_key_ordering_works(frame: DataFrame): Bool ->
+    let columns = strings2("name", "id");
+    let descending = bools2(false, true);
+    let nulls_last = bools2(false, false);
+    let eager = matches(sort_rows_by(frame, columns, descending, nulls_last, true), 3, 2) and
+        matches(top_rows_by(frame, strings("id"), 2, bools(false), true), 2, 2) and
+        matches(bottom_rows_by(frame, strings("id"), 2, bools(false), true), 2, 2);
+    let plan = lazy(frame);
+    let deferred = lazy_matches(lazy_sort_rows_by(plan, columns, descending, nulls_last, true), 3, 2) and
+        lazy_matches(lazy_top_rows_by(plan, strings("id"), 2, bools(false), true), 2, 2) and
+        lazy_matches(lazy_bottom_rows_by(plan, strings("id"), 2, bools(false), true), 2, 2);
+    release(plan);
+    eager and deferred.
+
+pub schema_layout_operations_work(frame: DataFrame): Bool ->
+    let existing = strings2("id", "name");
+    let renamed = strings2("person_id", "person_name");
+    let eager = matches(rename_columns(frame, existing, renamed, true), 3, 2) and
+        matches(drop_columns(frame, strings("name")), 3, 1) and
+        matches(reverse_rows(frame), 3, 2) and
+        matches(with_row_index(frame, "row_nr", 5), 3, 3);
+    let plan = lazy(frame);
+    let deferred = lazy_matches(lazy_rename_columns(plan, existing, renamed, true), 3, 2) and
+        lazy_matches(lazy_drop_columns(plan, strings("name")), 3, 1) and
+        plan_matches(lazy_reverse_rows(plan), 3, 2) and
+        lazy_matches(lazy_with_row_index(plan, "row_nr", 5), 3, 3);
+    release(plan);
+    eager and deferred.
+
+pub missing_value_operations_work(frame: DataFrame): Bool ->
+    case select(frame, strings("id")) {
+        Err(_error) -> false;
+        Ok(numeric) ->
+            let zero = lit(0);
+            let eager = matches(fill_null_values(numeric, zero), 3, 1) and
+                matches(fill_nan_values(numeric, zero), 3, 1) and
+                matches(drop_nan_rows(numeric, no_strings()), 3, 1) and
+                matches(null_counts(numeric), 1, 1);
+            let plan = lazy(numeric);
+            let deferred = lazy_matches(lazy_fill_null_values(plan, zero), 3, 1) and
+                lazy_matches(lazy_fill_nan_values(plan, zero), 3, 1) and
+                lazy_matches(lazy_drop_nan_rows(plan, no_strings()), 3, 1) and
+                plan_matches(lazy_null_counts(plan), 1, 1);
+            release(plan);
+            let _disposed_at_709 = dispose(numeric);
+            eager and deferred
+    }.
+
+pub planning_and_shift_operations_work(frame: DataFrame): Bool ->
+    case select(frame, strings("id")) {
+        Err(_error) -> false;
+        Ok(numeric) ->
+            let fill = lit(-1);
+            let eager = matches(shift_rows(numeric, 1), 3, 1) and
+                matches(shift_and_fill_rows(numeric, -1, fill), 3, 1);
+            let plan = lazy(numeric);
+            let schema_valid = lazy_schema(plan).length() == 1;
+            let deferred = plan_matches(lazy_cache(plan), 3, 1) and
+                plan_matches(lazy_shift_rows(plan, 1), 3, 1) and
+                lazy_matches(lazy_shift_and_fill_rows(plan, -1, fill), 3, 1);
+            release(plan);
+            let _disposed_at_726 = dispose(numeric);
+            eager and schema_valid and deferred
+    }.
+
+pub row_endpoint_and_layout_operations_work(frame: DataFrame): Bool ->
+    let invalid_limit = case tail(frame, -1) {
+        Err(_error) -> true;
+        Ok(unexpected) -> let valid = false; dispose(unexpected); valid
+    };
+    let eager = matches(tail(frame, 2), 2, 2) and
+        matches(clear_rows(frame), 0, 2) and
+        matches(rechunk_frame(frame), 3, 2);
+    let plan = lazy(frame);
+    let deferred = lazy_matches(lazy_tail(plan, 2), 2, 2) and
+        plan_matches(lazy_clear_rows(plan), 0, 2) and
+        plan_matches(lazy_first_row(plan), 1, 2) and
+        plan_matches(lazy_last_row(plan), 1, 2);
+    release(plan);
+    invalid_limit and eager and deferred.
+
+pub column_reductions_work(frame: DataFrame): Bool ->
+    case select(frame, strings("id")) {
+        Err(_error) -> false;
+        Ok(numeric) ->
+            let eager = matches(column_sums(numeric), 1, 1) and
+                matches(column_means(numeric), 1, 1) and
+                matches(column_medians(numeric), 1, 1) and
+                matches(column_minima(numeric), 1, 1) and
+                matches(column_maxima(numeric), 1, 1) and
+                matches(column_products(numeric), 1, 1) and
+                matches(column_variances(numeric, 1), 1, 1) and
+                matches(column_stddevs(numeric, 1), 1, 1) and
+                matches(column_quantiles(numeric, 0.5, "linear"), 1, 1) and
+                matches(column_non_null_counts(numeric), 1, 1) and
+                matches(column_lengths(numeric), 1, 1) and
+                matches(column_unique_counts(numeric), 1, 1) and
+                matches(column_approx_unique_counts(numeric), 1, 1);
+            let plan = lazy(numeric);
+            let deferred = plan_matches(lazy_column_sums(plan), 1, 1) and
+                plan_matches(lazy_column_means(plan), 1, 1) and
+                plan_matches(lazy_column_medians(plan), 1, 1) and
+                plan_matches(lazy_column_minima(plan), 1, 1) and
+                plan_matches(lazy_column_maxima(plan), 1, 1) and
+                plan_matches(lazy_column_products(plan), 1, 1) and
+                lazy_matches(lazy_column_variances(plan, 1), 1, 1) and
+                lazy_matches(lazy_column_stddevs(plan, 1), 1, 1) and
+                lazy_matches(lazy_column_quantiles(plan, 0.5, "linear"), 1, 1) and
+                plan_matches(lazy_column_non_null_counts(plan), 1, 1) and
+                plan_matches(lazy_column_lengths(plan), 1, 1) and
+                plan_matches(lazy_column_unique_counts(plan), 1, 1) and
+                plan_matches(lazy_column_approx_unique_counts(plan), 1, 1);
+            release(plan);
+            let _disposed_at_778 = dispose(numeric);
+            eager and deferred
+    }.
+
+pub concatenation_works(left: DataFrame, right: DataFrame): Bool ->
+    matches(concat_vertical(left, left), 6, 2) and
+        matches(concat_horizontal(left, right, true), 3, 4) and
+        matches(concat_diagonal(left, right), 6, 4).
+
+pub require_true(value: Bool): Unit -> case value { true -> Unit }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_relational/data/people.csv") {
+        Err(_error) -> require_true(false);
+        Ok(left) ->
+            case read_csv("examples/polars_relational/data/teams.csv") {
+                Err(_error) -> require_true(false);
+                Ok(right) ->
+                    let valid = eager_joins(left, right) and lazy_join_works(left, right) and checked_ordered_joins_work(left, right) and non_equi_joins_work(left, right) and row_set_operations_work(left) and multi_key_ordering_works(left) and schema_layout_operations_work(left) and missing_value_operations_work(left) and planning_and_shift_operations_work(left) and row_endpoint_and_layout_operations_work(left) and column_reductions_work(left) and concatenation_works(left, right);
+                    let _disposed_at_797 = dispose(right);
+                    let _disposed_at_798 = dispose(left);
+                    require_true(valid)
+            }
+    };
+    println("Polars relational operations passed.").

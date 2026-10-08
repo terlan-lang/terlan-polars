@@ -1,0 +1,22 @@
+module polars.DataFrameCsvErrorTest.
+
+import polars.DataFrame.{dispose, read_csv}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub read_csv_reports_missing_and_malformed_files(): Bool ->
+    let missing_fails =
+        case read_csv("test/fixtures/missing.csv") {
+            Err(_error) -> true;
+            Ok(unexpected) ->
+                let _disposed = dispose(unexpected);
+                false
+        };
+    let malformed_fails =
+        case read_csv("test/fixtures/malformed.csv") {
+            Err(_error) -> true;
+            Ok(unexpected) ->
+                let _disposed = dispose(unexpected);
+                false
+        };
+    missing_fails and malformed_fails.

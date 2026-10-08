@@ -1,0 +1,6 @@
+integers,floats,bools
+-1,0.0,true
+0,1.0,false
+2,2.0,true
+3,3.0,false
+4,4.0,true

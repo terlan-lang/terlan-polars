@@ -1,0 +1,6 @@
+ticker,company_name,price,day_high,day_low,year_high,year_low
+AAPL,Apple,229.9,231.31,228.6,237.23,164.08
+NVDA,NVIDIA,138.93,139.6,136.3,140.76,39.23
+MSFT,Microsoft,420.56,424.04,417.52,468.35,324.39
+GOOG,Alphabet (Google),166.41,167.62,164.78,193.31,121.46
+AMZN,Amazon,188.4,189.83,188.44,201.2,118.35

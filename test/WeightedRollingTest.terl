@@ -1,0 +1,18 @@
+module polars.WeightedRollingTest.
+
+import polars.DataFrame.{alias, col, dispose, dispose_series, height, rolling_sum_weighted, select_exprs, series_from_floats, series_to_frame, width}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub weighted_rolling_executes_through_native_boundary(): Bool ->
+    let {
+        Ok(series) <- series_from_floats("value", [1.0, 2.0, 3.0, 4.0]);
+        Ok(frame) <- series_to_frame(series)
+    } else {
+        _ -> false
+    };
+    (let expression = alias(rolling_sum_weighted(col("value"), 3, 3, false, [1.0, 2.0, 3.0]), "weighted");
+(let Ok(weighted) <- select_exprs(frame, [expression]) else {
+    _ -> false
+};
+(let valid = height(weighted) == 4 and width(weighted) == 1; let _disposed_at_2317 = dispose(weighted); let _disposed_at_2318 = dispose(frame); let _disposed_series = dispose_series(series); valid))).

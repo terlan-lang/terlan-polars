@@ -1,0 +1,9 @@
+module polars.ExpressionSortTest.
+
+import polars.DataFrame.{col, meta_output_name, sort_with}.
+
+@test
+pub stable_generic_sort_executes_through_the_native_boundary(): Bool ->
+    let ages = col("age");
+    let sorted_ages = sort_with(ages, false, false, true);
+    meta_output_name(sorted_ages) == "age".

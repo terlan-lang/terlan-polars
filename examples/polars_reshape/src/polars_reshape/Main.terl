@@ -1,0 +1,76 @@
+module polars_reshape.Main.
+
+import polars.DataFrame.{alias, as_struct, col, collect, dispose, explode_columns, group_agg, height, lazy, lazy_explode, lazy_unnest, lazy_unpivot, read_csv, release, transpose, unnest_columns, unpivot, width, with_columns}.
+import type polars.DataFrame.{DataFrame, Expr, LazyFrame}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import type std.core.Error.
+import type std.core.Result.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub expressions(): List[Expr] -> List.new().
+pub append(values: List[Expr], value: Expr): List[Expr] -> values.push(value); values.
+pub one_expr(value: Expr): List[Expr] -> append(expressions(), value).
+pub two_expr(left: Expr, right: Expr): List[Expr] -> append(one_expr(left), right).
+pub strings(value: String): List[String] -> let values = List.new(); values.push(value); values.
+pub two_strings(left: String, right: String): List[String] -> let values = strings(left); values.push(right); values.
+
+pub matches(result: Result[DataFrame, Error], expected_height: Int, expected_width: Int): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) -> let valid = height(df) == expected_height and width(df) == expected_width; dispose(df); valid
+    }.
+
+pub unpivot_works(df: DataFrame): Bool ->
+    let eager = matches(unpivot(df, two_strings("a", "b"), strings("category"), "metric", "reading"), 8, 3);
+    let plan = lazy(df);
+    let deferred = case lazy_unpivot(plan, two_strings("a", "b"), strings("category"), "metric", "reading") {
+        Err(_error) -> false;
+        Ok(unpivoted) -> let valid = matches(collect(unpivoted), 8, 3); release(unpivoted); valid
+    };
+    release(plan);
+    eager and deferred.
+
+pub explode_works(df: DataFrame): Bool ->
+    case group_agg(df, one_expr(col("category")), one_expr(alias(col("a"), "values"))) {
+        Err(_error) -> false;
+        Ok(grouped) ->
+            let eager = matches(explode_columns(grouped, strings("values")), 4, 2);
+            let plan = lazy(grouped);
+            let deferred = case lazy_explode(plan, strings("values")) {
+                Err(_error) -> false;
+                Ok(exploded) -> let valid = matches(collect(exploded), 4, 2); release(exploded); valid
+            };
+            release(plan);
+            let _disposed_at_47 = dispose(grouped);
+            eager and deferred
+    }.
+
+pub unnest_works(df: DataFrame): Bool ->
+    case with_columns(df, one_expr(alias(as_struct(two_expr(col("a"), col("b"))), "metrics"))) {
+        Err(_error) -> false;
+        Ok(structured) ->
+            let eager = matches(unnest_columns(structured, strings("metrics"), "metrics_"), 4, 5);
+            let plan = lazy(structured);
+            let deferred = case lazy_unnest(plan, strings("metrics"), "metrics_") {
+                Err(_error) -> false;
+                Ok(unnested) -> let valid = matches(collect(unnested), 4, 5); release(unnested); valid
+            };
+            release(plan);
+            let _disposed_at_62 = dispose(structured);
+            eager and deferred
+    }.
+
+pub require_true(value: Bool): Unit -> case value { true -> Unit }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_reshape/data/metrics.csv") {
+        Err(_error) -> require_true(false);
+        Ok(df) ->
+            let valid = unpivot_works(df) and explode_works(df) and unnest_works(df) and matches(transpose(df, "source"), 3, 5);
+            let _disposed_at_73 = dispose(df);
+            require_true(valid)
+    };
+    println("Polars reshape operations passed.").

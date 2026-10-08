@@ -1,0 +1,16 @@
+module polars_expressions.UserDefinedFunctions.
+
+import polars.DataFrame.{dispose, height, read_csv, width}.
+import std.core.Result.{Err, Ok}.
+
+/**
+ * Covers the sole executable region in upstream user-defined-functions.rs.
+ */
+pub run(): Bool ->
+    case read_csv("examples/polars_expressions/data/user_defined_functions.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 4 and width(df) == 2;
+            let _disposed_at_3428 = dispose(df);
+            valid
+    }.

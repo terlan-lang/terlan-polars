@@ -1,0 +1,90 @@
+module polars_expressions.Window.
+
+import polars.DataFrame.{alias, col, cols, dispose, equal, explode, filter, head_expression, height, lit, mean, over, over_explode, rank_dense_descending, read_csv, select_exprs, sort_by_descending, width, with_columns}.
+import type polars.DataFrame.{DataFrame, Expr}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+pub expressions(): List[Expr] -> List.new().
+pub append(values: List[Expr], value: Expr): List[Expr] -> values.push(value); values.
+pub one(value: Expr): List[Expr] -> append(expressions(), value).
+pub two(first: Expr, second: Expr): List[Expr] -> append(one(first), second).
+
+pub rank_example(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, col("Name"));
+    let values = append(values, col("Type 1"));
+    let values = append(values, alias(over(rank_dense_descending(col("Speed")), one(col("Type 1"))), "Speed rank"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) -> let valid = height(result) == 8 and width(result) == 3; dispose(result); valid
+    }.
+
+pub mean_example(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, col("Name"));
+    let values = append(values, col("Type 1"));
+    let values = append(values, col("Speed"));
+    let values = append(values, alias(over(mean(col("Speed")), one(col("Type 1"))), "Mean speed in group"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) -> let valid = height(result) == 8 and width(result) == 4; dispose(result); valid
+    }.
+
+pub grouped_windows(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, col("Type 1"));
+    let values = append(values, col("Type 2"));
+    let values = append(values, alias(over(mean(col("Attack")), one(col("Type 1"))), "avg_attack_by_type"));
+    let values = append(values, alias(over(mean(col("Defense")), two(col("Type 1"), col("Type 2"))), "avg_defense_by_type_combination"));
+    let values = append(values, alias(mean(col("Attack")), "avg_attack"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) -> let valid = width(result) == 5; dispose(result); valid
+    }.
+
+pub filtered_and_sorted(df: DataFrame): Bool ->
+    case filter(df, equal(col("Type 2"), lit("Psychic"))) {
+        Err(_error) -> false;
+        Ok(filtered) ->
+            let selected = case select_exprs(filtered, append(append(append(expressions(), col("Name")), col("Type 1")), col("Speed"))) {
+                Err(_error) -> false;
+                Ok(result) -> let valid = height(result) == 1 and width(result) == 3; dispose(result); valid
+            };
+            let sorted = sort_by_descending(cols(two_strings("Name", "Speed")), one(col("Speed")));
+            let sorted = over(sorted, one(col("Type 1")));
+            let windowed = case with_columns(filtered, one(sorted)) {
+                Err(_error) -> false;
+                Ok(result) -> let valid = height(result) == 1; dispose(result); valid
+            };
+            let _disposed_at_3507 = dispose(filtered);
+            selected and windowed
+    }.
+
+pub two_strings(first: String, second: String): List[String] ->
+    let values = List.new(); values.push(first); values.push(second); values.
+
+pub top_three(df: DataFrame): Bool ->
+    let keys = one(col("Type 1"));
+    let values = expressions();
+    let values = append(values, explode(over_explode(head_expression(col("Type 1"), 3), keys)));
+    let fastest = head_expression(sort_by_descending(col("Name"), one(col("Speed"))), 3);
+    let values = append(values, alias(explode(over_explode(fastest, keys)), "fastest/group"));
+    let strongest = head_expression(sort_by_descending(col("Name"), one(col("Attack"))), 3);
+    let values = append(values, alias(explode(over_explode(strongest, keys)), "strongest/group"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) -> let valid = width(result) == 3; dispose(result); valid
+    }.
+
+/** Covers all seven executable regions in upstream window.rs. */
+pub run(): Bool ->
+    case read_csv("examples/polars_expressions/data/window_pokemon.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 8 and width(df) == 6 and rank_example(df) and
+                mean_example(df) and grouped_windows(df) and filtered_and_sorted(df) and top_three(df);
+            let _disposed_at_3534 = dispose(df);
+            valid
+    }.

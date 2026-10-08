@@ -1,0 +1,188 @@
+module terlan_polars_loaded.Main.
+
+import polars.DataFrame.{collect, dispose, filter_eq, group_count, head, height, lazy, project, read_csv, release, schema, select, sort_by, where_eq, width}.
+import type polars.DataFrame.{ColumnSchema}.
+import std.collections.List.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.Unit.{Unit}.
+
+pub selected_height_is_two(df: polars.DataFrame.DataFrame): Bool ->
+    let columns = List.new();
+    columns.push("name");
+    columns.push("city");
+    case select(df, columns) {
+        Err(_error) ->
+            false;
+
+        Ok(selected) ->
+            let valid = height(selected) == 2;
+            let _disposed_at_1744 = dispose(selected);
+            valid
+    }.
+
+pub head_height_is_one(df: polars.DataFrame.DataFrame): Bool ->
+    case head(df, 1) {
+        Err(_error) ->
+            false;
+
+        Ok(headed) ->
+            let valid = height(headed) == 1;
+            let _disposed_at_1755 = dispose(headed);
+            valid
+    }.
+
+pub schema_is_typed(df: polars.DataFrame.DataFrame): Bool ->
+    case schema(df).first() {
+        Some(column) ->
+            column.name == "name" and column.data_type == "String";
+
+        None ->
+            false
+    }.
+
+pub filter_height_is_one(df: polars.DataFrame.DataFrame): Bool ->
+    case filter_eq(df, "age", 36) {
+        Err(_error) ->
+            false;
+
+        Ok(filtered) ->
+            let valid = height(filtered) == 1;
+            let _disposed_at_1775 = dispose(filtered);
+            valid
+    }.
+
+pub descending_sort_puts_oldest_first(df: polars.DataFrame.DataFrame): Bool ->
+    case sort_by(df, "age", true) {
+        Err(_error) ->
+            false;
+
+        Ok(sorted) ->
+            let valid = case head(sorted, 1) {
+                Err(_error) ->
+                    false;
+
+                Ok(first) ->
+                    let is_oldest = case filter_eq(first, "age", 85) {
+                        Err(_error) ->
+                            false;
+
+                        Ok(oldest) ->
+                            let matches = height(oldest) == 1;
+                            let _disposed_at_1796 = dispose(oldest);
+                            matches
+                    };
+                    let _disposed_at_1799 = dispose(first);
+                    is_oldest
+            };
+            let _disposed_at_1802 = dispose(sorted);
+            valid
+    }.
+
+pub grouped_count_is_materialized(): Bool ->
+    case read_csv("test/fixtures/groups.csv") {
+        Err(_error) ->
+            false;
+
+        Ok(df) ->
+            let keys = List.new();
+            keys.push("city");
+            let valid = case group_count(df, keys) {
+                Err(_error) ->
+                    false;
+
+                Ok(grouped) ->
+                    let matches = height(grouped) == 2 and width(grouped) == 2;
+                    let _disposed_at_1820 = dispose(grouped);
+                    matches
+            };
+            let _disposed_at_1823 = dispose(df);
+            valid
+    }.
+
+pub lazy_query_collects(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) ->
+            false;
+
+        Ok(df) ->
+            let plan = lazy(df);
+            let filtered = where_eq(plan, "age", 85);
+            let columns = List.new();
+            columns.push("name");
+            columns.push("age");
+            let projected = project(filtered, columns);
+            let valid = case collect(projected) {
+                Err(_error) ->
+                    false;
+
+                Ok(collected) ->
+                    let matches = height(collected) == 1 and width(collected) == 2;
+                    let _disposed_at_1845 = dispose(collected);
+                    matches
+            };
+            release(projected);
+            release(filtered);
+            release(plan);
+            let _disposed_at_1851 = dispose(df);
+            valid
+    }.
+
+pub helper_roundtrip_succeeds(): Bool ->
+    case lazy_query_collects() {
+        false ->
+            false;
+
+        true ->
+            case grouped_count_is_materialized() {
+                false ->
+                    false;
+
+                true ->
+                    dataframe_roundtrip_succeeds()
+            }
+    }.
+
+pub dataframe_roundtrip_succeeds(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) ->
+            false;
+
+        Ok(df) ->
+            let valid = case schema_is_typed(df) {
+                true ->
+                    case descending_sort_puts_oldest_first(df) {
+                        true ->
+                            case filter_height_is_one(df) {
+                                true ->
+                                    case selected_height_is_two(df) {
+                                        true ->
+                                            head_height_is_one(df);
+
+                                        false ->
+                                            false
+                                    };
+
+                                false ->
+                                    false
+                            };
+
+                        false ->
+                            false
+                    };
+
+                false ->
+                    false
+            };
+            let _disposed_at_1901 = dispose(df);
+            valid
+    }.
+
+pub require_true(value: Bool): Unit ->
+    case value {
+        true ->
+            Unit
+    }.
+
+pub main(): Unit ->
+    require_true(helper_roundtrip_succeeds()).

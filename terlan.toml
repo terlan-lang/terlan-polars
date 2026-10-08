@@ -1,0 +1,26 @@
+[package]
+name = "terlan-polars"
+version = "0.1.0-dev"
+namespace = "polars"
+description = "Polars DataFrame integration for Terlan"
+license = "MIT"
+repository = "https://github.com/terlan-lang/terlan-polars"
+compiler = ">= 0.0.7"
+links = ["https://terlan.org", "https://pola.rs"]
+
+[build]
+source_roots = ["src"]
+artifact = "library"
+
+[scripts]
+check-sources = "scripts/CheckSources.terls"
+check-pytorch-interop = "scripts/CheckPytorchInterop.terls"
+check-ndarray-pytorch-interop = "scripts/CheckNdarrayPytorchInterop.terls"
+check-immutable-ml-interop = "scripts/CheckImmutableMlInterop.terls"
+
+[native.rust]
+crate = "terlan_polars_native"
+path = "native"
+helper = "terlan-polars-native-boundary"
+helper_env = "TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH"
+features = ["real-polars"]

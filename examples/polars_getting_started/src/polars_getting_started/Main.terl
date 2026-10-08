@@ -1,0 +1,231 @@
+module polars_getting_started.Main.
+
+import polars.DataFrame.{alias, all_columns, and_predicate, between, col, cols, concat_vertical, date, dispose, divide, exclude, filter, floor_divide, group_agg, gt, height, left_join, len_expr, lit, lt, max, mean, multiply, pow, prefix, read_csv_dates, round_to, rows, select_exprs, split_first, suffix, width, with_columns, write_csv, year}.
+import polars.DataFrame.{sample_rows_fraction_seeded, sample_rows_n_seeded}.
+import type polars.DataFrame.{DataFrame, Expr}.
+import std.collections.List.
+import type std.collections.List.
+import std.core.Result.{Err, Ok}.
+import std.core.Unit.{Unit}.
+import std.io.Console.{println}.
+
+pub one(value: Expr): List[Expr] ->
+    let values = List.new();
+    values.push(value);
+    values.
+
+pub two(first: Expr, second: Expr): List[Expr] ->
+    let values = one(first);
+    values.push(second);
+    values.
+
+pub three(first: Expr, second: Expr, third: Expr): List[Expr] ->
+    let values = two(first, second);
+    values.push(third);
+    values.
+
+pub names(first: String): List[String] ->
+    let values = List.new();
+    values.push(first);
+    values.
+
+pub names2(first: String, second: String): List[String] ->
+    let values = names(first);
+    values.push(second);
+    values.
+
+pub bmi(): Expr ->
+    alias(divide(col("weight"), pow(col("height"), lit(2))), "bmi").
+
+pub decade(): Expr ->
+    alias(multiply(floor_divide(year(col("birthdate")), lit(10)), lit(10)), "decade").
+
+pub require_true(value: Bool): Unit ->
+    case value {
+        true -> Unit
+    }.
+
+pub csv_round_trip(df: DataFrame): Bool ->
+    case write_csv(df, "target/polars-getting-started-output.csv") {
+        Err(_error) -> false;
+        Ok(Unit) ->
+            case read_csv_dates("target/polars-getting-started-output.csv") {
+                Err(_error) -> false;
+                Ok(reloaded) ->
+                    let valid = height(reloaded) == 4 and width(reloaded) == 4;
+                    let _disposed_at_132 = dispose(reloaded);
+                    valid
+            }
+    }.
+
+pub select_example(df: DataFrame): Bool ->
+    case select_exprs(df, three(col("name"), alias(year(col("birthdate")), "birth_year"), bmi())) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 3 and
+                case rows(result, 1) {
+                    Ok([["Alice Archer", "1997", _bmi]]) -> true;
+                    _ -> false
+                };
+            let _disposed_at_146 = dispose(result);
+            valid
+    }.
+
+pub expansion_example(df: DataFrame): Bool ->
+    let scaled = suffix(round_to(multiply(cols(names2("weight", "height")), lit(0.95)), 2), "-5%");
+    case select_exprs(df, two(col("name"), scaled)) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = width(result) == 3 and
+                case rows(result, 1) {
+                    Ok([["Alice Archer", "55.0", "1.48"]]) -> true;
+                    _ -> false
+                };
+            let _disposed_at_160 = dispose(result);
+            valid
+    }.
+
+pub with_columns_example(df: DataFrame): Bool ->
+    case with_columns(df, two(alias(year(col("birthdate")), "birth_year"), bmi())) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 4 and width(result) == 6;
+            let _disposed_at_169 = dispose(result);
+            valid
+    }.
+
+pub filter_examples(df: DataFrame): Bool ->
+    let before_1990 = case filter(df, lt(year(col("birthdate")), lit(1990))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 3;
+            let _disposed_at_178 = dispose(result);
+            valid
+    };
+    let in_range = between(col("birthdate"), date("1982-12-31"), date("1996-01-01"));
+    let tall = gt(col("height"), lit(1.7));
+    let combined = case filter(df, and_predicate(in_range, tall)) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = case rows(result, 1) {
+                Ok([["Ben Brown", "1985-02-15", "72.5", "1.77"]]) -> true;
+                _ -> false
+            };
+            let _disposed_at_190 = dispose(result);
+            valid
+    };
+    before_1990 and combined.
+
+pub group_examples(df: DataFrame): Bool ->
+    let grouped_count = case group_agg(df, one(decade()), one(len_expr())) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 2 and width(result) == 2;
+            let _disposed_at_200 = dispose(result);
+            valid
+    };
+    let aggregations = three(
+        alias(len_expr(), "sample_size"),
+        alias(round_to(mean(col("weight")), 2), "avg_weight"),
+        alias(max(col("height")), "tallest")
+    );
+    let grouped_aggregates = case group_agg(df, one(decade()), aggregations) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 2 and width(result) == 4;
+            let _disposed_at_212 = dispose(result);
+            valid
+    };
+    grouped_count and grouped_aggregates.
+
+pub complex_query(df: DataFrame): Bool ->
+    case with_columns(df, two(decade(), split_first(col("name"), " "))) {
+        Err(_error) -> false;
+        Ok(enriched) ->
+            case select_exprs(enriched, one(exclude(all_columns(), names("birthdate")))) {
+                Err(_error) -> false;
+                Ok(projected) ->
+                    let averages = prefix(round_to(mean(cols(names2("weight", "height"))), 2), "avg_");
+                    let valid = case group_agg(projected, one(col("decade")), two(col("name"), averages)) {
+                        Err(_error) -> false;
+                        Ok(result) ->
+                            let matches = height(result) == 2 and width(result) == 4;
+                            let _disposed_at_229 = dispose(result);
+                            matches
+                    };
+                    let _disposed_at_232 = dispose(projected);
+                    let _disposed_at_233 = dispose(enriched);
+                    valid
+            }
+    }.
+
+pub join_example(df: DataFrame): Bool ->
+    case read_csv_dates("examples/polars_getting_started/data/family.csv") {
+        Err(_error) -> false;
+        Ok(family) ->
+            let valid = case left_join(df, family, names("name")) {
+                Err(_error) -> false;
+                Ok(result) ->
+                    let matches = height(result) == 4 and width(result) == 6 and
+                        case rows(result, 1) {
+                            Ok([["Alice Archer", "1997-01-10", "57.9", "1.56", "false", "3"]]) -> true;
+                            _ -> false
+                        };
+                    let _disposed_at_250 = dispose(result);
+                    matches
+            };
+            let _disposed_at_253 = dispose(family);
+            valid
+    }.
+
+pub concat_example(df: DataFrame): Bool ->
+    case read_csv_dates("examples/polars_getting_started/data/people_extra.csv") {
+        Err(_error) -> false;
+        Ok(extra) ->
+            let valid = case concat_vertical(df, extra) {
+                Err(_error) -> false;
+                Ok(result) ->
+                    let matches = height(result) == 8 and width(result) == 4;
+                    let _disposed_at_265 = dispose(result);
+                    matches
+            };
+            let _disposed_at_268 = dispose(extra);
+            valid
+    }.
+
+pub sampling_example(df: DataFrame): Bool ->
+    case sample_rows_n_seeded(df, 2, false, true, 42) {
+        Err(_error) -> false;
+        Ok(counted) ->
+            let counted_valid = height(counted) == 2 and width(counted) == 4;
+            let _disposed_at_277 = dispose(counted);
+            case sample_rows_fraction_seeded(df, 0.5, false, true, 42) {
+                Err(_error) -> false;
+                Ok(fractional) ->
+                    let valid = counted_valid and height(fractional) == 2 and width(fractional) == 4;
+                    let _disposed_at_282 = dispose(fractional);
+                    valid
+            }
+    }.
+
+pub run_all(df: DataFrame): Bool ->
+    csv_round_trip(df) and
+    select_example(df) and
+    expansion_example(df) and
+    with_columns_example(df) and
+    filter_examples(df) and
+    group_examples(df) and
+    complex_query(df) and
+    join_example(df) and
+    concat_example(df) and
+    sampling_example(df).
+
+pub main(): Unit ->
+    case read_csv_dates("examples/polars_getting_started/data/people.csv") {
+        Err(_error) -> require_true(false);
+        Ok(df) ->
+            let valid = run_all(df);
+            let _disposed_at_304 = dispose(df);
+            require_true(valid);
+            println("Polars getting-started examples passed: CSV, expressions, contexts, join, concat, and sampling.")
+    }.

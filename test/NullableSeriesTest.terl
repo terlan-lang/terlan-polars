@@ -1,0 +1,30 @@
+module polars.NullableSeriesTest.
+
+import polars.DataFrame.{dispose_series, series_from_nullable_bools, series_from_nullable_floats, series_from_nullable_ints, series_from_nullable_strings, series_null_count, series_values}.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub nullable_primitive_series_cross_native_boundary(): Bool ->
+    let {
+        Ok(strings) <- series_from_nullable_strings("text", [Some("a"), None, Some("c")]);
+        Ok(ints) <- series_from_nullable_ints("integer", [Some(1), None, Some(3)]);
+        Ok(floats) <- series_from_nullable_floats("float", [Some(1.5), None, Some(3.5)]);
+        Ok(bools) <- series_from_nullable_bools("boolean", [Some(true), None, Some(false)])
+    } else {
+        _ -> false
+    };
+    (let valid =
+    series_null_count(strings) == 1
+        and series_null_count(ints) == 1
+        and series_null_count(floats) == 1
+        and series_null_count(bools) == 1
+        and series_values(strings, 3) == ["a", "null", "c"]
+        and series_values(ints, 3) == ["1", "null", "3"]
+        and series_values(floats, 3) == ["1.5", "null", "3.5"]
+        and series_values(bools, 3) == ["true", "null", "false"];
+let _disposed_strings = dispose_series(strings);
+let _disposed_ints = dispose_series(ints);
+let _disposed_floats = dispose_series(floats);
+let _disposed_bools = dispose_series(bools);
+valid).

@@ -1,0 +1,110 @@
+module polars.CheatsheetDirectConveniencesTest.
+
+import polars.DataFrame.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub direct_dataframe_and_expression_conveniences_cross_native_boundary(): Bool ->
+    let {
+        Ok(names) <- DataFrame.series_from_strings("person", ["Ada", "Grace"]);
+        Ok(scores) <- DataFrame.series_from_ints("score", [10, 20]);
+        Ok(different_height) <- DataFrame.series_from_ints("different_height", [1, 2, 3]);
+        Ok(constructed) <- DataFrame.dataframe_from_series([names, scores]);
+        Ok(df) <- DataFrame.read_csv("test/fixtures/people.csv");
+        Ok(size_mb) <- DataFrame.estimated_size(df, "mb");
+        Ok(gathered) <- DataFrame.gather_every(df, 2, 0);
+        Ok(dropped) <- DataFrame.drop_columns(df, ["absent"], false);
+        Ok(filtered) <-
+            DataFrame.filter_all(
+                df,
+                [
+                    DataFrame.gt(DataFrame.col("age"), DataFrame.lit(35)),
+                    DataFrame.lt(DataFrame.col("age"), DataFrame.lit(90)),
+                ],
+            );
+        Ok(constrained) <-
+            DataFrame.filter_constraints(
+                df,
+                ["name", "age"],
+                [DataFrame.lit("Ada"), DataFrame.lit(36)],
+            );
+        Ok(classified) <-
+            DataFrame.select_exprs(
+                df,
+                [
+                    DataFrame.alias(
+                        DataFrame.when_chain(
+                            [
+                                DataFrame.gt(DataFrame.col("age"), DataFrame.lit(80)),
+                                DataFrame.gt(DataFrame.col("age"), DataFrame.lit(35)),
+                            ],
+                            [DataFrame.lit("senior"), DataFrame.lit("adult")],
+                            DataFrame.lit("other"),
+                        ),
+                        "band",
+                    ),
+                ],
+            );
+        Ok(projected) <-
+            DataFrame.select_exprs(
+                df,
+                [
+                    DataFrame.date(
+                        DataFrame.alias(DataFrame.lit(2024), "year"),
+                        DataFrame.lit(1),
+                        DataFrame.lit(2),
+                    ),
+                    DataFrame.alias(DataFrame.log10(DataFrame.col("age")), "age_log10"),
+                ],
+            )
+    } else {
+        _ -> false
+    };
+    (let invalid_unit_rejected =
+    case DataFrame.estimated_size(df, "milkshake") {
+        Err(_error) -> true;
+        Ok(_unexpected) -> false
+    };
+let invalid_step_rejected =
+    case DataFrame.gather_every(df, 0, 0) {
+        Err(_error) -> true;
+        Ok(unexpected) ->
+            let _disposed_unexpected = DataFrame.dispose(unexpected);
+            false
+    };
+let mismatched_constructor_rejected =
+    case DataFrame.dataframe_from_series([names, different_height]) {
+        Err(_error) -> true;
+        Ok(unexpected) ->
+            let _disposed_unexpected = DataFrame.dispose(unexpected);
+            false
+    };
+let valid =
+    DataFrame.dtypes(df) == ["String", "Int64", "String"]
+        and DataFrame.columns(constructed) == ["person", "score"]
+        and DataFrame.height(constructed) == 2
+        and size_mb > 0.0
+        and invalid_unit_rejected
+        and invalid_step_rejected
+        and mismatched_constructor_rejected
+        and DataFrame.series_len(different_height) == 3
+        and DataFrame.height(gathered) == 1
+        and DataFrame.width(dropped) == 3
+        and DataFrame.height(filtered) == 2
+        and DataFrame.height(constrained) == 1
+        and DataFrame.columns(classified) == ["band"]
+        and DataFrame.height(classified) == 2
+        and DataFrame.columns(projected) == ["year", "age_log10"]
+        and DataFrame.height(projected) == 2;
+let _disposed_projected = DataFrame.dispose(projected);
+let _disposed_classified = DataFrame.dispose(classified);
+let _disposed_constrained = DataFrame.dispose(constrained);
+let _disposed_constructed = DataFrame.dispose(constructed);
+let _disposed_different_height = DataFrame.dispose_series(different_height);
+let _disposed_scores = DataFrame.dispose_series(scores);
+let _disposed_names = DataFrame.dispose_series(names);
+let _disposed_filtered = DataFrame.dispose(filtered);
+let _disposed_dropped = DataFrame.dispose(dropped);
+let _disposed_gathered = DataFrame.dispose(gathered);
+let _disposed_df = DataFrame.dispose(df);
+valid).

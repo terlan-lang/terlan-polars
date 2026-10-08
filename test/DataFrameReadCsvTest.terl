@@ -1,0 +1,11 @@
+module polars.DataFrameReadCsvTest.
+
+import polars.DataFrame.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub read_csv_returns_typed_result(): Bool ->
+    case DataFrame.read_csv("test/fixtures/people.csv") {
+        Err(_error) -> true;
+        Ok(df) -> DataFrame.height(df) == 2
+    }.

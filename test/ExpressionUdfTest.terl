@@ -1,0 +1,107 @@
+module polars.ExpressionUdfTest.
+
+import polars.DataFrame.{Int64, add, alias, apply_udf, cast_with_options, col, define_udf, extract_i64, extract_usize, fill_null_with_strategy, into_selector, lit, map_children, map_name, meta_children, meta_nodes, meta_output_name, over_with_options, rewrite, sort_by, subtract, to_field, true_div, try_into_selector, udf_parameter}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.Expr.
+import type std.collections.List.
+
+no_arguments(): List[Expr] -> [].
+
+@test
+pub declarative_udf_substitutes_expression_arguments(): Bool ->
+    case udf_parameter(0) {
+        Err(_error) -> false;
+        Ok(parameter) ->
+            let udf_body = alias(parameter, "renamed");
+            case define_udf(1, Int64, udf_body) {
+                Err(_error) -> false;
+                Ok(udf) ->
+                    let argument = col("value");
+                    case apply_udf(udf, [argument]) {
+                        Err(_error) -> false;
+                        Ok(expression) -> meta_output_name(expression) == "renamed"
+                    }
+            }
+    }.
+
+@test
+pub declarative_udf_rejects_wrong_argument_count(): Bool ->
+    let {
+        Ok(parameter) <- udf_parameter(0);
+        Ok(udf) <- define_udf(1, Int64, parameter);
+        Err(_error) <- apply_udf(udf, no_arguments())
+    } else {
+        _ -> false
+    };
+    true.
+
+@test
+pub expression_trees_are_typed_and_declaratively_rewritable(): Bool ->
+    let {
+        Ok(parameter) <- udf_parameter(0);
+        Ok(udf) <- define_udf(1, Int64, parameter)
+    } else {
+        _ -> false
+    };
+    (let expression = alias(add(col("value"), lit(1)), "total");
+(let {
+    Ok(rewritten) <- rewrite(expression, udf);
+    Ok(mapped) <- map_children(expression, udf)
+} else {
+    _ -> false
+};
+meta_nodes(expression).length() == 4
+    and meta_children(expression).length() == 1
+    and meta_output_name(rewritten) == "total"
+    and meta_output_name(mapped) == "total")).
+
+@test
+pub constant_integer_extraction_is_checked(): Bool ->
+    let expression = subtract(lit(7), lit(2));
+    let {
+        Ok(signed) <- extract_i64(expression);
+        Ok(unsigned) <- extract_usize(expression)
+    } else {
+        _ -> false
+    };
+    signed == 5 and unsigned == 5.
+
+@test
+pub expression_field_resolution_uses_portable_schema(): Bool ->
+    case to_field(add(col("value"), lit(1)), ["value"], ["Int64"]) {
+        Err(_error) -> false;
+        Ok(_field) -> true
+    }.
+
+@test
+pub expression_name_callbacks_have_declarative_transforms(): Bool ->
+    meta_output_name(map_name(col("Value"), "lowercase")) == "value"
+        and meta_output_name(map_name(col("value"), "prefix", "raw_")) == "raw_value".
+
+@test
+pub option_bearing_expressions_cross_the_native_boundary(): Bool ->
+    let {
+        Ok(selector) <- into_selector(col("value"));
+        Err(_error) <- try_into_selector(add(col("value"), lit(1)))
+    } else {
+        _ -> false
+    };
+    meta_output_name(alias(selector, "selected")) == "selected"
+        and meta_output_name(alias(true_div(col("value"), lit(2)), "ratio")) == "ratio"
+        and meta_output_name(alias(cast_with_options(col("value"), "Int8", "overflowing"), "casted")) == "casted"
+        and meta_output_name(alias(fill_null_with_strategy(col("value"), "forward", 1), "filled")) == "filled"
+        and meta_output_name(alias(sort_by(col("value"), [col("key")], [false], [true], true), "sorted")) == "sorted"
+        and meta_output_name(
+    alias(
+        over_with_options(
+            col("value"),
+            [col("group")],
+            [col("order")],
+            false,
+            true,
+            "groups_to_rows",
+        ),
+        "windowed",
+    ),
+) == "windowed".

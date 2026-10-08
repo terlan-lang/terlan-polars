@@ -1,0 +1,22 @@
+module polars.ArrowInterchangeTest.
+
+import polars.DataFrame.{dispose, from_arrow_ipc, height, read_csv, to_arrow_ipc, width}.
+import std.core.Result.{Err, Ok}.
+
+dispose_false(dataframe: polars.DataFrame.DataFrame): Bool ->
+    let _disposed = dispose(dataframe);
+    false.
+
+@test
+pub arrow_ipc_round_trip_preserves_dataframe_shape(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(source) ->
+            let {
+                Ok(value) <- to_arrow_ipc(source);
+                Ok(restored) <- from_arrow_ipc(value)
+            } else {
+                _ -> dispose_false(source)
+            };
+            (let valid = height(restored) == height(source) and width(restored) == width(source); let _restored_disposed = dispose(restored); let _source_disposed = dispose(source); valid)
+    }.

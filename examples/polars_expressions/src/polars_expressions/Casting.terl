@@ -1,0 +1,203 @@
+module polars_expressions.Casting.
+
+import polars.DataFrame.{alias, cast, col, date_format, dispose, estimated_size, height, parse_datetime, read_csv, read_csv_dates, rows, select_exprs, strict_cast, width, with_columns}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+import std.io.Console.{println}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub checked(label: String, value: Bool): Bool ->
+    case value {
+        true -> true;
+        false ->
+            let _reported = println(label);
+            false
+    }.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub numeric_cast(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, alias(cast(col("integers"), "Float32"), "integers_as_floats"));
+    let values = append(values, alias(cast(col("floats"), "Int32"), "floats_as_integers"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                width(result) == 2
+                    and case rows(result, 3) {
+    Ok([["1.0", "4"], ["2.0", "5"], ["3.0", "-6"]]) -> true;
+    _ -> false
+};
+            let _disposed_at_3773 = dispose(result);
+            valid
+    }.
+
+pub downcast(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, cast(col("integers"), "Int16"));
+    let values = append(values, cast(col("floats"), "Float32"));
+    case with_columns(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = estimated_size(result) < estimated_size(df);
+            let _disposed_at_3785 = dispose(result);
+            valid
+    }.
+
+pub overflow(df: DataFrame): Bool ->
+    case select_exprs(df, append(expressions(), strict_cast(col("big_integers"), "Int8"))) {
+        Err(_error) -> true;
+        Ok(result) ->
+            let _disposed = dispose(result);
+            false
+    }.
+
+pub non_strict_overflow(df: DataFrame): Bool ->
+    case select_exprs(df, append(expressions(), cast(col("big_integers"), "Int8"))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                case rows(result, 3) {
+                    Ok([["null"], ["2"], ["null"]]) -> true;
+                    _ -> false
+                };
+            let _disposed_at_3805 = dispose(result);
+            valid
+    }.
+
+pub string_casts(): Bool ->
+    case read_csv("examples/polars_expressions/data/casting_strings.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values = expressions();
+            let values = append(values, cast(col("integers_as_strings"), "Int32"));
+            let values = append(values, cast(col("floats_as_strings"), "Float64"));
+            let values = append(values, cast(col("floats"), "String"));
+            let valid =
+                case select_exprs(df, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 3 and width(result) == 3;
+                        let _disposed_at_3821 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3824 = dispose(df);
+            valid
+    }.
+
+pub invalid_string_cast(): Bool ->
+    case read_csv("examples/polars_expressions/data/casting_invalid.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case select_exprs(df, append(expressions(), strict_cast(col("floats"), "Float64"))) {
+                    Err(_error) -> true;
+                    Ok(result) ->
+                        let _disposed = dispose(result);
+                        false
+                };
+            let _disposed_at_3838 = dispose(df);
+            valid
+    }.
+
+pub bool_casts(): Bool ->
+    case read_csv("examples/polars_expressions/data/casting_bool.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values = expressions();
+            let values = append(values, cast(col("integers"), "Boolean"));
+            let values = append(values, cast(col("floats"), "Boolean"));
+            let values = append(values, cast(col("bools"), "UInt8"));
+            let valid =
+                case select_exprs(df, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 5 and width(result) == 3;
+                        let _disposed_at_3854 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3857 = dispose(df);
+            valid
+    }.
+
+pub temporal_casts(): Bool ->
+    case read_csv_dates("examples/polars_expressions/data/casting_dates.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values = expressions();
+            let values = append(values, alias(cast(col("date"), "Int64"), "days_since_epoch"));
+            let values = append(values, alias(cast(col("datetime"), "Int64"), "us_since_epoch"));
+            let valid =
+                case select_exprs(df, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches =
+                            case rows(result, 2) {
+                                Ok([["0", "0"], ["9", "60000000"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3875 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3878 = dispose(df);
+            valid
+    }.
+
+pub temporal_strings(): Bool ->
+    case read_csv_dates("examples/polars_expressions/data/casting_dates2.csv") {
+        Err(_error) -> false;
+        Ok(dates) ->
+            let formatted =
+                case select_exprs(dates, append(expressions(), date_format(col("date"), "%Y-%m-%d"))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = height(result) == 2;
+                        let _disposed_at_3890 = dispose(result);
+                        valid
+                };
+            let _disposed_at_3893 = dispose(dates);
+            case read_csv("examples/polars_expressions/data/casting_dates2.csv") {
+                Err(_error) -> false;
+                Ok(strings) ->
+                    let parsed =
+                        case select_exprs(strings, append(expressions(), parse_datetime(col("string")))) {
+                            Err(_error) -> false;
+                            Ok(result) ->
+                                let valid = height(result) == 2;
+                                let _disposed_at_3901 = dispose(result);
+                                valid
+                        };
+                    let _disposed_at_3904 = dispose(strings);
+                    formatted and parsed
+            }
+    }.
+
+/**
+ * Covers all ten executable regions in upstream casting.rs.
+ */
+pub run(): Bool ->
+    case read_csv("examples/polars_expressions/data/casting_numbers.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                checked("casting:dfnum", height(df) == 3 and width(df) == 3)
+                    and checked("casting:castnum", numeric_cast(df))
+                    and checked("casting:downcast", downcast(df))
+                    and checked("casting:overflow", overflow(df))
+                    and checked("casting:overflow2", non_strict_overflow(df))
+                    and checked("casting:strings", string_casts())
+                    and checked("casting:strings2", invalid_string_cast())
+                    and checked("casting:bool", bool_casts())
+                    and checked("casting:dates", temporal_casts())
+                    and checked("casting:dates2", temporal_strings());
+            let _disposed_at_3924 = dispose(df);
+            valid
+    }.

@@ -1,0 +1,2146 @@
+[package]
+terlan = "polars"
+cargo = "terlan_polars_native"
+upstream = "polars"
+version = "0.55.2"
+features = ["lazy", "streaming", "sql", "csv", "parquet", "json", "ipc", "cloud", "http", "aws", "gcp", "azure", "strings", "temporal", "range", "arg_where", "dtype-date", "dtype-datetime", "dtype-time", "dtype-i8", "dtype-i16", "dtype-u8", "dtype-i128", "dtype-u128", "dtype-f16", "dtype-array", "dtype-extension", "dtype-decimal", "dtype-categorical", "timezones", "round_series", "is_between", "is_in", "is_close", "is_first_distinct", "is_last_distinct", "is_unique", "approx_unique", "dtype-struct", "unique_counts", "regex", "interpolate", "interpolate_by", "peaks", "rle", "ewma", "ewma_by", "concat_str", "rank", "top_k", "replace", "cutqcut", "trigonometry", "cum_agg", "rolling_window", "rolling_window_by", "moment", "mode", "index_of", "search_sorted", "repeat_by", "pct_change", "log", "product", "semi_anti_join", "cross_join", "asof_join", "iejoin", "diagonal_concat", "pivot", "dynamic_group_by"]
+status = "feature-gated"
+runtime = "beam-port-helper"
+
+[types]
+DataFrame = { rust = "TerlanPolarsDataFrame", terlan = "polars.DataFrame.DataFrame", opaque = true }
+LazyFrame = { rust = "TerlanPolarsLazyFrame", terlan = "polars.DataFrame.LazyFrame", opaque = true }
+Series = { rust = "TerlanPolarsSeries", terlan = "polars.DataFrame.Series", opaque = true }
+SqlContext = { rust = "TerlanPolarsSqlContext", terlan = "polars.DataFrame.SqlContext", opaque = true }
+TableStyle = { rust = "String", terlan = "polars.DataFrame.TableStyle", opaque = true, ownership = "value" }
+Expr = { rust = "String", terlan = "polars.DataFrame.Expr", opaque = true, ownership = "value" }
+ExprUdf = { rust = "String", terlan = "polars.DataFrame.ExprUdf", opaque = true, ownership = "value" }
+
+[functions.col]
+terlan = "polars.DataFrame.col"
+rust = "terlan_polars_native::expressions::expr_col"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.extension_type]
+terlan = "polars.DataFrame.extension_type"
+rust = "terlan_polars_native::expressions::data_type_extension"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.extension_type_with_metadata]
+terlan = "polars.DataFrame.extension_type"
+rust = "terlan_polars_native::expressions::data_type_extension_metadata"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.udf_parameter]
+terlan = "polars.DataFrame.udf_parameter"
+rust = "terlan_polars_native::expression_udf_parameter"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.define_udf]
+terlan = "polars.DataFrame.define_udf"
+rust = "terlan_polars_native::define_expression_udf"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.define_nested_udf]
+terlan = "polars.DataFrame.define_udf"
+rust = "terlan_polars_native::define_expression_udf"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.apply_udf]
+terlan = "polars.DataFrame.apply_udf"
+rust = "terlan_polars_native::apply_expression_udf"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.cols]
+terlan = "polars.DataFrame.cols"
+rust = "terlan_polars_native::expressions::expr_cols"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.all_columns]
+terlan = "polars.DataFrame.all_columns"
+rust = "terlan_polars_native::expressions::expr_all"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.concat_list]
+terlan = "polars.DataFrame.concat_list"
+rust = "terlan_polars_native::expressions::expr_concat_list"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.int_range]
+terlan = "polars.DataFrame.int_range"
+rust = "terlan_polars_native::expressions::expr_int_range"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.int_ranges]
+terlan = "polars.DataFrame.int_ranges"
+rust = "terlan_polars_native::expressions::expr_int_ranges"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.lit]
+terlan = "polars.DataFrame.lit"
+rust = "terlan_polars_native::expressions::expr_lit"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.date]
+terlan = "polars.DataFrame.date"
+rust = "terlan_polars_native::expressions::expr_date"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.len_expr]
+terlan = "polars.DataFrame.len_expr"
+rust = "terlan_polars_native::expressions::expr_len"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.pi]
+terlan = "polars.DataFrame.pi"
+rust = "terlan_polars_native::expressions::expr_pi"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_year]
+receiver = "Expr"
+terlan = "year"
+rust = "terlan_polars_native::expressions::expr_year"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_mean]
+receiver = "Expr"
+terlan = "mean"
+rust = "terlan_polars_native::expressions::expr_mean"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_max]
+receiver = "Expr"
+terlan = "max"
+rust = "terlan_polars_native::expressions::expr_max"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_multiply]
+receiver = "Expr"
+terlan = "multiply"
+rust = "terlan_polars_native::expressions::expr_multiply"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_divide]
+receiver = "Expr"
+terlan = "divide"
+rust = "terlan_polars_native::expressions::expr_divide"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_true_div]
+receiver = "Expr"
+terlan = "true_div"
+rust = "terlan_polars_native::expressions::expr_true_divide"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_cast_with_options]
+receiver = "Series"
+terlan = "series_cast_with_options"
+rust = "terlan_polars_native::series_cast_with_options"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_shape]
+receiver = "DataFrame"
+terlan = "dataframe_shape"
+rust = "terlan_polars_native::dataframe_shape"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_first_col_n_chunks]
+receiver = "DataFrame"
+terlan = "dataframe_first_col_n_chunks"
+rust = "terlan_polars_native::dataframe_first_col_n_chunks"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_collect_with_engine]
+receiver = "LazyFrame"
+terlan = "collect_with_engine"
+rust = "terlan_polars_native::lazy_collect_with_engine"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_collect_all_with_engine]
+receiver = "LazyFrameSet"
+terlan = "collect_all_with_engine"
+rust = "terlan_polars_native::lazy_collect_all_with_engine"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_fill_null_strategy]
+receiver = "DataFrame"
+terlan = "fill_null_with_strategy"
+rust = "terlan_polars_native::fill_null_with_strategy"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_cast_with_options]
+receiver = "Expr"
+terlan = "cast_with_options"
+rust = "terlan_polars_native::expressions::expr_cast_with_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_fill_null_with_strategy]
+receiver = "Expr"
+terlan = "fill_null_with_strategy"
+rust = "terlan_polars_native::expressions::expr_fill_null_with_strategy"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_into_selector]
+receiver = "Expr"
+terlan = "into_selector"
+rust = "terlan_polars_native::expressions::expr_into_selector"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_try_into_selector]
+receiver = "Expr"
+terlan = "try_into_selector"
+rust = "terlan_polars_native::expressions::expr_into_selector"
+error = "std.core.Error.Error"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_sort_by_options]
+receiver = "Expr"
+terlan = "sort_by"
+rust = "terlan_polars_native::expressions::expr_sort_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_over_with_options]
+receiver = "Expr"
+terlan = "over_with_options"
+rust = "terlan_polars_native::expressions::expr_over_with_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_floor_divide]
+receiver = "Expr"
+terlan = "floor_divide"
+rust = "terlan_polars_native::expressions::expr_floor_divide"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_pow]
+receiver = "Expr"
+terlan = "pow"
+rust = "terlan_polars_native::expressions::expr_pow"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_lt]
+receiver = "Expr"
+terlan = "lt"
+rust = "terlan_polars_native::expressions::expr_lt"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_gt]
+receiver = "Expr"
+terlan = "gt"
+rust = "terlan_polars_native::expressions::expr_gt"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_and_predicate]
+receiver = "Expr"
+terlan = "and_predicate"
+rust = "terlan_polars_native::expressions::expr_and"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_alias]
+receiver = "Expr"
+terlan = "alias"
+rust = "terlan_polars_native::expressions::expr_alias"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_suffix]
+receiver = "Expr"
+terlan = "suffix"
+rust = "terlan_polars_native::expressions::expr_suffix"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_prefix]
+receiver = "Expr"
+terlan = "prefix"
+rust = "terlan_polars_native::expressions::expr_prefix"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_exclude]
+receiver = "Expr"
+terlan = "exclude"
+rust = "terlan_polars_native::expressions::expr_exclude"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_round]
+receiver = "Expr"
+terlan = "round_to"
+rust = "terlan_polars_native::expressions::expr_round"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_round_with_mode]
+receiver = "Expr"
+terlan = "round_with_mode"
+rust = "terlan_polars_native::expressions::expr_round_with_mode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_round_sig_figs]
+receiver = "Expr"
+terlan = "round_sig_figs"
+rust = "terlan_polars_native::expressions::expr_round_sig_figs"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_truncate]
+receiver = "Expr"
+terlan = "truncate"
+rust = "terlan_polars_native::expressions::expr_truncate"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_floor]
+receiver = "Expr"
+terlan = "floor"
+rust = "terlan_polars_native::expressions::expr_floor"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ceil]
+receiver = "Expr"
+terlan = "ceil"
+rust = "terlan_polars_native::expressions::expr_ceil"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_abs]
+receiver = "Expr"
+terlan = "abs"
+rust = "terlan_polars_native::expressions::expr_abs"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_clip]
+receiver = "Expr"
+terlan = "clip"
+rust = "terlan_polars_native::expressions::expr_clip"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_clip_min]
+receiver = "Expr"
+terlan = "clip_min"
+rust = "terlan_polars_native::expressions::expr_clip_min"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_clip_max]
+receiver = "Expr"
+terlan = "clip_max"
+rust = "terlan_polars_native::expressions::expr_clip_max"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_product]
+receiver = "Expr"
+terlan = "product"
+rust = "terlan_polars_native::expressions::expr_product"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_log]
+receiver = "Expr"
+terlan = "log"
+rust = "terlan_polars_native::expressions::expr_log"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_log1p]
+receiver = "Expr"
+terlan = "log1p"
+rust = "terlan_polars_native::expressions::expr_log1p"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_exp]
+receiver = "Expr"
+terlan = "exp"
+rust = "terlan_polars_native::expressions::expr_exp"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_entropy]
+receiver = "Expr"
+terlan = "entropy"
+rust = "terlan_polars_native::expressions::expr_entropy"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_skew]
+receiver = "Expr"
+terlan = "skew"
+rust = "terlan_polars_native::expressions::expr_skew"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_kurtosis]
+receiver = "Expr"
+terlan = "kurtosis"
+rust = "terlan_polars_native::expressions::expr_kurtosis"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_upper_bound]
+receiver = "Expr"
+terlan = "upper_bound"
+rust = "terlan_polars_native::expressions::expr_upper_bound"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_lower_bound]
+receiver = "Expr"
+terlan = "lower_bound"
+rust = "terlan_polars_native::expressions::expr_lower_bound"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_drop_nulls]
+receiver = "Expr"
+terlan = "drop_nulls"
+rust = "terlan_polars_native::expressions::expr_drop_nulls"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_drop_nans]
+receiver = "Expr"
+terlan = "drop_nans"
+rust = "terlan_polars_native::expressions::expr_drop_nans"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_count]
+receiver = "Expr"
+terlan = "count"
+rust = "terlan_polars_native::expressions::expr_count"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_len_values]
+receiver = "Expr"
+terlan = "len_values"
+rust = "terlan_polars_native::expressions::expr_len_values"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_first_non_null]
+receiver = "Expr"
+terlan = "first_non_null"
+rust = "terlan_polars_native::expressions::expr_first_non_null"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_last_non_null]
+receiver = "Expr"
+terlan = "last_non_null"
+rust = "terlan_polars_native::expressions::expr_last_non_null"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_item]
+receiver = "Expr"
+terlan = "item"
+rust = "terlan_polars_native::expressions::expr_item"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_implode]
+receiver = "Expr"
+terlan = "implode"
+rust = "terlan_polars_native::expressions::expr_implode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_quantile]
+receiver = "Expr"
+terlan = "quantile"
+rust = "terlan_polars_native::expressions::expr_quantile"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_mode]
+receiver = "Expr"
+terlan = "mode"
+rust = "terlan_polars_native::expressions::expr_mode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_unique]
+receiver = "Expr"
+terlan = "unique"
+rust = "terlan_polars_native::expressions::expr_unique"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_arg_unique]
+receiver = "Expr"
+terlan = "arg_unique"
+rust = "terlan_polars_native::expressions::expr_arg_unique"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_arg_min]
+receiver = "Expr"
+terlan = "arg_min"
+rust = "terlan_polars_native::expressions::expr_arg_min"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_arg_max]
+receiver = "Expr"
+terlan = "arg_max"
+rust = "terlan_polars_native::expressions::expr_arg_max"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_dot]
+receiver = "Expr"
+terlan = "dot"
+rust = "terlan_polars_native::expressions::expr_dot"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_slice_expression]
+receiver = "Expr"
+terlan = "slice_expression"
+rust = "terlan_polars_native::expressions::expr_slice_expression"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_append]
+receiver = "Expr"
+terlan = "append_expression"
+rust = "terlan_polars_native::expressions::expr_append"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rechunk]
+receiver = "Expr"
+terlan = "rechunk"
+rust = "terlan_polars_native::expressions::expr_rechunk"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_arg_sort]
+receiver = "Expr"
+terlan = "arg_sort"
+rust = "terlan_polars_native::expressions::expr_arg_sort"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_index_of]
+receiver = "Expr"
+terlan = "index_of"
+rust = "terlan_polars_native::expressions::expr_index_of"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_search_sorted]
+receiver = "Expr"
+terlan = "search_sorted"
+rust = "terlan_polars_native::expressions::expr_search_sorted"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_gather]
+receiver = "Expr"
+terlan = "gather"
+rust = "terlan_polars_native::expressions::expr_gather"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_get_expression]
+receiver = "Expr"
+terlan = "get_expression"
+rust = "terlan_polars_native::expressions::expr_get_expression"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_sort_with]
+receiver = "Expr"
+terlan = "sort_with"
+rust = "terlan_polars_native::expressions::expr_sort_with"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_sort_with_stability]
+receiver = "Expr"
+terlan = "sort_with"
+rust = "terlan_polars_native::expressions::expr_sort_with_stability"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_reverse]
+receiver = "Expr"
+terlan = "reverse"
+rust = "terlan_polars_native::expressions::expr_reverse"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_shift]
+receiver = "Expr"
+terlan = "shift"
+rust = "terlan_polars_native::expressions::expr_shift"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_shift_and_fill]
+receiver = "Expr"
+terlan = "shift_and_fill"
+rust = "terlan_polars_native::expressions::expr_shift_and_fill"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_repeat_by]
+receiver = "Expr"
+terlan = "repeat_by"
+rust = "terlan_polars_native::expressions::expr_repeat_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_diff]
+receiver = "Expr"
+terlan = "diff"
+rust = "terlan_polars_native::expressions::expr_diff"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_pct_change]
+receiver = "Expr"
+terlan = "pct_change"
+rust = "terlan_polars_native::expressions::expr_pct_change"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_gather_every]
+receiver = "Expr"
+terlan = "gather_every"
+rust = "terlan_polars_native::expressions::expr_gather_every"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_extend_constant]
+receiver = "Expr"
+terlan = "extend_constant"
+rust = "terlan_polars_native::expressions::expr_extend_constant"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_tail_expression]
+receiver = "Expr"
+terlan = "tail_expression"
+rust = "terlan_polars_native::expressions::expr_tail_expression"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rank]
+receiver = "Expr"
+terlan = "rank"
+rust = "terlan_polars_native::expressions::expr_rank"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rank_random]
+receiver = "Expr"
+terlan = "rank_random"
+rust = "terlan_polars_native::expressions::expr_rank_random"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_top_k]
+receiver = "Expr"
+terlan = "top_k"
+rust = "terlan_polars_native::expressions::expr_top_k"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bottom_k]
+receiver = "Expr"
+terlan = "bottom_k"
+rust = "terlan_polars_native::expressions::expr_bottom_k"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_top_k_by]
+receiver = "Expr"
+terlan = "top_k_by"
+rust = "terlan_polars_native::expressions::expr_top_k_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bottom_k_by]
+receiver = "Expr"
+terlan = "bottom_k_by"
+rust = "terlan_polars_native::expressions::expr_bottom_k_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_replace]
+receiver = "Expr"
+terlan = "replace"
+rust = "terlan_polars_native::expressions::expr_replace"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_replace_strict]
+receiver = "Expr"
+terlan = "replace_strict"
+rust = "terlan_polars_native::expressions::expr_replace_strict"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_replace_or_default]
+receiver = "Expr"
+terlan = "replace_or_default"
+rust = "terlan_polars_native::expressions::expr_replace_or_default"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_cut]
+receiver = "Expr"
+terlan = "cut"
+rust = "terlan_polars_native::expressions::expr_cut"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_cut_labeled]
+receiver = "Expr"
+terlan = "cut_labeled"
+rust = "terlan_polars_native::expressions::expr_cut_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_qcut]
+receiver = "Expr"
+terlan = "qcut"
+rust = "terlan_polars_native::expressions::expr_qcut"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_qcut_labeled]
+receiver = "Expr"
+terlan = "qcut_labeled"
+rust = "terlan_polars_native::expressions::expr_qcut_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_qcut_equal_frequency]
+receiver = "Expr"
+terlan = "qcut_equal_frequency"
+rust = "terlan_polars_native::expressions::expr_qcut_equal_frequency"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_qcut_equal_frequency_labeled]
+receiver = "Expr"
+terlan = "qcut_equal_frequency_labeled"
+rust = "terlan_polars_native::expressions::expr_qcut_equal_frequency_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_intervals]
+receiver = "Expr"
+terlan = "bin_intervals"
+rust = "terlan_polars_native::expressions::expr_bin_intervals"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_intervals_labeled]
+receiver = "Expr"
+terlan = "bin_intervals_labeled"
+rust = "terlan_polars_native::expressions::expr_bin_intervals_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_quantiles]
+receiver = "Expr"
+terlan = "bin_quantiles"
+rust = "terlan_polars_native::expressions::expr_bin_quantiles"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_quantiles_labeled]
+receiver = "Expr"
+terlan = "bin_quantiles_labeled"
+rust = "terlan_polars_native::expressions::expr_bin_quantiles_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_ranks]
+receiver = "Expr"
+terlan = "bin_ranks"
+rust = "terlan_polars_native::expressions::expr_bin_ranks"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_bin_ranks_labeled]
+receiver = "Expr"
+terlan = "bin_ranks_labeled"
+rust = "terlan_polars_native::expressions::expr_bin_ranks_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_intervals]
+receiver = "Series"
+terlan = "bin_intervals"
+rust = "terlan_polars_native::expressions::series_bin_intervals"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_intervals_labeled]
+receiver = "Series"
+terlan = "bin_intervals_labeled"
+rust = "terlan_polars_native::expressions::series_bin_intervals_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_quantiles]
+receiver = "Series"
+terlan = "bin_quantiles"
+rust = "terlan_polars_native::expressions::series_bin_quantiles"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_quantiles_labeled]
+receiver = "Series"
+terlan = "bin_quantiles_labeled"
+rust = "terlan_polars_native::expressions::series_bin_quantiles_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_ranks]
+receiver = "Series"
+terlan = "bin_ranks"
+rust = "terlan_polars_native::expressions::series_bin_ranks"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_bin_ranks_labeled]
+receiver = "Series"
+terlan = "bin_ranks_labeled"
+rust = "terlan_polars_native::expressions::series_bin_ranks_labeled"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_interpolate_by]
+receiver = "Expr"
+terlan = "interpolate_by"
+rust = "terlan_polars_native::expressions::expr_interpolate_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_peak_min]
+receiver = "Expr"
+terlan = "peak_min"
+rust = "terlan_polars_native::expressions::expr_peak_min"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_peak_max]
+receiver = "Expr"
+terlan = "peak_max"
+rust = "terlan_polars_native::expressions::expr_peak_max"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rle]
+receiver = "Expr"
+terlan = "rle"
+rust = "terlan_polars_native::expressions::expr_rle"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rle_id]
+receiver = "Expr"
+terlan = "rle_id"
+rust = "terlan_polars_native::expressions::expr_rle_id"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_reshape]
+receiver = "Expr"
+terlan = "reshape_expression"
+rust = "terlan_polars_native::expressions::expr_reshape"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ewm_mean]
+receiver = "Expr"
+terlan = "ewm_mean"
+rust = "terlan_polars_native::expressions::expr_ewm_mean"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ewm_std]
+receiver = "Expr"
+terlan = "ewm_std"
+rust = "terlan_polars_native::expressions::expr_ewm_std"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ewm_var]
+receiver = "Expr"
+terlan = "ewm_var"
+rust = "terlan_polars_native::expressions::expr_ewm_var"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ewm_mean_by]
+receiver = "Expr"
+terlan = "ewm_mean_by"
+rust = "terlan_polars_native::expressions::expr_ewm_mean_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_over_join]
+receiver = "Expr"
+terlan = "over_join"
+rust = "terlan_polars_native::expressions::expr_over_join"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_over_ordered]
+receiver = "Expr"
+terlan = "over_ordered"
+rust = "terlan_polars_native::expressions::expr_over_ordered"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_agg_groups]
+receiver = "Expr"
+terlan = "agg_groups"
+rust = "terlan_polars_native::expressions::expr_agg_groups"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_cumulative_eval]
+receiver = "Expr"
+terlan = "cumulative_eval"
+rust = "terlan_polars_native::expressions::expr_cumulative_eval"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_contains_literal]
+receiver = "Expr"
+terlan = "string_contains_literal"
+rust = "terlan_polars_native::expressions::expr_string_contains_literal"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_find_literal]
+receiver = "Expr"
+terlan = "string_find_literal"
+rust = "terlan_polars_native::expressions::expr_string_find_literal"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_find]
+receiver = "Expr"
+terlan = "string_find"
+rust = "terlan_polars_native::expressions::expr_string_find"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_count_matches]
+receiver = "Expr"
+terlan = "string_count_matches"
+rust = "terlan_polars_native::expressions::expr_string_count_matches"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_pad_start]
+receiver = "Expr"
+terlan = "string_pad_start"
+rust = "terlan_polars_native::expressions::expr_string_pad_start"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_pad_end]
+receiver = "Expr"
+terlan = "string_pad_end"
+rust = "terlan_polars_native::expressions::expr_string_pad_end"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_zfill]
+receiver = "Expr"
+terlan = "string_zfill"
+rust = "terlan_polars_native::expressions::expr_string_zfill"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_hex_encode]
+receiver = "Expr"
+terlan = "string_hex_encode"
+rust = "terlan_polars_native::expressions::expr_string_hex_encode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_hex_decode]
+receiver = "Expr"
+terlan = "string_hex_decode"
+rust = "terlan_polars_native::expressions::expr_string_hex_decode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_base64_encode]
+receiver = "Expr"
+terlan = "string_base64_encode"
+rust = "terlan_polars_native::expressions::expr_string_base64_encode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_base64_decode]
+receiver = "Expr"
+terlan = "string_base64_decode"
+rust = "terlan_polars_native::expressions::expr_string_base64_decode"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_normalize]
+receiver = "Expr"
+terlan = "string_normalize"
+rust = "terlan_polars_native::expressions::expr_string_normalize"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_reverse]
+receiver = "Expr"
+terlan = "string_reverse"
+rust = "terlan_polars_native::expressions::expr_string_reverse"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_string_escape_regex]
+receiver = "Expr"
+terlan = "string_escape_regex"
+rust = "terlan_polars_native::expressions::expr_string_escape_regex"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_between]
+receiver = "Expr"
+terlan = "between"
+rust = "terlan_polars_native::expressions::expr_between"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_split_first]
+receiver = "Expr"
+terlan = "split_first"
+rust = "terlan_polars_native::expressions::expr_split_first"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[errors]
+Error = { rust = "TerlanPolarsError", terlan = "std.core.Error.Error", conversion = "code_message" }
+
+[functions.read_csv]
+terlan = "polars.DataFrame.read_csv"
+rust = "terlan_polars_native::read_csv"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.read_csv_dates]
+terlan = "polars.DataFrame.read_csv_dates"
+rust = "terlan_polars_native::read_csv_dates"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.write_csv]
+receiver = "DataFrame"
+terlan = "write_csv"
+rust = "terlan_polars_native::write_csv"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.from_arrow_ipc]
+terlan = "polars.DataFrame.from_arrow_ipc"
+rust = "terlan_polars_native::dataframe_from_arrow_ipc"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.to_arrow_ipc]
+receiver = "DataFrame"
+terlan = "to_arrow_ipc"
+rust = "terlan_polars_native::dataframe_to_arrow_ipc"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.read_database_uri]
+terlan = "polars.DataFrame.read_database_uri"
+rust = "terlan_polars_native::read_database_uri"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.read_database_env]
+terlan = "polars.DataFrame.read_database_env"
+rust = "terlan_polars_native::read_database_env"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.from_rows]
+terlan = "polars.DataFrame.from_rows"
+rust = "terlan_polars_native::from_rows"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.height]
+receiver = "DataFrame"
+terlan = "height"
+rust = "terlan_polars_native::height"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.width]
+receiver = "DataFrame"
+terlan = "width"
+rust = "terlan_polars_native::width"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.columns]
+receiver = "DataFrame"
+terlan = "columns"
+rust = "terlan_polars_native::columns"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.rows]
+receiver = "DataFrame"
+terlan = "rows"
+rust = "terlan_polars_native::rows"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.schema]
+receiver = "DataFrame"
+terlan = "schema"
+rust = "terlan_polars_native::schema"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.filter_eq]
+receiver = "DataFrame"
+terlan = "filter_eq"
+rust = "terlan_polars_native::filter_eq"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sort_by]
+receiver = "DataFrame"
+terlan = "sort_by"
+rust = "terlan_polars_native::sort_by"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.group_count]
+receiver = "DataFrame"
+terlan = "group_count"
+rust = "terlan_polars_native::group_count"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy]
+receiver = "DataFrame"
+terlan = "lazy"
+rust = "terlan_polars_native::to_lazy"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_filter_eq]
+receiver = "LazyFrame"
+terlan = "where_eq"
+rust = "terlan_polars_native::lazy_filter_eq"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_select]
+receiver = "LazyFrame"
+terlan = "project"
+rust = "terlan_polars_native::lazy_select"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_collect]
+receiver = "LazyFrame"
+terlan = "collect"
+rust = "terlan_polars_native::collect_lazy"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_dispose]
+receiver = "LazyFrame"
+terlan = "release"
+native_operation = "polars.lazy_frame.dispose"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.select]
+receiver = "DataFrame"
+terlan = "select"
+rust = "terlan_polars_native::select"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.head]
+receiver = "DataFrame"
+terlan = "head"
+rust = "terlan_polars_native::head"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.select_exprs]
+receiver = "DataFrame"
+terlan = "select_exprs"
+rust = "terlan_polars_native::select_exprs"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.with_columns_exprs]
+receiver = "DataFrame"
+terlan = "with_columns"
+rust = "terlan_polars_native::with_columns_exprs"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.filter_expr]
+receiver = "DataFrame"
+terlan = "filter"
+rust = "terlan_polars_native::filter_expr"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.group_agg]
+receiver = "DataFrame"
+terlan = "group_agg"
+rust = "terlan_polars_native::group_agg"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.left_join]
+receiver = "DataFrame"
+terlan = "left_join"
+rust = "terlan_polars_native::left_join"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.concat_vertical]
+receiver = "DataFrame"
+terlan = "concat_vertical"
+rust = "terlan_polars_native::concat_vertical"
+error = "std.core.Error.Error"
+status = "stub-default"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_scatter_svg]
+receiver = "DataFrame"
+terlan = "plot_scatter_svg"
+rust = "terlan_polars_native::plot_scatter_svg"
+native_operation = "polars.visualization.scatter_svg"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_line_svg]
+receiver = "DataFrame"
+terlan = "plot_line_svg"
+rust = "terlan_polars_native::plot_line_svg"
+native_operation = "polars.visualization.line_svg"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_bar_svg]
+receiver = "DataFrame"
+terlan = "plot_bar_svg"
+rust = "terlan_polars_native::plot_bar_svg"
+native_operation = "polars.visualization.bar_svg"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_histogram_svg]
+receiver = "DataFrame"
+terlan = "plot_histogram_svg"
+rust = "terlan_polars_native::plot_histogram_svg"
+native_operation = "polars.visualization.histogram_svg"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_box_svg]
+receiver = "DataFrame"
+terlan = "plot_box_svg"
+rust = "terlan_polars_native::plot_box_svg"
+native_operation = "polars.visualization.box_svg"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.plot_scatter_html]
+receiver = "DataFrame"
+terlan = "plot_scatter_html"
+rust = "terlan_polars_native::plot_scatter_html"
+native_operation = "polars.visualization.scatter_html"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plotly-html"
+beam_helper_status = "implemented"
+
+[methods.plot_line_html]
+receiver = "DataFrame"
+terlan = "plot_line_html"
+rust = "terlan_polars_native::plot_line_html"
+native_operation = "polars.visualization.line_html"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plotly-html"
+beam_helper_status = "implemented"
+
+[methods.plot_bar_html]
+receiver = "DataFrame"
+terlan = "plot_bar_html"
+rust = "terlan_polars_native::plot_bar_html"
+native_operation = "polars.visualization.bar_html"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plotly-html"
+beam_helper_status = "implemented"
+
+[methods.plot_histogram_html]
+receiver = "DataFrame"
+terlan = "plot_histogram_html"
+rust = "terlan_polars_native::plot_histogram_html"
+native_operation = "polars.visualization.histogram_html"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plotly-html"
+beam_helper_status = "implemented"
+
+[methods.plot_box_html]
+receiver = "DataFrame"
+terlan = "plot_box_html"
+rust = "terlan_polars_native::plot_box_html"
+native_operation = "polars.visualization.box_html"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plotly-html"
+beam_helper_status = "implemented"
+
+[methods.plot_scatter_png]
+receiver = "DataFrame"
+terlan = "plot_scatter_png"
+rust = "terlan_polars_native::plot_scatter_png"
+native_operation = "polars.visualization.scatter_png"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plot-png"
+beam_helper_status = "implemented"
+
+[methods.plot_line_png]
+receiver = "DataFrame"
+terlan = "plot_line_png"
+rust = "terlan_polars_native::plot_line_png"
+native_operation = "polars.visualization.line_png"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plot-png"
+beam_helper_status = "implemented"
+
+[methods.plot_bar_png]
+receiver = "DataFrame"
+terlan = "plot_bar_png"
+rust = "terlan_polars_native::plot_bar_png"
+native_operation = "polars.visualization.bar_png"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plot-png"
+beam_helper_status = "implemented"
+
+[methods.plot_histogram_png]
+receiver = "DataFrame"
+terlan = "plot_histogram_png"
+rust = "terlan_polars_native::plot_histogram_png"
+native_operation = "polars.visualization.histogram_png"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plot-png"
+beam_helper_status = "implemented"
+
+[methods.plot_box_png]
+receiver = "DataFrame"
+terlan = "plot_box_png"
+rust = "terlan_polars_native::plot_box_png"
+native_operation = "polars.visualization.box_png"
+error = "std.core.Error.Error"
+status = "optional-feature"
+native_feature = "plot-png"
+beam_helper_status = "implemented"
+
+[functions.gt]
+terlan = "polars.DataFrame.gt"
+rust = "terlan_polars_native::gt"
+native_operation = "polars.table.gt"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.tab_stub]
+receiver = "TableStyle"
+terlan = "tab_stub"
+rust = "terlan_polars_native::tab_stub"
+native_operation = "polars.table.tab_stub"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.cols_label]
+receiver = "TableStyle"
+terlan = "cols_label"
+rust = "terlan_polars_native::cols_label"
+native_operation = "polars.table.cols_label"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.tab_header]
+receiver = "TableStyle"
+terlan = "tab_header"
+rust = "terlan_polars_native::tab_header"
+native_operation = "polars.table.tab_header"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.fmt_number]
+receiver = "TableStyle"
+terlan = "fmt_number"
+rust = "terlan_polars_native::fmt_number"
+native_operation = "polars.table.fmt_number"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.fmt_nanoplot]
+receiver = "TableStyle"
+terlan = "fmt_nanoplot"
+rust = "terlan_polars_native::fmt_nanoplot"
+native_operation = "polars.table.fmt_nanoplot"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.data_color]
+receiver = "TableStyle"
+terlan = "data_color"
+rust = "terlan_polars_native::data_color"
+native_operation = "polars.table.data_color"
+error = "std.core.Error.Error"
+status = "helper-owned"
+beam_helper_status = "implemented"
+
+[methods.table_html]
+receiver = "DataFrame"
+terlan = "table_html"
+rust = "terlan_polars_native::table_html"
+native_operation = "polars.table.to_html"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dispose]
+receiver = "DataFrame"
+terlan = "dispose"
+native_operation = "polars.dataframe.dispose"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.sql_context]
+terlan = "polars.DataFrame.sql_context"
+rust = "terlan_polars_native::sql_context_new"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sql_context_register]
+receiver = "SqlContext"
+terlan = "register_table"
+rust = "terlan_polars_native::sql_context_register"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sql_context_unregister]
+receiver = "SqlContext"
+terlan = "unregister_table"
+rust = "terlan_polars_native::sql_context_unregister"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sql_context_tables]
+receiver = "SqlContext"
+terlan = "sql_tables"
+rust = "terlan_polars_native::sql_context_tables"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sql_context_execute]
+receiver = "SqlContext"
+terlan = "sql_query"
+rust = "terlan_polars_native::sql_context_execute"
+error = "std.core.Error.Error"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.sql_context_dispose]
+receiver = "SqlContext"
+terlan = "dispose_sql_context"
+native_operation = "polars.sql_context.dispose"
+status = "helper-owned"
+real_polars_status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.date_range]
+terlan = "polars.DataFrame.date_range"
+rust = "terlan_polars_native::expressions::expr_date_range"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.date_ranges]
+terlan = "polars.DataFrame.date_ranges"
+rust = "terlan_polars_native::expressions::expr_date_ranges"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.datetime_range]
+terlan = "polars.DataFrame.datetime_range"
+rust = "terlan_polars_native::expressions::expr_datetime_range"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.datetime_ranges]
+terlan = "polars.DataFrame.datetime_ranges"
+rust = "terlan_polars_native::expressions::expr_datetime_ranges"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.time_range]
+terlan = "polars.DataFrame.time_range"
+rust = "terlan_polars_native::expressions::expr_time_range"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.time_ranges]
+terlan = "polars.DataFrame.time_ranges"
+rust = "terlan_polars_native::expressions::expr_time_ranges"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.duration]
+terlan = "polars.DataFrame.duration"
+rust = "terlan_polars_native::expressions::expr_duration"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.datetime]
+terlan = "polars.DataFrame.datetime"
+rust = "terlan_polars_native::expressions::expr_datetime"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.repeat]
+terlan = "polars.DataFrame.repeat"
+rust = "terlan_polars_native::expressions::expr_repeat"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_temporal_replace]
+receiver = "Expr"
+terlan = "temporal_replace"
+rust = "terlan_polars_native::expressions::expr_temporal_replace"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_convert_time_zone]
+receiver = "Expr"
+terlan = "convert_time_zone"
+rust = "terlan_polars_native::expressions::expr_convert_time_zone"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_replace_time_zone]
+receiver = "Expr"
+terlan = "replace_time_zone"
+rust = "terlan_polars_native::expressions::expr_replace_time_zone"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_sign]
+receiver = "Expr"
+terlan = "sign"
+rust = "terlan_polars_native::expressions::expr_sign"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_neg]
+receiver = "Expr"
+terlan = "neg"
+rust = "terlan_polars_native::expressions::expr_neg"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_sqrt]
+receiver = "Expr"
+terlan = "sqrt"
+rust = "terlan_polars_native::expressions::expr_sqrt"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_cbrt]
+receiver = "Expr"
+terlan = "cbrt"
+rust = "terlan_polars_native::expressions::expr_cbrt"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_extract_i64]
+receiver = "Expr"
+terlan = "extract_i64"
+rust = "terlan_polars_native::expressions::expr_extract_i64"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_extract_usize]
+receiver = "Expr"
+terlan = "extract_usize"
+rust = "terlan_polars_native::expressions::expr_extract_usize"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_to_physical]
+receiver = "Expr"
+terlan = "to_physical"
+rust = "terlan_polars_native::expressions::expr_to_physical"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_set_sorted_flag]
+receiver = "Expr"
+terlan = "set_sorted_flag"
+rust = "terlan_polars_native::expressions::expr_set_sorted_flag"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_arg_true]
+receiver = "Expr"
+terlan = "arg_true"
+rust = "terlan_polars_native::expressions::expr_arg_true"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.show_versions]
+terlan = "polars.DataFrame.show_versions"
+rust = "terlan_polars_native::show_versions"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_glimpse]
+receiver = "DataFrame"
+terlan = "glimpse"
+rust = "terlan_polars_native::glimpse"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_describe]
+receiver = "DataFrame"
+terlan = "describe"
+rust = "terlan_polars_native::describe"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_concat_vertical_relaxed]
+receiver = "DataFrame"
+terlan = "concat_vertical_relaxed"
+rust = "terlan_polars_native::concat_vertical_relaxed"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_upsample]
+receiver = "DataFrame"
+terlan = "upsample"
+rust = "terlan_polars_native::upsample"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_update]
+receiver = "DataFrame"
+terlan = "update"
+rust = "terlan_polars_native::update"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_join_with_coalesce]
+receiver = "DataFrame"
+terlan = "join_with_coalesce"
+rust = "terlan_polars_native::join_with_coalesce"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_join_with_coalesce]
+receiver = "LazyFrame"
+terlan = "lazy_join_with_coalesce"
+rust = "terlan_polars_native::lazy_join_with_coalesce"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rolling_map]
+receiver = "Expr"
+terlan = "rolling_map"
+rust = "terlan_polars_native::expressions::expr_rolling_map"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rolling]
+receiver = "Expr"
+terlan = "rolling"
+rust = "terlan_polars_native::expressions::expr_rolling"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_meta_nodes]
+receiver = "Expr"
+terlan = "meta_nodes"
+rust = "terlan_polars_native::expressions::expr_meta_nodes"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_meta_children]
+receiver = "Expr"
+terlan = "meta_children"
+rust = "terlan_polars_native::expressions::expr_meta_children"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_rewrite]
+receiver = "Expr"
+terlan = "rewrite"
+rust = "terlan_polars_native::expressions::expr_rewrite"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_map_children]
+receiver = "Expr"
+terlan = "map_children"
+rust = "terlan_polars_native::expressions::expr_map_children"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_to_field]
+receiver = "Expr"
+terlan = "to_field"
+rust = "terlan_polars_native::expressions::expr_to_field"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_map_name]
+receiver = "Expr"
+terlan = "map_name"
+rust = "terlan_polars_native::expressions::expr_map_name"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_map_field_names]
+receiver = "Expr"
+terlan = "map_field_names"
+rust = "terlan_polars_native::expressions::expr_map_field_names"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_map_groups]
+receiver = "DataFrame"
+terlan = "map_groups"
+rust = "terlan_polars_native::map_groups"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_write_csv_partitioned]
+receiver = "LazyFrame"
+terlan = "lazy_write_csv_partitioned"
+rust = "terlan_polars_native::lazy_write_csv_partitioned"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_write_parquet_partitioned]
+receiver = "LazyFrame"
+terlan = "lazy_write_parquet_partitioned"
+rust = "terlan_polars_native::lazy_write_parquet_partitioned"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_write_ndjson_partitioned]
+receiver = "LazyFrame"
+terlan = "lazy_write_ndjson_partitioned"
+rust = "terlan_polars_native::lazy_write_ndjson_partitioned"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_write_ipc_partitioned]
+receiver = "LazyFrame"
+terlan = "lazy_write_ipc_partitioned"
+rust = "terlan_polars_native::lazy_write_ipc_partitioned"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_profile]
+receiver = "LazyFrame"
+terlan = "profile"
+rust = "terlan_polars_native::lazy_profile"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.lazy_describe_plan_dot]
+receiver = "LazyFrame"
+terlan = "describe_plan_dot"
+rust = "terlan_polars_native::lazy_describe_plan_dot"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_all]
+terlan = "polars.DataFrame.selector_all"
+rust = "terlan_polars_native::expressions::expr_selector_all"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_names]
+terlan = "polars.DataFrame.selector_names"
+rust = "terlan_polars_native::expressions::expr_selector_names"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_numeric]
+terlan = "polars.DataFrame.selector_numeric"
+rust = "terlan_polars_native::expressions::expr_selector_numeric"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_string]
+terlan = "polars.DataFrame.selector_string"
+rust = "terlan_polars_native::expressions::expr_selector_string"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_starts_with]
+terlan = "polars.DataFrame.selector_starts_with"
+rust = "terlan_polars_native::expressions::expr_selector_starts_with"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_contains]
+terlan = "polars.DataFrame.selector_contains"
+rust = "terlan_polars_native::expressions::expr_selector_contains"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_first]
+terlan = "polars.DataFrame.selector_first"
+rust = "terlan_polars_native::expressions::expr_selector_first"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_union]
+terlan = "polars.DataFrame.selector_union"
+rust = "terlan_polars_native::expressions::expr_selector_union"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_intersection]
+terlan = "polars.DataFrame.selector_intersection"
+rust = "terlan_polars_native::expressions::expr_selector_intersection"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_difference]
+terlan = "polars.DataFrame.selector_difference"
+rust = "terlan_polars_native::expressions::expr_selector_difference"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_exclusive_or]
+terlan = "polars.DataFrame.selector_exclusive_or"
+rust = "terlan_polars_native::expressions::expr_selector_exclusive_or"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.selector_complement]
+terlan = "polars.DataFrame.selector_complement"
+rust = "terlan_polars_native::expressions::expr_selector_complement"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.scan_csv_with_storage_options]
+terlan = "polars.DataFrame.scan_csv_with_storage_options"
+rust = "terlan_polars_native::lazy_scan_csv_with_storage_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.scan_parquet_with_storage_options]
+terlan = "polars.DataFrame.scan_parquet_with_storage_options"
+rust = "terlan_polars_native::lazy_scan_parquet_with_storage_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.scan_ndjson_with_storage_options]
+terlan = "polars.DataFrame.scan_ndjson_with_storage_options"
+rust = "terlan_polars_native::lazy_scan_ndjson_with_storage_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[functions.scan_ipc_with_storage_options]
+terlan = "polars.DataFrame.scan_ipc_with_storage_options"
+rust = "terlan_polars_native::lazy_scan_ipc_with_storage_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+
+[methods.expr_ewm_sum]
+receiver = "Expr"
+terlan = "ewm_sum"
+rust = "terlan_polars_native::expressions::expr_ewm_sum"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_ewm_sum_by]
+receiver = "Expr"
+terlan = "ewm_sum_by"
+rust = "terlan_polars_native::expressions::expr_ewm_sum_by"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_is_sorted]
+receiver = "Expr"
+terlan = "is_sorted"
+rust = "terlan_polars_native::expressions::expr_is_sorted"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_to_unit_list]
+receiver = "Series"
+terlan = "series_to_unit_list"
+rust = "terlan_polars_native::series_extended::series_to_unit_list"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_from_cats_and_dtype]
+receiver = "Series"
+terlan = "series_from_cats_and_dtype"
+rust = "terlan_polars_native::series_extended::series_from_cats_and_dtype"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.csv_read_options_with_column_names]
+receiver = "CsvReadOptions"
+terlan = "with_column_names_overwrite"
+rust = "terlan_polars_native::csv_read_options_with_column_names"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.csv_read_options_with_infer_schema_files]
+receiver = "CsvReadOptions"
+terlan = "with_infer_schema_files"
+rust = "terlan_polars_native::csv_read_options_with_infer_schema_files"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.csv_read_options_with_column_policies]
+receiver = "CsvReadOptions"
+terlan = "with_column_policies"
+rust = "terlan_polars_native::csv_read_options_with_column_policies"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_concat_horizontal_extend]
+receiver = "DataFrame"
+terlan = "concat_horizontal_extend"
+rust = "terlan_polars_native::concat_horizontal_extend"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_dtypes]
+receiver = "DataFrame"
+terlan = "dtypes"
+rust = "terlan_polars_native::data_types"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_estimated_size_with_unit]
+receiver = "DataFrame"
+terlan = "estimated_size"
+rust = "terlan_polars_native::estimated_size_with_unit"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_drop_columns_with_options]
+receiver = "DataFrame"
+terlan = "drop_columns"
+rust = "terlan_polars_native::drop_columns_with_options"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_filter_all]
+receiver = "DataFrame"
+terlan = "filter_all"
+rust = "terlan_polars_native::filter_all"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_filter_constraints]
+receiver = "DataFrame"
+terlan = "filter_constraints"
+rust = "terlan_polars_native::filter_constraints"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.dataframe_gather_every]
+receiver = "DataFrame"
+terlan = "gather_every"
+rust = "terlan_polars_native::gather_rows_every"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_date_components]
+receiver = "Expr"
+terlan = "date"
+rust = "terlan_polars_native::expressions::expr_date_components"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_log10]
+receiver = "Expr"
+terlan = "log10"
+rust = "terlan_polars_native::expressions::expr_log10"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.expr_when_chain]
+receiver = "Expr"
+terlan = "when_chain"
+rust = "terlan_polars_native::expressions::expr_when_chain"
+status = "implemented"
+beam_helper_status = "implemented"
+
+[methods.series_estimated_size_with_unit]
+receiver = "Series"
+terlan = "series_estimated_size"
+rust = "terlan_polars_native::series_estimated_size_with_unit"
+status = "implemented"
+beam_helper_status = "implemented"

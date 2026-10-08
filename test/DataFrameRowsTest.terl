@@ -1,0 +1,31 @@
+module polars.DataFrameRowsTest.
+
+import polars.DataFrame.{dispose, read_csv, rows}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub rows_materializes_bounded_values_and_nulls(): Bool ->
+    case read_csv("test/fixtures/nullable.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let values_are_valid =
+                (let {
+    Ok(values) <- rows(df, 2);
+    [[first_name, first_score], [second_name, second_score]] <- values
+} else {
+    _ -> false
+};
+first_name == "Ada" and first_score == "10" and second_name == "Grace" and second_score == "null");
+            let negative_limit_fails =
+                case rows(df, -1) {
+                    Err(_error) -> true;
+                    Ok(_unexpected) -> false
+                };
+            let oversized_limit_fails =
+                case rows(df, 10001) {
+                    Err(_error) -> true;
+                    Ok(_unexpected) -> false
+                };
+            let _disposed_at_2678 = dispose(df);
+            values_are_valid and negative_limit_fails and oversized_limit_fails
+    }.

@@ -1,0 +1,18 @@
+module terlan_polars_consumer.Main.
+
+import polars.DataFrame.{dispose, height, read_csv}.
+import std.core.Result.{Err, Ok}.
+import std.core.Unit.
+
+pub package_import_typechecks(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> true;
+        Ok(df) ->
+            let valid = height(df) == 2;
+            let _disposed = dispose(df);
+            valid
+    }.
+
+pub main(): Unit ->
+    let _ok = package_import_typechecks();
+    Unit.

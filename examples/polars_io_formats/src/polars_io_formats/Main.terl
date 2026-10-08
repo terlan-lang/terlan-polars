@@ -1,0 +1,77 @@
+module polars_io_formats.Main.
+
+import polars.DataFrame.{dispose, height, lazy, lazy_write_csv, lazy_write_ipc, lazy_write_ndjson, lazy_write_parquet, read_csv, read_ipc, read_json, read_ndjson, read_parquet, release, width, write_ipc, write_json, write_ndjson, write_parquet}.
+import std.core.Result.{Err, Ok}.
+import std.core.Unit.
+import std.io.Console.{println}.
+
+import type polars.DataFrame.
+import type std.core.{Error, Result}.
+
+pub validate(result: Result[DataFrame, Error]): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid = height(df) == 3 and width(df) == 3;
+            let _disposed_at_1928 = dispose(df);
+            valid
+    }.
+
+pub succeeded(result: Result[Unit, Error]): Bool ->
+    case result {
+        Err(_error) -> false;
+        Ok(Unit) -> true
+    }.
+
+pub parquet(df: DataFrame): Bool ->
+    case write_parquet(df, "target/polars-io.parquet") {
+        Err(_error) -> false;
+        Ok(Unit) -> validate(read_parquet("target/polars-io.parquet"))
+    }.
+
+pub json(df: DataFrame): Bool ->
+    case write_json(df, "target/polars-io.json") {
+        Err(_error) -> false;
+        Ok(Unit) -> validate(read_json("target/polars-io.json"))
+    }.
+
+pub ndjson(df: DataFrame): Bool ->
+    case write_ndjson(df, "target/polars-io.ndjson") {
+        Err(_error) -> false;
+        Ok(Unit) -> validate(read_ndjson("target/polars-io.ndjson"))
+    }.
+
+pub ipc(df: DataFrame): Bool ->
+    case write_ipc(df, "target/polars-io.arrow") {
+        Err(_error) -> false;
+        Ok(Unit) -> validate(read_ipc("target/polars-io.arrow"))
+    }.
+
+pub lazy_sinks(df: DataFrame): Bool ->
+    let plan = lazy(df);
+    let valid =
+        succeeded(lazy_write_csv(plan, "target/polars-lazy-io.csv"))
+            and validate(read_csv("target/polars-lazy-io.csv"))
+            and succeeded(lazy_write_parquet(plan, "target/polars-lazy-io.parquet"))
+            and validate(read_parquet("target/polars-lazy-io.parquet"))
+            and succeeded(lazy_write_ndjson(plan, "target/polars-lazy-io.ndjson"))
+            and validate(read_ndjson("target/polars-lazy-io.ndjson"))
+            and succeeded(lazy_write_ipc(plan, "target/polars-lazy-io.arrow"))
+            and validate(read_ipc("target/polars-lazy-io.arrow"));
+    release(plan);
+    valid.
+
+pub require_true(value: Bool): Unit ->
+    case value {
+        true -> Unit
+    }.
+
+pub main(): Unit ->
+    case read_csv("examples/polars_io_formats/data/people.csv") {
+    Err(_error) -> require_true(false);
+    Ok(df) ->
+        let valid = parquet(df) and json(df) and ndjson(df) and ipc(df) and lazy_sinks(df);
+        let _disposed_at_1985 = dispose(df);
+        require_true(valid)
+};
+    println("Polars eager and lazy file-format round-trips passed.").

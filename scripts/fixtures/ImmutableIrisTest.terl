@@ -1,0 +1,43 @@
+module interop.ImmutableIrisTest.
+
+import ndarray.Array.{dispose as dispose_array, export_tensor_packet, import_tensor_packet, live_count, shape as array_shape, transpose}.
+import polars.DataFrame.{dispose as dispose_frame, read_csv, to_array}.
+import pytorch.Tensor.{amax, dispose as dispose_tensor, from_packet, item_float, shape as tensor_shape}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.
+
+@test
+pub immutable_packages_execute_the_transformed_iris_pipeline(): Bool ->
+    let arrays_before = live_count();
+    case read_csv("data/iris.csv") {
+        Err(_error) -> false;
+        Ok(frame) -> verify_frame(frame, arrays_before)
+    }.
+
+verify_frame(frame: DataFrame, arrays_before: Int): Bool ->
+    let source_packet =
+        to_array(
+            frame,
+            ["sepal_length_cm", "sepal_width_cm", "petal_length_cm", "petal_width_cm"],
+            "Float64",
+            "error",
+        );
+    let source = import_tensor_packet(source_packet);
+    let transformed = transpose(source, 0, 1);
+    let pytorch_packet = export_tensor_packet(transformed, "pytorch");
+    let tensor = from_packet(pytorch_packet);
+    let row_maxima = amax(tensor, [1], false);
+    let maximum = amax(row_maxima, [0], false);
+    let valid =
+        array_shape(source) == [150, 4]
+            and array_shape(transformed) == [4, 150]
+            and tensor_shape(tensor) == [4, 150]
+            and item_float(maximum) == 7.9;
+    let _disposed_maximum = dispose_tensor(maximum);
+    let _disposed_row_maxima = dispose_tensor(row_maxima);
+    let _disposed_tensor = dispose_tensor(tensor);
+    let _disposed_transformed = dispose_array(transformed);
+    let _disposed_source = dispose_array(source);
+    let _disposed_frame = dispose_frame(frame);
+    valid and live_count() == arrays_before.

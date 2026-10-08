@@ -1,0 +1,121 @@
+module polars_expressions.Folds.
+
+import polars.DataFrame.{alias, all_columns, all_horizontal, col, concat_string, dispose, filter, fold_product, fold_sum, gt, height, lit, read_csv, rows, select_exprs, sum_horizontal, width}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub numeric(): Bool ->
+    case read_csv("examples/polars_expressions/data/folds.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let inputs = append(append(expressions(), col("a")), col("b"));
+            let sums = expressions();
+            let sums = append(sums, alias(fold_sum(lit(0), inputs), "sum_fold"));
+            let sums = append(sums, alias(sum_horizontal(inputs), "sum_horz"));
+            let manual_sum =
+                case select_exprs(df, sums) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            case rows(result, 1) {
+                                Ok([["11", "11"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3032 = dispose(result);
+                        valid
+                };
+            let explicit =
+                case select_exprs(
+    df,
+    append(
+        append(expressions(), fold_sum(lit(0), inputs)),
+        alias(fold_sum(lit(0), inputs), "sum_fold"),
+    ),
+) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid = width(result) == 2;
+                        let _disposed_at_3039 = dispose(result);
+                        valid
+                };
+            let zero_product =
+                case select_exprs(df, append(expressions(), alias(fold_product(lit(0), inputs), "prod"))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            case rows(result, 1) {
+                                Ok([["0"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3049 = dispose(result);
+                        valid
+                };
+            let product =
+                case select_exprs(df, append(expressions(), alias(fold_product(lit(1), inputs), "prod"))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let valid =
+                            case rows(result, 1) {
+                                Ok([["10"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3059 = dispose(result);
+                        valid
+                };
+            let _disposed_at_3062 = dispose(df);
+            manual_sum and explicit and zero_product and product
+    }.
+
+pub conditional(): Bool ->
+    case read_csv("examples/polars_expressions/data/folds_conditional.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let predicates = append(expressions(), gt(all_columns(), lit(1)));
+            let valid =
+                case filter(df, all_horizontal(predicates)) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 1;
+                        let _disposed_at_3075 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3078 = dispose(df);
+            valid
+    }.
+
+pub string_concat(): Bool ->
+    case read_csv("examples/polars_expressions/data/folds_string.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let inputs = append(append(expressions(), col("a")), col("b"));
+            let valid =
+                case select_exprs(df, append(expressions(), concat_string(inputs, ""))) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches =
+                            case rows(result, 3) {
+                                Ok([["a1"], ["b2"], ["c3"]]) -> true;
+                                _ -> false
+                            };
+                        let _disposed_at_3094 = dispose(result);
+                        matches
+                };
+            let _disposed_at_3097 = dispose(df);
+            valid
+    }.
+
+/**
+ * Covers all six executable regions in upstream folds.rs.
+ */
+pub run(): Bool ->
+    numeric() and conditional() and string_concat().

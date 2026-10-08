@@ -1,0 +1,25 @@
+module polars.DataFrameHeadTest.
+
+import polars.DataFrame.{dispose, head, height, read_csv}.
+import std.core.Result.{Err, Ok}.
+
+import type polars.DataFrame.
+
+pub dispose_false(df: DataFrame): Bool ->
+    let _disposed_at_3158 = dispose(df);
+    false.
+
+@test
+pub head_has_typed_result_surface(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            case head(df, 1) {
+                Err(_error) -> dispose_false(df);
+                Ok(headed) ->
+                    let valid = height(headed) == 1;
+                    let _disposed_at_3174 = dispose(headed);
+                    let _disposed_at_3175 = dispose(df);
+                    valid
+            }
+    }.

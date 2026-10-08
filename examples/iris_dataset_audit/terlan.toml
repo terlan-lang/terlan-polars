@@ -1,0 +1,11 @@
+[package]
+name = "iris-dataset-audit"
+version = "0.1.0"
+namespace = "iris_dataset_audit"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

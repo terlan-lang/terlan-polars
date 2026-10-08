@@ -1,0 +1,194 @@
+module polars_expressions.Operations.
+
+import polars.DataFrame.{add, alias, and_predicate, approx_n_unique, col, dispose, divide, equal, filter, floor_divide, gt, gte, height, is_null, lit, lt, lte, modulo, multiply, n_unique, not_equal, not_expr, or_predicate, pow, read_csv, rows, select_exprs, subtract, unique_counts, unique_stable, value_counts, when_then_otherwise, width, xor}.
+import std.collections.List.
+import std.core.Result.{Err, Ok}.
+import std.io.Console.{println}.
+
+import type polars.DataFrame.{DataFrame, Expr}.
+import type std.collections.List.
+
+pub expressions(): List[Expr] ->
+    List.new().
+
+pub append(values: List[Expr], value: Expr): List[Expr] ->
+    values.push(value);
+    values.
+
+pub checked(label: String, value: Bool): Bool ->
+    case value {
+        true -> true;
+        false ->
+            let _reported = println(label);
+            false
+    }.
+
+pub arithmetic(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, alias(add(col("nrs"), lit(5)), "nrs + 5"));
+    let values = append(values, alias(subtract(col("nrs"), lit(5)), "nrs - 5"));
+    let values = append(values, alias(multiply(col("nrs"), col("random")), "nrs * random"));
+    let values = append(values, alias(divide(col("nrs"), col("random")), "nrs / random"));
+    let values = append(values, alias(pow(col("nrs"), lit(2)), "nrs ** 2"));
+    let values = append(values, alias(modulo(col("nrs"), lit(3)), "nrs % 3"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                height(result) == 5
+                    and width(result) == 6
+                    and case rows(result, 1) {
+    Ok([["6", "-4", _product, _quotient, "1", "1"]]) -> true;
+    _ -> false
+};
+            let _disposed_at_2137 = dispose(result);
+            valid
+    }.
+
+pub comparison(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, alias(gt(col("nrs"), lit(1)), "nrs > 1"));
+    let values = append(values, alias(gte(col("nrs"), lit(3)), "nrs >= 3"));
+    let values = append(values, alias(lt(col("random"), lit(0.2)), "random < .2"));
+    let values = append(values, alias(lte(col("random"), lit(0.5)), "random <= .5"));
+    let values = append(values, alias(not_equal(col("nrs"), lit(1)), "nrs != 1"));
+    let values = append(values, alias(equal(col("nrs"), lit(1)), "nrs == 1"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 5 and width(result) == 6;
+            let _disposed_at_2153 = dispose(result);
+            valid
+    }.
+
+pub boolean_operations(df: DataFrame): Bool ->
+    let values = expressions();
+    let values =
+        append(
+            values,
+            alias(
+                and_predicate(not_expr(is_null(col("nrs"))), equal(col("groups"), lit("A"))),
+                "number not null and group A",
+            ),
+        );
+    let values =
+        append(
+            values,
+            alias(
+                or_predicate(lt(col("random"), lit(0.5)), equal(col("groups"), lit("B"))),
+                "random < 0.5 or group B",
+            ),
+        );
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                case rows(result, 5) {
+                    Ok([["true", "true"], ["true", "false"], ["false", "true"], ["false", "false"], ["false", "true"]]) ->
+                        true;
+                    _ -> false
+                };
+            let _disposed_at_2174 = dispose(result);
+            valid
+    }.
+
+pub bitwise_operations(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, col("nrs"));
+    let values = append(values, alias(and_predicate(col("nrs"), lit(6)), "nrs & 6"));
+    let values = append(values, alias(or_predicate(col("nrs"), lit(6)), "nrs | 6"));
+    let values = append(values, alias(not_expr(col("nrs")), "not nrs"));
+    let values = append(values, alias(xor(col("nrs"), lit(6)), "nrs ^ 6"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                width(result) == 5
+                    and case rows(result, 1) {
+    Ok([["1", "0", "7", "-2", "7"]]) -> true;
+    _ -> false
+};
+            let _disposed_at_2193 = dispose(result);
+            valid
+    }.
+
+pub count_unique(): Bool ->
+    case read_csv("examples/polars_expressions/data/numbers.csv") {
+        Err(_error) -> false;
+        Ok(numbers) ->
+            let values = expressions();
+            let values = append(values, alias(n_unique(col("numbers")), "n_unique"));
+            let values = append(values, alias(approx_n_unique(col("numbers")), "approx_n_unique"));
+            let valid =
+                case select_exprs(numbers, values) {
+                    Err(_error) -> false;
+                    Ok(result) ->
+                        let matches = height(result) == 1 and width(result) == 2;
+                        let _disposed_at_2208 = dispose(result);
+                        matches
+                };
+            let _disposed_at_2211 = dispose(numbers);
+            valid
+    }.
+
+pub counted_values(df: DataFrame): Bool ->
+    case select_exprs(df, append(expressions(), alias(value_counts(col("names")), "value_counts"))) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 4 and width(result) == 1;
+            let _disposed_at_2220 = dispose(result);
+            valid
+    }.
+
+pub unique_values(df: DataFrame): Bool ->
+    let values = expressions();
+    let values = append(values, alias(unique_stable(col("names")), "unique"));
+    let values = append(values, alias(unique_counts(col("names")), "unique_counts"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid = height(result) == 4 and width(result) == 2;
+            let _disposed_at_2232 = dispose(result);
+            valid
+    }.
+
+pub collatz(df: DataFrame): Bool ->
+    let odd = equal(modulo(col("nrs"), lit(2)), lit(1));
+    let odd_value = add(multiply(lit(3), col("nrs")), lit(1));
+    let even_value = floor_divide(col("nrs"), lit(2));
+    let values = expressions();
+    let values = append(values, col("nrs"));
+    let values = append(values, alias(when_then_otherwise(odd, odd_value, even_value), "Collatz"));
+    case select_exprs(df, values) {
+        Err(_error) -> false;
+        Ok(result) ->
+            let valid =
+                case rows(result, 5) {
+                    Ok([["1", "4"], ["2", "1"], ["3", "10"], ["null", "null"], ["5", "16"]]) ->
+                        true;
+                    _ -> false
+                };
+            let _disposed_at_2250 = dispose(result);
+            valid
+    }.
+
+/**
+ * Covers all nine executable tagged regions in upstream operations.rs.
+ */
+pub run(): Bool ->
+    case read_csv("examples/polars_expressions/data/operations.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                checked("operations:dataframe failed", height(df) == 5 and width(df) == 4)
+                    and checked("operations:arithmetic failed", arithmetic(df))
+                    and checked("operations:comparison failed", comparison(df))
+                    and checked("operations:boolean failed", boolean_operations(df))
+                    and checked("operations:bitwise failed", bitwise_operations(df))
+                    and checked("operations:count failed", count_unique())
+                    and checked("operations:value_counts failed", counted_values(df))
+                    and checked("operations:unique_counts failed", unique_values(df))
+                    and checked("operations:collatz failed", collatz(df));
+            let _disposed_at_2268 = dispose(df);
+            valid
+    }.

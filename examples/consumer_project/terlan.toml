@@ -1,0 +1,10 @@
+[package]
+name = "terlan-polars-consumer"
+version = "0.1.0-dev"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

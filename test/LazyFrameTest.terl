@@ -1,0 +1,47 @@
+module polars.LazyFrameTest.
+
+import polars.DataFrame.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub lazy_queries_collect_projected_rows(): Bool ->
+    case DataFrame.read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let plan = DataFrame.lazy(df);
+            let filtered = DataFrame.where_eq(plan, "age", 85);
+            let projected = DataFrame.project(filtered, ["name", "age"]);
+            let valid =
+                case DataFrame.collect(projected) {
+                    Err(_error) -> false;
+                    Ok(collected) ->
+                        let valid = DataFrame.height(collected) == 1 and DataFrame.width(collected) == 2;
+                        let _disposed_collected = DataFrame.dispose(collected);
+                        valid
+                };
+            let _released_projected = DataFrame.release(projected);
+            let _released_filtered = DataFrame.release(filtered);
+            let _released_plan = DataFrame.release(plan);
+            let _disposed_df = DataFrame.dispose(df);
+            valid
+    }.
+
+@test
+pub lazy_queries_defer_schema_errors_until_collect(): Bool ->
+    case DataFrame.read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let plan = DataFrame.lazy(df);
+            let invalid = DataFrame.project(plan, ["missing"]);
+            let deferred =
+                case DataFrame.collect(invalid) {
+                    Err(_error) -> true;
+                    Ok(unexpected) ->
+                        let _disposed = DataFrame.dispose(unexpected);
+                        false
+                };
+            let _released_invalid = DataFrame.release(invalid);
+            let _released_plan = DataFrame.release(plan);
+            let _disposed_df = DataFrame.dispose(df);
+            deferred
+    }.
