@@ -57,27 +57,28 @@ use terlan_polars_native::{
     map_groups, null_counts, parquet_metadata, parquet_read_options, parquet_row_count,
     parquet_write_options, pivot, plot_bar_html, plot_bar_png, plot_bar_svg, plot_box_html,
     plot_box_png, plot_box_svg, plot_histogram_html, plot_histogram_png, plot_histogram_svg,
-    plot_line_html, plot_line_png, plot_line_svg, plot_scatter_html, plot_scatter_png,
-    plot_scatter_svg, read_csv, read_csv_dates, read_csv_with_options, read_database_env,
-    read_database_uri, read_ipc, read_ipc_with_options, read_json, read_json_with_options,
-    read_ndjson, read_parquet, read_parquet_with_options, rechunk, remove_where, rename_columns,
-    reverse_rows, row_hashes, row_hashes_seeded, row_is_duplicated, row_is_unique, rows,
-    sample_rows_fraction, sample_rows_fraction_seeded, sample_rows_n, sample_rows_n_seeded, schema,
-    select, select_exprs, select_exprs_sequential, series_cast, series_data_type, series_empty,
-    series_equal, series_equal_missing, series_from_bools, series_from_dates,
-    series_from_datetimes, series_from_floats, series_from_ints, series_from_nullable_bools,
-    series_from_nullable_dates, series_from_nullable_datetimes, series_from_nullable_floats,
-    series_from_nullable_ints, series_from_nullable_strings, series_from_strings, series_len,
-    series_name, series_null_count, series_tensor_packet, series_to_frame, series_values,
-    shift_and_fill_rows, shift_rows, show_versions, slice_rows, sort_by, sort_rows_by,
-    sql_context_execute, sql_context_new, sql_context_register, sql_context_tables,
-    sql_context_unregister, tab_header, tab_stub, table_html, tail, to_lazy, top_rows_by,
-    transpose, unique_rows, unnest_columns, unpivot, update, upsample, width, with_columns_exprs,
-    with_columns_sequential, with_row_index, write_csv, write_csv_with_options, write_ipc,
-    write_ipc_with_options, write_json, write_ndjson, write_parquet, write_parquet_with_options,
-    TerlanPolarsColumnSchema, TerlanPolarsDataFrame, TerlanPolarsError, TerlanPolarsFrameSet,
-    TerlanPolarsLazyFrame, TerlanPolarsLazyFrameSet, TerlanPolarsScalar, TerlanPolarsSeries,
-    TerlanPolarsSqlContext,
+    plot_line_html, plot_line_png, plot_line_svg, plot_options, plot_scatter_html,
+    plot_scatter_png, plot_scatter_svg, plot_with_html, plot_with_png, plot_with_svg, read_csv,
+    read_csv_dates, read_csv_with_options, read_database_env, read_database_uri, read_ipc,
+    read_ipc_with_options, read_json, read_json_with_options, read_ndjson, read_parquet,
+    read_parquet_with_options, rechunk, remove_where, rename_columns, reverse_rows, row_hashes,
+    row_hashes_seeded, row_is_duplicated, row_is_unique, rows, sample_rows_fraction,
+    sample_rows_fraction_seeded, sample_rows_n, sample_rows_n_seeded, schema, select, select_exprs,
+    select_exprs_sequential, series_cast, series_data_type, series_empty, series_equal,
+    series_equal_missing, series_from_bools, series_from_dates, series_from_datetimes,
+    series_from_floats, series_from_ints, series_from_nullable_bools, series_from_nullable_dates,
+    series_from_nullable_datetimes, series_from_nullable_floats, series_from_nullable_ints,
+    series_from_nullable_strings, series_from_strings, series_len, series_name, series_null_count,
+    series_tensor_packet, series_to_frame, series_values, shift_and_fill_rows, shift_rows,
+    show_versions, slice_rows, sort_by, sort_rows_by, sql_context_execute, sql_context_new,
+    sql_context_register, sql_context_tables, sql_context_unregister, tab_header, tab_stub,
+    table_html, tail, to_lazy, top_rows_by, transpose, unique_rows, unnest_columns, unpivot,
+    update, upsample, width, with_columns_exprs, with_columns_sequential, with_plot_color,
+    with_plot_dimensions, with_plot_facet, with_plot_title, with_row_index, write_csv,
+    write_csv_with_options, write_ipc, write_ipc_with_options, write_json, write_ndjson,
+    write_parquet, write_parquet_with_options, TerlanPolarsColumnSchema, TerlanPolarsDataFrame,
+    TerlanPolarsError, TerlanPolarsFrameSet, TerlanPolarsLazyFrame, TerlanPolarsLazyFrameSet,
+    TerlanPolarsScalar, TerlanPolarsSeries, TerlanPolarsSqlContext,
 };
 
 const DATAFRAME_TYPE: &str = "polars.DataFrame.DataFrame";
@@ -348,6 +349,24 @@ impl Worker {
             "polars.visualization.histogram_png" => self.plot_histogram_png(request.args),
             "polars.visualization.box_png" => {
                 self.plot_grouped_xy_svg(request.args, "plot_box_png", plot_box_png)
+            }
+            "polars.visualization.options" => plot_options_new(request.args),
+            "polars.visualization.options.title" => {
+                plot_options_text(request.args, "with_plot_title", with_plot_title)
+            }
+            "polars.visualization.options.color" => {
+                plot_options_text(request.args, "with_plot_color", with_plot_color)
+            }
+            "polars.visualization.options.facet" => plot_options_facet(request.args),
+            "polars.visualization.options.dimensions" => plot_options_dimensions(request.args),
+            "polars.visualization.render_svg" => {
+                self.plot_with_options(request.args, "plot_with_svg", plot_with_svg)
+            }
+            "polars.visualization.render_html" => {
+                self.plot_with_options(request.args, "plot_with_html", plot_with_html)
+            }
+            "polars.visualization.render_png" => {
+                self.plot_with_options(request.args, "plot_with_png", plot_with_png)
             }
             "polars.table.gt" => table_style_new(request.args),
             "polars.table.tab_stub" => table_style_two_text(request.args, "tab_stub", tab_stub),
@@ -2472,6 +2491,35 @@ impl Worker {
             Err(error) => return error,
         };
         encode_bytes_result(plot_histogram_png(dataframe, x, group, title))
+    }
+
+    fn plot_with_options(
+        &self,
+        args: Vec<NativeArg>,
+        name: &str,
+        function: fn(
+            &TerlanPolarsDataFrame,
+            &str,
+            &str,
+            &str,
+            &str,
+        ) -> Result<Vec<u8>, TerlanPolarsError>,
+    ) -> String {
+        let [NativeArg::Handle(handle), NativeArg::Text(kind), NativeArg::Text(x), NativeArg::Text(y), NativeArg::Text(options)] =
+            args.as_slice()
+        else {
+            return protocol_error(
+                "native_bad_args",
+                &format!(
+                    "{name} expects a DataFrame handle, plot kind, two columns, and PlotOptions"
+                ),
+            );
+        };
+        let dataframe = match self.frame(handle) {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        encode_bytes_result(function(dataframe, kind, x, y, options))
     }
 
     fn table_html(&self, args: Vec<NativeArg>) -> String {
@@ -6734,6 +6782,50 @@ fn table_style_new(args: Vec<NativeArg>) -> String {
     format!("ok_string {}", STANDARD.encode(gt()))
 }
 
+fn plot_options_new(args: Vec<NativeArg>) -> String {
+    if !args.is_empty() {
+        return protocol_error("native_bad_args", "plot_options expects no arguments");
+    }
+    format!("ok_string {}", STANDARD.encode(plot_options()))
+}
+
+fn plot_options_text(
+    args: Vec<NativeArg>,
+    name: &str,
+    function: fn(&str, &str) -> Result<String, TerlanPolarsError>,
+) -> String {
+    let [NativeArg::Text(options), NativeArg::Text(value)] = args.as_slice() else {
+        return protocol_error(
+            "native_bad_args",
+            &format!("{name} expects PlotOptions and a string"),
+        );
+    };
+    expression_result_reply(function(options, value))
+}
+
+fn plot_options_facet(args: Vec<NativeArg>) -> String {
+    let [NativeArg::Text(options), NativeArg::Text(column), NativeArg::Int(columns)] =
+        args.as_slice()
+    else {
+        return protocol_error(
+            "native_bad_args",
+            "with_plot_facet expects PlotOptions, a column, and a grid-column count",
+        );
+    };
+    expression_result_reply(with_plot_facet(options, column, *columns))
+}
+
+fn plot_options_dimensions(args: Vec<NativeArg>) -> String {
+    let [NativeArg::Text(options), NativeArg::Int(width), NativeArg::Int(height)] = args.as_slice()
+    else {
+        return protocol_error(
+            "native_bad_args",
+            "with_plot_dimensions expects PlotOptions, width, and height",
+        );
+    };
+    expression_result_reply(with_plot_dimensions(options, *width, *height))
+}
+
 fn table_style_two_text(
     args: Vec<NativeArg>,
     name: &str,
@@ -8782,6 +8874,55 @@ mod tests {
             );
             assert!(std::str::from_utf8(&bytes).unwrap().contains("<svg"));
         }
+    }
+
+    #[cfg(feature = "real-polars")]
+    #[test]
+    fn helper_composes_plot_options_and_renders_grouped_line() {
+        let mut worker = Worker::default();
+        let source = parse_result_handle(&worker.execute_line(&call_line(
+            "polars.dataframe.read_csv",
+            &[string_arg(&fixture_path("people.csv"))],
+        )));
+        let options = parse_string_reply(
+            &worker.execute_line(&call_line("polars.visualization.options", &[])),
+            "ok_string",
+        );
+        let options = parse_string_reply(
+            &worker.execute_line(&call_line(
+                "polars.visualization.options.color",
+                &[string_arg(&options), string_arg("city")],
+            )),
+            "result_ok_string",
+        );
+        let options = parse_string_reply(
+            &worker.execute_line(&call_line(
+                "polars.visualization.options.dimensions",
+                &[
+                    string_arg(&options),
+                    "i:720".to_string(),
+                    "i:480".to_string(),
+                ],
+            )),
+            "result_ok_string",
+        );
+        let bytes = parse_bytes_reply(
+            &worker.execute_line(&call_line(
+                "polars.visualization.render_svg",
+                &[
+                    handle_arg(&source),
+                    string_arg("line"),
+                    string_arg("age"),
+                    string_arg("age"),
+                    string_arg(&options),
+                ],
+            )),
+            "result_ok_bytes",
+        );
+        let svg = std::str::from_utf8(&bytes).unwrap();
+        assert!(svg.contains("<svg"));
+        assert!(svg.contains("720"));
+        assert!(svg.contains("480"));
     }
 
     #[cfg(feature = "plotly-html")]

@@ -23,6 +23,7 @@ pub mod interchange;
 pub mod io_options;
 pub mod lazyframe_extended;
 pub mod parity;
+pub mod plot_options;
 pub mod series;
 pub mod series_extended;
 pub mod sql;
@@ -68,6 +69,9 @@ pub use io_options::{
     write_ipc_with_options, write_parquet_with_options,
 };
 pub use lazyframe_extended::*;
+pub use plot_options::{
+    plot_options, with_plot_color, with_plot_dimensions, with_plot_facet, with_plot_title,
+};
 pub use series::*;
 pub use series_extended::*;
 pub use sql::{
@@ -83,7 +87,8 @@ pub use udf::{apply_expression_udf, define_expression_udf, expression_udf_parame
 pub use visualization::{
     plot_bar_html, plot_bar_png, plot_bar_svg, plot_box_html, plot_box_png, plot_box_svg,
     plot_histogram_html, plot_histogram_png, plot_histogram_svg, plot_line_html, plot_line_png,
-    plot_line_svg, plot_scatter_html, plot_scatter_png, plot_scatter_svg,
+    plot_line_svg, plot_scatter_html, plot_scatter_png, plot_scatter_svg, plot_with_html,
+    plot_with_png, plot_with_svg,
 };
 
 const MAX_MATERIALIZED_ROWS: usize = 10_000;

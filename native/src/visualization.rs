@@ -1,5 +1,7 @@
 //! Bounded in-memory visualization for package-owned DataFrames.
 
+#[cfg(feature = "real-polars")]
+use crate::plot_options::{decode_plot_options, PlotOptions, MAX_FACETS};
 use crate::{TerlanPolarsDataFrame, TerlanPolarsError};
 
 #[cfg(feature = "real-polars")]
@@ -89,6 +91,398 @@ fn render_svg<P: PlottersExt>(plot: &P) -> Result<Vec<u8>, TerlanPolarsError> {
 #[cfg(feature = "real-polars")]
 fn plot_build_error(error: plotlars_core::io::PlotlarsError) -> TerlanPolarsError {
     TerlanPolarsError::new("plot_error", format!("could not build plot: {error}"))
+}
+
+#[cfg(feature = "real-polars")]
+#[derive(Clone)]
+struct OwnedPlot {
+    traces: Vec<plotlars_core::ir::trace::TraceIR>,
+    layout: plotlars_core::ir::layout::LayoutIR,
+}
+
+#[cfg(feature = "real-polars")]
+impl plotlars_core::Plot for OwnedPlot {
+    fn ir_traces(&self) -> &[plotlars_core::ir::trace::TraceIR] {
+        &self.traces
+    }
+
+    fn ir_layout(&self) -> &plotlars_core::ir::layout::LayoutIR {
+        &self.layout
+    }
+}
+
+#[cfg(feature = "real-polars")]
+impl OwnedPlot {
+    fn from_plot(plot: &impl plotlars_core::Plot, options: &PlotOptions) -> Self {
+        let mut layout = plot.ir_layout().clone();
+        if let (Some(width), Some(height)) = (options.width, options.height) {
+            layout.dimensions = Some(
+                plotlars_core::components::Dimensions::new()
+                    .width(width)
+                    .height(height)
+                    .auto_size(false),
+            );
+        }
+        Self {
+            traces: plot.ir_traces().to_vec(),
+            layout,
+        }
+    }
+}
+
+#[cfg(feature = "real-polars")]
+fn facet_config(options: &PlotOptions) -> Option<plotlars_core::components::FacetConfig> {
+    options
+        .facet_columns
+        .map(|columns| plotlars_core::components::FacetConfig::new().cols(columns))
+}
+
+#[cfg(feature = "real-polars")]
+fn validate_facet_count(
+    dataframe: &TerlanPolarsDataFrame,
+    facet: Option<&str>,
+) -> Result<(), TerlanPolarsError> {
+    if let Some(facet) = facet {
+        let count = dataframe
+            .inner
+            .column(facet)
+            .and_then(|column| column.n_unique())
+            .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?;
+        if count > MAX_FACETS {
+            return Err(TerlanPolarsError::new(
+                "plot_limit_exceeded",
+                format!("facet column `{facet}` has {count} values; the maximum is {MAX_FACETS}"),
+            ));
+        }
+    }
+    Ok(())
+}
+
+#[cfg(feature = "real-polars")]
+#[allow(clippy::too_many_arguments)]
+fn basic_line_plot(
+    data: &polars::prelude::DataFrame,
+    x: &str,
+    y: &str,
+    facet: Option<&str>,
+    config: Option<&plotlars_core::components::FacetConfig>,
+    color: Option<plotlars_core::components::Rgb>,
+    title: &str,
+    legend_title: Option<&str>,
+    options: &PlotOptions,
+) -> Result<OwnedPlot, TerlanPolarsError> {
+    use plotlars_core::{plots::lineplot::LinePlot, plots::timeseriesplot::TimeSeriesPlot};
+
+    let numeric_x = data
+        .column(x)
+        .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?
+        .dtype()
+        .is_numeric();
+    macro_rules! build {
+        ($plot:ty) => {{
+            let plot = <$plot>::try_new(
+                data,
+                x,
+                y,
+                None,
+                facet,
+                config,
+                None,
+                color,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                (!title.is_empty()).then(|| title.into()),
+                Some(x.into()),
+                Some(y.into()),
+                None,
+                legend_title.map(Into::into),
+                None,
+                None,
+                None,
+                None,
+            )
+            .map_err(plot_build_error)?;
+            OwnedPlot::from_plot(&plot, options)
+        }};
+    }
+    Ok(if numeric_x {
+        build!(LinePlot)
+    } else {
+        build!(TimeSeriesPlot)
+    })
+}
+
+#[cfg(feature = "real-polars")]
+fn grouped_line_plot(
+    dataframe: &TerlanPolarsDataFrame,
+    x: &str,
+    y: &str,
+    group: &str,
+    options: &PlotOptions,
+) -> Result<OwnedPlot, TerlanPolarsError> {
+    use plotlars_core::{components::Rgb, ir::trace::TraceIR};
+    use polars::prelude::{col, lit, DataType, IntoLazy};
+
+    const MAX_GROUPS: usize = 64;
+    const COLORS: [Rgb; 10] = [
+        Rgb(31, 119, 180),
+        Rgb(255, 127, 14),
+        Rgb(44, 160, 44),
+        Rgb(214, 39, 40),
+        Rgb(148, 103, 189),
+        Rgb(140, 86, 75),
+        Rgb(227, 119, 194),
+        Rgb(127, 127, 127),
+        Rgb(188, 189, 34),
+        Rgb(23, 190, 207),
+    ];
+
+    let groups = plotlars_core::data::get_unique_groups(&dataframe.inner, group, None);
+    if groups.len() > MAX_GROUPS {
+        return Err(TerlanPolarsError::new(
+            "plot_limit_exceeded",
+            format!(
+                "line color column `{group}` has {} values; the maximum is {MAX_GROUPS}",
+                groups.len()
+            ),
+        ));
+    }
+
+    let mut result = basic_line_plot(
+        &dataframe.inner,
+        x,
+        y,
+        None,
+        None,
+        None,
+        &options.title,
+        Some(group),
+        options,
+    )?;
+    result.traces.clear();
+
+    for (index, group_name) in groups.iter().enumerate() {
+        let filtered = dataframe
+            .inner
+            .clone()
+            .lazy()
+            .filter(
+                col(group)
+                    .cast(DataType::String)
+                    .eq(lit(group_name.as_str())),
+            )
+            .collect()
+            .map_err(|error| TerlanPolarsError::new("plot_error", error.to_string()))?;
+        let line = basic_line_plot(
+            &filtered,
+            x,
+            y,
+            None,
+            None,
+            Some(COLORS[index % COLORS.len()]),
+            "",
+            None,
+            options,
+        )?;
+        let mut trace =
+            line.traces.first().cloned().ok_or_else(|| {
+                TerlanPolarsError::new("plot_error", "line group produced no trace")
+            })?;
+        match &mut trace {
+            TraceIR::LinePlot(line) => {
+                line.name = Some(group_name.clone());
+                line.legend_group = Some(group_name.clone());
+                line.show_legend = Some(true);
+            }
+            TraceIR::TimeSeriesPlot(line) => {
+                line.name = Some(group_name.clone());
+                line.legend_group = Some(group_name.clone());
+                line.show_legend = Some(true);
+            }
+            _ => {
+                return Err(TerlanPolarsError::new(
+                    "plot_error",
+                    "line group produced an unexpected trace",
+                ));
+            }
+        }
+        result.traces.push(trace);
+    }
+    Ok(result)
+}
+
+#[cfg(feature = "real-polars")]
+fn build_plot(
+    dataframe: &TerlanPolarsDataFrame,
+    kind: &str,
+    x: &str,
+    y: &str,
+    descriptor: &str,
+) -> Result<OwnedPlot, TerlanPolarsError> {
+    use plotlars_core::plots::{
+        barplot::BarPlot, boxplot::BoxPlot, histogram::Histogram, scatterplot::ScatterPlot,
+    };
+
+    let options = decode_plot_options(descriptor)?;
+    let color = (!options.color.is_empty()).then_some(options.color.as_str());
+    let facet = (!options.facet.is_empty()).then_some(options.facet.as_str());
+    let config = facet_config(&options);
+    let config_ref = config.as_ref();
+
+    let mut columns = vec![x];
+    if kind != "histogram" {
+        columns.push(y);
+    }
+    if let Some(color) = color {
+        columns.push(color);
+    }
+    if let Some(facet) = facet {
+        columns.push(facet);
+    }
+    validate_plot(dataframe, &columns)?;
+    validate_facet_count(dataframe, facet)?;
+
+    let build = || -> Result<OwnedPlot, TerlanPolarsError> {
+        let plot = match kind {
+            "scatter" | "point" => {
+                let plot = ScatterPlot::try_new(
+                    &dataframe.inner,
+                    x,
+                    y,
+                    color,
+                    None,
+                    facet,
+                    config_ref,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    (!options.title.is_empty()).then(|| options.title.as_str().into()),
+                    Some(x.into()),
+                    Some(y.into()),
+                    color.map(Into::into),
+                    None,
+                    None,
+                    None,
+                )
+                .map_err(plot_build_error)?;
+                OwnedPlot::from_plot(&plot, &options)
+            }
+            "line" => {
+                if color.is_some() && facet.is_some() {
+                    return Err(TerlanPolarsError::new(
+                        "plot_error",
+                        "line plots cannot combine categorical color and faceting",
+                    ));
+                }
+                if let Some(group) = color {
+                    grouped_line_plot(dataframe, x, y, group, &options)?
+                } else {
+                    basic_line_plot(
+                        &dataframe.inner,
+                        x,
+                        y,
+                        facet,
+                        config_ref,
+                        None,
+                        &options.title,
+                        None,
+                        &options,
+                    )?
+                }
+            }
+            "bar" => {
+                let plot = BarPlot::try_new(
+                    &dataframe.inner,
+                    x,
+                    y,
+                    None,
+                    color,
+                    None,
+                    facet,
+                    config_ref,
+                    None,
+                    None,
+                    None,
+                    None,
+                    (!options.title.is_empty()).then(|| options.title.as_str().into()),
+                    Some(x.into()),
+                    Some(y.into()),
+                    color.map(Into::into),
+                    None,
+                    None,
+                    None,
+                )
+                .map_err(plot_build_error)?;
+                OwnedPlot::from_plot(&plot, &options)
+            }
+            "histogram" => {
+                let plot = Histogram::try_new(
+                    &dataframe.inner,
+                    x,
+                    color,
+                    None,
+                    facet,
+                    config_ref,
+                    None,
+                    None,
+                    None,
+                    (!options.title.is_empty()).then(|| options.title.as_str().into()),
+                    Some(x.into()),
+                    Some("count".into()),
+                    color.map(Into::into),
+                    None,
+                    None,
+                    None,
+                )
+                .map_err(plot_build_error)?;
+                OwnedPlot::from_plot(&plot, &options)
+            }
+            "box" => {
+                let plot = BoxPlot::try_new(
+                    &dataframe.inner,
+                    x,
+                    y,
+                    None,
+                    color,
+                    None,
+                    facet,
+                    config_ref,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    (!options.title.is_empty()).then(|| options.title.as_str().into()),
+                    Some(x.into()),
+                    Some(y.into()),
+                    color.map(Into::into),
+                    None,
+                    None,
+                    None,
+                )
+                .map_err(plot_build_error)?;
+                OwnedPlot::from_plot(&plot, &options)
+            }
+            _ => {
+                return Err(TerlanPolarsError::new(
+                    "plot_error",
+                    format!("unknown plot kind `{kind}`"),
+                ));
+            }
+        };
+        Ok(plot)
+    };
+
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(build))
+        .map_err(|_| TerlanPolarsError::new("plot_error", "Plotlars failed while building plot"))?
 }
 
 /// Renders a scatter plot as bounded UTF-8 SVG bytes. Empty `group` disables grouping.
@@ -838,6 +1232,54 @@ unavailable_plot!(plot_histogram_svg(dataframe: &TerlanPolarsDataFrame, x: &str,
 #[cfg(not(feature = "real-polars"))]
 unavailable_plot!(plot_box_svg(dataframe: &TerlanPolarsDataFrame, labels: &str, values: &str, group: &str, title: &str));
 
+/// Renders a plot with a versioned options descriptor as bounded SVG bytes.
+#[cfg(feature = "real-polars")]
+pub fn plot_with_svg(
+    dataframe: &TerlanPolarsDataFrame,
+    kind: &str,
+    x: &str,
+    y: &str,
+    options: &str,
+) -> Result<Vec<u8>, TerlanPolarsError> {
+    let plot = build_plot(dataframe, kind, x, y, options)?;
+    render_svg(&plot)
+}
+
+/// Renders a plot with a versioned options descriptor as bounded Plotly HTML bytes.
+#[cfg(feature = "plotly-html")]
+pub fn plot_with_html(
+    dataframe: &TerlanPolarsDataFrame,
+    kind: &str,
+    x: &str,
+    y: &str,
+    options: &str,
+) -> Result<Vec<u8>, TerlanPolarsError> {
+    let plot = build_plot(dataframe, kind, x, y, options)?;
+    render_plotly_html(&plot)
+}
+
+/// Renders a plot with a versioned options descriptor as bounded PNG bytes.
+#[cfg(feature = "plot-png")]
+pub fn plot_with_png(
+    dataframe: &TerlanPolarsDataFrame,
+    kind: &str,
+    x: &str,
+    y: &str,
+    options: &str,
+) -> Result<Vec<u8>, TerlanPolarsError> {
+    let plot = build_plot(dataframe, kind, x, y, options)?;
+    render_png(&plot)
+}
+
+#[cfg(not(feature = "real-polars"))]
+unavailable_plot!(plot_with_svg(dataframe: &TerlanPolarsDataFrame, kind: &str, x: &str, y: &str, options: &str));
+
+#[cfg(not(feature = "plotly-html"))]
+unavailable_plotly!(plot_with_html(dataframe: &TerlanPolarsDataFrame, kind: &str, x: &str, y: &str, options: &str));
+
+#[cfg(not(feature = "plot-png"))]
+unavailable_png!(plot_with_png(dataframe: &TerlanPolarsDataFrame, kind: &str, x: &str, y: &str, options: &str));
+
 #[cfg(all(test, feature = "real-polars"))]
 mod tests {
     use super::*;
@@ -849,7 +1291,9 @@ mod tests {
                 "x" => [1.0, 2.0, 3.0, 4.0],
                 "y" => [4.0, 2.0, 5.0, 3.0],
                 "label" => ["a", "b", "c", "d"],
-                "group" => ["one", "one", "two", "two"]
+                "group" => ["one", "one", "two", "two"],
+                "facet" => ["first", "second", "first", "second"],
+                "date" => ["2026-01-01", "2026-01-02", "2026-01-01", "2026-01-02"]
             ]
             .unwrap(),
         }
@@ -877,6 +1321,41 @@ mod tests {
         assert!(error.message().contains("does not exist"));
     }
 
+    #[test]
+    fn typed_options_build_grouped_lines_and_faceted_bars() {
+        let df = frame();
+        let line_options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
+        let line_options = crate::with_plot_title(&line_options, "Grouped line").unwrap();
+        let line_options = crate::with_plot_dimensions(&line_options, 960, 540).unwrap();
+        let line = build_plot(&df, "line", "x", "y", &line_options).unwrap();
+        assert_eq!(line.traces.len(), 2);
+        let dimensions = line.layout.dimensions.as_ref().unwrap();
+        assert_eq!(
+            (dimensions.width, dimensions.height),
+            (Some(960), Some(540))
+        );
+        assert!(is_svg(plot_with_svg(&df, "line", "x", "y", &line_options)));
+        let dated_line = build_plot(&df, "line", "date", "y", &line_options).unwrap();
+        assert_eq!(dated_line.traces.len(), 2);
+        assert!(dated_line
+            .traces
+            .iter()
+            .all(|trace| matches!(trace, plotlars_core::ir::trace::TraceIR::TimeSeriesPlot(_))));
+
+        let bar_options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
+        let bar_options = crate::with_plot_facet(&bar_options, "facet", 2).unwrap();
+        let bar = build_plot(&df, "bar", "label", "y", &bar_options).unwrap();
+        let grid = bar.layout.grid.as_ref().unwrap();
+        assert_eq!((grid.cols, grid.rows, grid.n_facets), (2, 1, 2));
+        assert!(is_svg(plot_with_svg(
+            &df,
+            "bar",
+            "label",
+            "y",
+            &bar_options
+        )));
+    }
+
     #[cfg(feature = "plotly-html")]
     #[test]
     fn renders_all_optional_plotly_html_plot_types() {
@@ -891,6 +1370,15 @@ mod tests {
             let html = String::from_utf8(result.unwrap()).unwrap();
             assert!(html.contains("plotly") || html.contains("Plotly"));
         }
+
+        let options = crate::with_plot_color(&crate::plot_options(), "group").unwrap();
+        let options = crate::with_plot_dimensions(&options, 960, 540).unwrap();
+        let html =
+            String::from_utf8(plot_with_html(&df, "line", "x", "y", &options).unwrap()).unwrap();
+        assert!(html.contains("one"));
+        assert!(html.contains("two"));
+        assert!(html.contains("\"width\":960"));
+        assert!(html.contains("\"height\":540"));
     }
 
     #[cfg(feature = "plot-png")]
@@ -906,5 +1394,11 @@ mod tests {
         ] {
             assert!(result.unwrap().starts_with(b"\x89PNG\r\n\x1a\n"));
         }
+        let options = crate::with_plot_facet(&crate::plot_options(), "facet", 2).unwrap();
+        let options = crate::with_plot_dimensions(&options, 720, 480).unwrap();
+        let png = plot_with_png(&df, "bar", "label", "y", &options).unwrap();
+        assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"));
+        assert_eq!(u32::from_be_bytes(png[16..20].try_into().unwrap()), 720);
+        assert_eq!(u32::from_be_bytes(png[20..24].try_into().unwrap()), 480);
     }
 }

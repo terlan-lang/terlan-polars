@@ -467,6 +467,11 @@ pub opaque type IpcWriteOptions = String.
 pub opaque type TableStyle = String.
 
 /**
+ * Immutable options shared by SVG, interactive HTML, and PNG plots.
+ */
+pub opaque type PlotOptions = String.
+
+/**
  * Reports terlan-polars and pinned Rust dependency versions.
  */
 @compiler.native {polars.show_versions}
@@ -7385,6 +7390,223 @@ pub (_df: DataFrame) unnest_columns(_columns: List[String], _separator: String):
 @compiler.native {polars.dataframe.transpose}
 pub (_df: DataFrame) transpose(_keep_names_as: String): Result[DataFrame, Error] ->
     native.
+
+/**
+ * Creates default plot options with no title, color grouping, facet, or fixed size.
+ */
+@compiler.native {polars.visualization.options}
+pub plot_options(): PlotOptions ->
+    native.
+
+/**
+ * Returns plot options with the title replaced; an empty title removes it.
+ */
+@compiler.native {polars.visualization.options.title}
+pub (_options: PlotOptions) with_plot_title(_title: String): Result[PlotOptions, Error] ->
+    native.
+
+/**
+ * Returns plot options with a Polars-compatible categorical `color` column.
+ */
+@compiler.native {polars.visualization.options.color}
+pub (_options: PlotOptions) with_plot_color(_column: String): Result[PlotOptions, Error] ->
+    native.
+
+/**
+ * Returns plot options with a facet column and optional grid-column count.
+ * Zero grid columns selects automatic layout; an empty column clears faceting.
+ */
+@compiler.native {polars.visualization.options.facet}
+pub (_options: PlotOptions) with_plot_facet(_column: String, _columns: Int = 0): Result[PlotOptions, Error] ->
+    native.
+
+/**
+ * Polars-compatible `column` spelling for setting a facet column.
+ */
+pub (_options: PlotOptions) with_plot_column(_column: String, _columns: Int = 0): Result[PlotOptions, Error] ->
+    with_plot_facet(_options, _column, _columns).
+
+/**
+ * Returns plot options with bounded fixed pixel dimensions.
+ */
+@compiler.native {polars.visualization.options.dimensions}
+pub (_options: PlotOptions) with_plot_dimensions(_width: Int, _height: Int): Result[PlotOptions, Error] ->
+    native.
+
+@compiler.native {polars.visualization.render_svg}
+(_df: DataFrame) render_plot_svg(
+    _kind: String,
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    native.
+
+@compiler.native {polars.visualization.render_html}
+(_df: DataFrame) render_plot_html(
+    _kind: String,
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    native.
+
+@compiler.native {polars.visualization.render_png}
+(_df: DataFrame) render_plot_png(
+    _kind: String,
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    native.
+
+/**
+ * Renders a point plot with typed options as bounded SVG bytes.
+ */
+pub (_df: DataFrame) plot_point_svg_with_options(_x: String, _y: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_svg(_df, "point", _x, _y, _options).
+
+/**
+ * Alias for `plot_point_svg_with_options`.
+ */
+pub (_df: DataFrame) plot_scatter_svg_with_options(
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    plot_point_svg_with_options(_df, _x, _y, _options).
+
+/**
+ * Renders a line plot with typed options as bounded SVG bytes.
+ */
+pub (_df: DataFrame) plot_line_svg_with_options(_x: String, _y: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_svg(_df, "line", _x, _y, _options).
+
+/**
+ * Renders a bar plot with typed options as bounded SVG bytes.
+ */
+pub (_df: DataFrame) plot_bar_svg_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_svg(_df, "bar", _labels, _values, _options).
+
+/**
+ * Renders a histogram with typed options as bounded SVG bytes.
+ */
+pub (_df: DataFrame) plot_histogram_svg_with_options(_x: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_svg(_df, "histogram", _x, "", _options).
+
+/**
+ * Renders a box plot with typed options as bounded SVG bytes.
+ */
+pub (_df: DataFrame) plot_box_svg_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_svg(_df, "box", _labels, _values, _options).
+
+/**
+ * Renders a point plot with typed options as bounded interactive HTML bytes.
+ */
+pub (_df: DataFrame) plot_point_html_with_options(
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_html(_df, "point", _x, _y, _options).
+
+/**
+ * Alias for `plot_point_html_with_options`.
+ */
+pub (_df: DataFrame) plot_scatter_html_with_options(
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    plot_point_html_with_options(_df, _x, _y, _options).
+
+/**
+ * Renders a line plot with typed options as bounded interactive HTML bytes.
+ */
+pub (_df: DataFrame) plot_line_html_with_options(_x: String, _y: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_html(_df, "line", _x, _y, _options).
+
+/**
+ * Renders a bar plot with typed options as bounded interactive HTML bytes.
+ */
+pub (_df: DataFrame) plot_bar_html_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_html(_df, "bar", _labels, _values, _options).
+
+/**
+ * Renders a histogram with typed options as bounded interactive HTML bytes.
+ */
+pub (_df: DataFrame) plot_histogram_html_with_options(_x: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_html(_df, "histogram", _x, "", _options).
+
+/**
+ * Renders a box plot with typed options as bounded interactive HTML bytes.
+ */
+pub (_df: DataFrame) plot_box_html_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_html(_df, "box", _labels, _values, _options).
+
+/**
+ * Renders a point plot with typed options as bounded PNG bytes.
+ */
+pub (_df: DataFrame) plot_point_png_with_options(_x: String, _y: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_png(_df, "point", _x, _y, _options).
+
+/**
+ * Alias for `plot_point_png_with_options`.
+ */
+pub (_df: DataFrame) plot_scatter_png_with_options(
+    _x: String,
+    _y: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    plot_point_png_with_options(_df, _x, _y, _options).
+
+/**
+ * Renders a line plot with typed options as bounded PNG bytes.
+ */
+pub (_df: DataFrame) plot_line_png_with_options(_x: String, _y: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_png(_df, "line", _x, _y, _options).
+
+/**
+ * Renders a bar plot with typed options as bounded PNG bytes.
+ */
+pub (_df: DataFrame) plot_bar_png_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_png(_df, "bar", _labels, _values, _options).
+
+/**
+ * Renders a histogram with typed options as bounded PNG bytes.
+ */
+pub (_df: DataFrame) plot_histogram_png_with_options(_x: String, _options: PlotOptions): Result[Bytes, Error] ->
+    render_plot_png(_df, "histogram", _x, "", _options).
+
+/**
+ * Renders a box plot with typed options as bounded PNG bytes.
+ */
+pub (_df: DataFrame) plot_box_png_with_options(
+    _labels: String,
+    _values: String,
+    _options: PlotOptions,
+): Result[Bytes, Error] ->
+    render_plot_png(_df, "box", _labels, _values, _options).
 
 /**
  * Renders a bounded scatter plot as in-memory SVG bytes.

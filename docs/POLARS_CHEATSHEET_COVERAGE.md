@@ -253,7 +253,7 @@ Validated on 2026-10-08:
 | Cheat-sheet operation | Status | Terlan mapping and limits |
 | --- | --- | --- |
 | Great Tables `GT`, `tab_stub`, `cols_label`, `tab_header`, `fmt_number`, `fmt_nanoplot`, `data_color` | Direct | A declarative Rust styling layer exports the same operations and bounded HTML with escaped cell/header content. It does not expose Python Great Tables objects. |
-| `df.plot.point(...)` / `df.plot.scatter(...)` | Direct | `plot_point_svg` is the canonical Polars spelling and `plot_scatter_svg` is its alias. Their color column maps to Terlan's grouping argument. Line, bar, histogram, and box SVG renderers are also available through Plotlars/Plotters. SVG is the lightweight default. |
+| `df.plot.point(...)` / `df.plot.scatter(...)` | Direct | `plot_point_svg` is the canonical Polars spelling and `plot_scatter_svg` is its alias. Immutable `PlotOptions` map categorical `color`, facets, titles, and dimensions consistently to the five chart families across SVG, optional Plotly HTML, and optional PNG. Line color grouping and bar facets are covered directly. SVG is the lightweight default. |
 | Plotnine `ggplot`, `aes`, `geom_point`; Plotly, hvPlot, Seaborn, Matplotlib | External | Python plotting-library objects and Plotnine's general grammar are external. The five covered chart forms have native SVG plus optional Plotly HTML and PNG outputs. |
 | `df.to_pandas()` | External | A Python pandas object cannot cross the native boundary. Data can be exported as owned Arrow IPC bytes for a Python adapter to consume. |
 | `polars_cloud.ComputeContext`, `lf.remote(ctx).execute().await_result()` | External | Polars Cloud is a separate hosted Python service and is not integrated. |
@@ -262,8 +262,9 @@ Validated on 2026-10-08:
 
 `terlan-polars` now covers every core dataframe and expression behavior printed
 on the sheet. Its plotting calls cover the chart operations printed on the
-sheet, while arbitrary Altair marks, encoding objects, and chained chart
-configuration remain external visualization-library behavior. `map_groups` is
+sheet, including categorical color grouping and bounded facets, while arbitrary
+Altair marks, encoding objects, and chained chart configuration remain external
+visualization-library behavior. `map_groups` is
 deliberately constrained to safe declarative group projections, and
 Python-object interchange remains outside the native boundary. Avro, Delta
 Lake, spreadsheets, and Iceberg are classified as separate optional adapters;

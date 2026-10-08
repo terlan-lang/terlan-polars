@@ -5026,6 +5026,46 @@
       "operation": "polars.dataframe.transpose"
     },
     {
+      "arity": 0,
+      "name": "plot_options",
+      "operation": "polars.visualization.options"
+    },
+    {
+      "arity": 2,
+      "name": "with_plot_title",
+      "operation": "polars.visualization.options.title"
+    },
+    {
+      "arity": 2,
+      "name": "with_plot_color",
+      "operation": "polars.visualization.options.color"
+    },
+    {
+      "arity": 3,
+      "name": "with_plot_facet",
+      "operation": "polars.visualization.options.facet"
+    },
+    {
+      "arity": 3,
+      "name": "with_plot_dimensions",
+      "operation": "polars.visualization.options.dimensions"
+    },
+    {
+      "arity": 5,
+      "name": "render_plot_svg",
+      "operation": "polars.visualization.render_svg"
+    },
+    {
+      "arity": 5,
+      "name": "render_plot_html",
+      "operation": "polars.visualization.render_html"
+    },
+    {
+      "arity": 5,
+      "name": "render_plot_png",
+      "operation": "polars.visualization.render_png"
+    },
+    {
       "arity": 5,
       "name": "plot_scatter_svg",
       "operation": "polars.visualization.scatter_svg"

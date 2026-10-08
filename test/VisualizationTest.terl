@@ -1,6 +1,6 @@
 module polars.VisualizationTest.
 
-import polars.DataFrame.{dispose, plot_bar_svg, plot_box_svg, plot_histogram_svg, plot_line_svg, plot_point_svg, plot_scatter_svg, read_csv}.
+import polars.DataFrame.{dispose, plot_bar_svg, plot_bar_svg_with_options, plot_box_svg, plot_histogram_svg, plot_line_svg, plot_line_svg_with_options, plot_options, plot_point_svg, plot_scatter_svg, read_csv, with_plot_color, with_plot_column, with_plot_dimensions, with_plot_title}.
 import std.core.Result.{Err, Ok}.
 
 @test
@@ -99,4 +99,24 @@ pub svg_visualizations_validate_columns(): Bool ->
                 };
             let _disposed = dispose(df);
             valid
+    }.
+
+@test
+pub typed_plot_options_cover_line_color_and_bar_facets(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let {
+                Ok(line_color) <- with_plot_color(plot_options(), "city");
+                Ok(line_title) <- with_plot_title(line_color, "Age by city");
+                Ok(line_options) <- with_plot_dimensions(line_title, 720, 480);
+                Ok(_line) <- plot_line_svg_with_options(df, "age", "age", line_options);
+                Ok(bar_options) <- with_plot_column(plot_options(), "city", 2);
+                Ok(_bar) <- plot_bar_svg_with_options(df, "city", "age", bar_options)
+            } else {
+                _ ->
+                    let _disposed = dispose(df);
+                    false
+            };
+            (let _disposed = dispose(df); true)
     }.
