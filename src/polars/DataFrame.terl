@@ -7395,6 +7395,13 @@ pub (_df: DataFrame) plot_scatter_svg(_x: String, _y: String, _group: String, _t
     native.
 
 /**
+ * Polars-compatible name for a bounded point plot.
+ * `plot.scatter` is an alias of `plot.point` in Python Polars 2.
+ */
+pub (_df: DataFrame) plot_point_svg(_x: String, _y: String, _color: String, _title: String): Result[Bytes, Error] ->
+    plot_scatter_svg(_df, _x, _y, _color, _title).
+
+/**
  * Renders a bounded line plot as in-memory SVG bytes.
  */
 @compiler.native {polars.visualization.line_svg}
@@ -7443,6 +7450,12 @@ pub (_df: DataFrame) plot_scatter_html(_x: String, _y: String, _group: String, _
     native.
 
 /**
+ * Polars-compatible name for an optional interactive point plot.
+ */
+pub (_df: DataFrame) plot_point_html(_x: String, _y: String, _color: String, _title: String): Result[Bytes, Error] ->
+    plot_scatter_html(_df, _x, _y, _color, _title).
+
+/**
  * Optional interactive Plotly line plot as a bounded HTML document.
  */
 @compiler.native {polars.visualization.line_html}
@@ -7486,6 +7499,12 @@ pub (_df: DataFrame) plot_box_html(
 @compiler.native {polars.visualization.scatter_png}
 pub (_df: DataFrame) plot_scatter_png(_x: String, _y: String, _group: String, _title: String): Result[Bytes, Error] ->
     native.
+
+/**
+ * Polars-compatible name for an optional PNG point plot.
+ */
+pub (_df: DataFrame) plot_point_png(_x: String, _y: String, _color: String, _title: String): Result[Bytes, Error] ->
+    plot_scatter_png(_df, _x, _y, _color, _title).
 
 /**
  * Optional PNG line plot; SVG remains the default static format.

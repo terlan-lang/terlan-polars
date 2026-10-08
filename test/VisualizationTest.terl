@@ -1,6 +1,6 @@
 module polars.VisualizationTest.
 
-import polars.DataFrame.{dispose, plot_bar_svg, plot_box_svg, plot_histogram_svg, plot_line_svg, plot_scatter_svg, read_csv}.
+import polars.DataFrame.{dispose, plot_bar_svg, plot_box_svg, plot_histogram_svg, plot_line_svg, plot_point_svg, plot_scatter_svg, read_csv}.
 import std.core.Result.{Err, Ok}.
 
 @test
@@ -10,6 +10,20 @@ pub scatter_svg_renders(): Bool ->
         Ok(df) ->
             let valid =
                 case plot_scatter_svg(df, "age", "age", "city", "Scatter") {
+                    Err(_error) -> false;
+                    Ok(_svg) -> true
+                };
+            let _disposed = dispose(df);
+            valid
+    }.
+
+@test
+pub point_svg_is_the_polars_compatible_scatter_alias(): Bool ->
+    case read_csv("test/fixtures/people.csv") {
+        Err(_error) -> false;
+        Ok(df) ->
+            let valid =
+                case plot_point_svg(df, "age", "age", "city", "Point") {
                     Err(_error) -> false;
                     Ok(_svg) -> true
                 };

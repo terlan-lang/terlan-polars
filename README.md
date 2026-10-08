@@ -157,10 +157,12 @@ make release-check
 
 The feature-resolved Rust API inventory gate is complemented by the
 [Polars 2.0 alignment record](docs/POLARS_2_ALIGNMENT.md) and the
-[Polars 1.43 cheat-sheet audit](docs/POLARS_CHEATSHEET_COVERAGE.md). The audit
-tracks Python conveniences, I/O formats, and ecosystem operations that are not
-part of the pinned Rust API denominator, checks observable behavior beyond
-name mappings, and records the remaining gaps.
+[Polars 1.43 cheat-sheet audit](docs/POLARS_CHEATSHEET_COVERAGE.md). The
+[graphics contract](docs/POLARS_GRAPHICS.md) records the supported chart and
+backend matrix, output bounds, and the boundary with Altair configuration. The
+audit tracks Python conveniences, I/O formats, and ecosystem operations that
+are not part of the pinned Rust API denominator, checks observable behavior
+beyond name mappings, and records the remaining gaps.
 
 This additionally requires zero unmapped identities in the published Polars 0.55.2 Rust inventory baseline,
 strict missing-documentation checks for the Rust adapter, and canonical Terlan

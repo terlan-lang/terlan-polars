@@ -1,0 +1,71 @@
+name: Polars Package CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: polars-package-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  release-check:
+    name: Release check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout package
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned Terlan compiler
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: terlan-lang/terlan
+          ref: 6c00b3d1bfaa1ca10ddb07533f5823e827029274
+          path: _build/terlan
+          persist-credentials: false
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            build-essential \
+            libfontconfig1-dev \
+            libsqlite3-dev \
+            libssl-dev \
+            pkg-config \
+            protobuf-compiler \
+            zstd
+
+      - name: Install Rust toolchain
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt
+          rustup default 1.96.0
+
+      - name: Build pinned Terlan compiler
+        run: |
+          cargo build --locked --quiet \
+            --manifest-path _build/terlan/Cargo.toml \
+            -p terlan --bin terlc
+
+      - name: Prefetch locked Polars dependencies
+        run: cargo fetch --locked --manifest-path native/Cargo.toml
+
+      - name: Run package release gate
+        run: |
+          make release-check \
+            TERLC="$GITHUB_WORKSPACE/_build/terlan/target/debug/terlc"
