@@ -3,7 +3,7 @@ module polars.ArrowInterchangeTest.
 import polars.DataFrame.{dispose, from_arrow_ipc, height, read_csv, to_arrow_ipc, width}.
 import std.core.Result.{Err, Ok}.
 
-dispose_false(dataframe: polars.DataFrame.DataFrame): Bool ->
+dispose_false(dataframe: polars.DataFrame): Bool ->
     let _disposed = dispose(dataframe);
     false.
 
