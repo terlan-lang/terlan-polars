@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: terlan-lang/terlan
-          ref: 6c00b3d1bfaa1ca10ddb07533f5823e827029274
+          ref: 52b1458b53cf668a20d70e7969e0373b7166b763
           path: _build/terlan
           persist-credentials: false
 
