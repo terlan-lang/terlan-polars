@@ -25,13 +25,13 @@ struct Revisions {
 directory_result(result: Result[Unit, DirectoryError]): Result[Unit, String] ->
     case result {
         Ok(Unit) -> Ok(Unit);
-        Err(reason) -> Err(Directory.message(reason))
+        Err(reason) -> Err(reason.message)
     }.
 
 file_result(result: Result[Unit, FileError]): Result[Unit, String] ->
     case result {
         Ok(Unit) -> Ok(Unit);
-        Err(reason) -> Err(File.message(reason))
+        Err(reason) -> Err(reason.message)
     }.
 
 child(parent: String, name: String): String ->
@@ -59,18 +59,18 @@ bounded(program: String, arguments: List[String], working_directory: String): Co
                 Process.with_arguments(Process.command(program), arguments),
                 working_directory,
             ),
-            Process.maximum_timeout_ms(Process.limits()),
+            Process.limits().maximum_timeout_ms,
         ),
-        16777216,
+        16_777_216,
     ).
 
 run_output(command: Command): Option[Output] ->
     case Process.run(command) {
-        Err(reason) -> output_failure(Process.error_message(reason));
+        Err(reason) -> output_failure(reason.message);
         Ok(output) ->
             if {
-                Process.status(output) == 0 -> Some(output);
-                true -> output_failure(String.concat([Process.stdout(output), Process.stderr(output)]))
+                output.status == 0 -> Some(output);
+                true -> output_failure(String.concat([output.stdout, output.stderr]))
             }
     }.
 
@@ -146,7 +146,7 @@ snapshot_package(repositories: String, name: String, source: String): Option[Str
         true -> case run_output(git(repository, ["rev-parse", "HEAD"])) {
             None -> None;
             Some(output) ->
-                let revision = String.trim(Process.stdout(output));
+                let revision = String.trim(output.stdout);
                 if {
                     revision == "" -> option_failure("git returned an empty package revision");
                     true -> Some(revision)
@@ -220,7 +220,7 @@ fetch_command(terlc: String, consumer: String): Command ->
 
 lockfile_valid(consumer: String): Bool ->
     case File.read_text(child(consumer, "terlan.lock")) {
-        Err(reason) -> failure(File.message(reason));
+        Err(reason) -> failure(reason.message);
         Ok(lockfile) ->
             if {
                 not String.contains(lockfile, "name = \"terlan-polars\"") -> failure("lockfile omits terlan-polars");
@@ -251,7 +251,7 @@ fetch_and_test(terlc: String, repositories: String, consumer: String, libtorch: 
         not run_ok(fetch_command(terlc, consumer)) -> false;
         not lockfile_valid(consumer) -> false;
         true -> case Directory.remove_all(repositories) {
-            Err(reason) -> failure(Directory.message(reason));
+            Err(reason) -> failure(reason.message);
             Ok(Unit) -> run_ok(cache_only_test_command(terlc, consumer, libtorch))
         }
     }.
@@ -318,11 +318,11 @@ run(
     iris: String,
 ): Bool ->
     case Directory.create_temporary("terlan-immutable-ml-interop.") {
-        Err(reason) -> failure(Directory.message(reason));
+        Err(reason) -> failure(reason.message);
         Ok(temporary) ->
             let valid = execute(temporary, terlc, polars, ndarray, pytorch, libtorch, iris);
             case Directory.remove_all(temporary) {
-                Err(reason) -> failure(Directory.message(reason));
+                Err(reason) -> failure(reason.message);
                 Ok(Unit) -> valid
             }
     }.

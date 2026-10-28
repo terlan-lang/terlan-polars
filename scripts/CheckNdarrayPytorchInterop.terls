@@ -18,13 +18,13 @@ import type std.system.Process.Command.
 directory_result(result: Result[Unit, DirectoryError]): Result[Unit, String] ->
     case result {
         Ok(Unit) -> Ok(Unit);
-        Err(reason) -> Err(Directory.message(reason))
+        Err(reason) -> Err(reason.message)
     }.
 
 file_result(result: Result[Unit, FileError]): Result[Unit, String] ->
     case result {
         Ok(Unit) -> Ok(Unit);
-        Err(reason) -> Err(File.message(reason))
+        Err(reason) -> Err(reason.message)
     }.
 
 child(parent: String, name: String): String ->
@@ -73,17 +73,17 @@ test_command(terlc: String, consumer: String, iris: String): Command ->
                 ),
                 [Process.environment_entry("TERLAN_POLARS_IRIS_CSV", iris)],
             ),
-            Process.maximum_timeout_ms(Process.limits()),
+            Process.limits().maximum_timeout_ms,
         ),
-        16777216,
+        16_777_216,
     ).
 
 run_test(terlc: String, consumer: String, iris: String): Bool ->
     case Process.run(test_command(terlc, consumer, iris)) {
-        Err(reason) -> failure(Process.error_message(reason));
+        Err(reason) -> failure(reason.message);
         Ok(output) ->
             if {
-                Process.status(output) != 0 -> failure(String.concat([Process.stdout(output), Process.stderr(output)]));
+                output.status != 0 -> failure(String.concat([output.stdout, output.stderr]));
                 true -> let _printed =
                     println(
                         "[terlan-ml-interop] polars-to-ndarray=passed ndarray-transpose=passed ndarray-to-pytorch=passed independent-cleanup=passed",
@@ -123,11 +123,11 @@ stage_and_run(
 
 run(terlc: String, polars: String, ndarray: String, pytorch: String, iris: String): Bool ->
     case Directory.create_temporary("terlan-polars-ndarray-pytorch-interop.") {
-        Err(reason) -> failure(Directory.message(reason));
+        Err(reason) -> failure(reason.message);
         Ok(temporary) ->
             let valid = stage_and_run(temporary, terlc, polars, ndarray, pytorch, iris);
             case Directory.remove_all(temporary) {
-                Err(reason) -> failure(Directory.message(reason));
+                Err(reason) -> failure(reason.message);
                 Ok(Unit) -> valid
             }
     }.

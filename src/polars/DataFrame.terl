@@ -13,6 +13,7 @@ import std.core.Result.{Err, Ok}.
 
 import type std.collections.List.
 import type std.core.{Error, Option, Result}.
+import type std.vm.Bytes.
 
 /**
  * DataFrame represents an opaque Polars data frame value.
@@ -4071,7 +4072,7 @@ pub csv_read_options(
     schema_overwrite_names: List[String] = [],
     schema_overwrite_types: List[String] = [],
     dtype_overwrite: List[String] = [],
-    chunk_size: Int = 262144,
+    chunk_size: Int = 262_144,
     skip_rows: Int = 0,
     skip_lines: Int = 0,
     skip_rows_after_header: Int = 0,
@@ -4130,7 +4131,7 @@ pub (_df: DataFrame) write_csv(_path: String): Result[Unit, Error] ->
 pub csv_write_options(
     include_bom: Bool = false,
     include_header: Bool = true,
-    batch_size: Int = 1024,
+    batch_size: Int = 1_024,
     date_format: String = "",
     time_format: String = "",
     datetime_format: String = "",
@@ -4220,7 +4221,7 @@ pub read_json(_path: String): Result[DataFrame, Error] ->
 pub json_read_options(
     lines: Bool = false,
     infer_schema_length: Int = 100,
-    batch_size: Int = 8192,
+    batch_size: Int = 8_192,
     ignore_errors: Bool = false,
     projection: List[String] = [],
     schema_names: List[String] = [],

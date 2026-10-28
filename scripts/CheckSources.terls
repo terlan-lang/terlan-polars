@@ -7,7 +7,7 @@ import std.core.Option.Some.
 import std.core.Result.{Err, Ok}.
 import std.core.{Int, String, Unit}.
 import std.io.Console.{eprintln, println}.
-import std.io.Directory.
+import std.io.Directory.files_recursive_excluding.
 import std.system.{Arguments, Process}.
 
 import type std.system.Process.{Command, Output}.
@@ -31,12 +31,12 @@ failure(message: String): Bool ->
 command(context: Context, arguments: List[String]): Command ->
     let request = Process.with_arguments(Process.command(context.compiler), arguments);
     let located = Process.with_working_directory(request, context.repository);
-    let bounded = Process.with_timeout_ms(located, 600000);
-    Process.with_output_limit_bytes(bounded, 16777216).
+    let bounded = Process.with_timeout_ms(located, 600_000);
+    Process.with_output_limit_bytes(bounded, 16_777_216).
 
 print_output(output: Output): Unit ->
-    let stdout = Process.stdout(output);
-    let stderr = Process.stderr(output);
+    let stdout = output.stdout;
+    let stderr = output.stderr;
     let _stdout =
         if {
             stdout == "" -> Unit;
@@ -49,7 +49,7 @@ print_output(output: Output): Unit ->
 
 check_output(label: String, output: Output): Bool ->
     let _printed = print_output(output);
-    let status = Process.status(output);
+    let status = output.status;
     if {
         status == 0 -> true;
         true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
@@ -58,7 +58,7 @@ check_output(label: String, output: Output): Bool ->
 run_command(context: Context, arguments: List[String]): Bool ->
     let label = String.join(arguments, " ");
     case Process.run(command(context, arguments)) {
-        Err(reason) -> failure(String.concat([label, ": ", Process.error_message(reason)]));
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
         Ok(output) -> check_output(label, output)
     }.
 
@@ -103,8 +103,8 @@ has_script(paths: List[String]): Bool ->
 
 check(context: Context): Bool ->
     let scripts = child(context.repository, "scripts");
-    let Ok(paths) <- Directory.files_recursive_excluding(scripts, [".git", "_build", "target"]) else {
-        Err(reason) -> failure(Directory.message(reason))
+    let Ok(paths) <- files_recursive_excluding(scripts, [".git", "_build", "target"]) else {
+        Err(reason) -> failure(reason.message)
     };
     if {
         not has_script(paths) -> failure(String.append("no Terlan scripts found in ", scripts));

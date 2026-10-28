@@ -50,7 +50,7 @@ pub direct_dataframe_and_expression_conveniences_cross_native_boundary(): Bool -
                 df,
                 [
                     DataFrame.date(
-                        DataFrame.alias(DataFrame.lit(2024), "year"),
+                        DataFrame.alias(DataFrame.lit(2_024), "year"),
                         DataFrame.lit(1),
                         DataFrame.lit(2),
                     ),

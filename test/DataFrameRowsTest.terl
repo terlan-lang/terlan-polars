@@ -22,7 +22,7 @@ first_name == "Ada" and first_score == "10" and second_name == "Grace" and secon
                     Ok(_unexpected) -> false
                 };
             let oversized_limit_fails =
-                case rows(df, 10001) {
+                case rows(df, 10_001) {
                     Err(_error) -> true;
                     Ok(_unexpected) -> false
                 };
