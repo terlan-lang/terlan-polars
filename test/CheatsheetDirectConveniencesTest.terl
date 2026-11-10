@@ -5,7 +5,7 @@ import std.core.Result.{Err, Ok}.
 
 @test
 pub direct_dataframe_and_expression_conveniences_cross_native_boundary(): Bool ->
-    let {
+    when {
         Ok(names) <- DataFrame.series_from_strings("person", ["Ada", "Grace"]);
         Ok(scores) <- DataFrame.series_from_ints("score", [10, 20]);
         Ok(different_height) <- DataFrame.series_from_ints("different_height", [1, 2, 3]);

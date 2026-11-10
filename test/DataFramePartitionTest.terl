@@ -26,7 +26,7 @@ pub fixture(): Result[DataFrame, Error] ->
 
 @test
 pub stable_partitioning_returns_owned_frames(): Bool ->
-    let {
+    when {
         Ok(dataframe) <- fixture();
         Ok(partitions) <- partition_by(dataframe, ["group"], true, false);
         Ok(first) <- dataframe_set_get(partitions, 0);

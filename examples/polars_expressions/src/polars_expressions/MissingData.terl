@@ -20,7 +20,7 @@ pub expressions(): List[Expr] ->
     List.new().
 
 pub append(values: List[Expr], value: Expr): List[Expr] ->
-    values.push(value);
+    let _pushed = values.push(value);
     values.
 
 pub null_basics_df(df: DataFrame): Bool ->
@@ -54,7 +54,7 @@ pub null_basics_df(df: DataFrame): Bool ->
         and checked("missing:is-null", flags).
 
 pub null_basics(): Bool ->
-    let {
+    when {
         Ok(raw) <- read_csv("examples/polars_expressions/data/missing_value.csv");
         Ok(df) <- with_columns(raw, append(expressions(), cast(col("value"), "Int64")))
     } else {
@@ -123,9 +123,12 @@ pub nan_examples(): Bool ->
     case read_csv("examples/polars_expressions/data/missing_nan.csv") {
         Err(_error) -> false;
         Ok(nan_df) ->
-            let NaN = height(nan_df) == 4 and width(nan_df) == 1;
+            let nan_valid = height(nan_df) == 4 and width(nan_df) == 1;
             let replaced =
-                case with_columns(nan_df, append(expressions(), alias(fill_nan(col("value"), null_lit()), "replaced"))) {
+                case with_columns(
+                    nan_df,
+                    append(expressions(), alias(fill_nan(col("value"), null_lit()), "replaced")),
+                ) {
                     Err(_error) -> false;
                     Ok(cleaned) ->
                         let aggregations = expressions();
@@ -147,7 +150,10 @@ pub nan_examples(): Bool ->
                 Err(_error) -> false;
                 Ok(computed_df) ->
                     let computed =
-                        case select_exprs(computed_df, append(expressions(), divide(col("dividend"), col("divisor")))) {
+                        case select_exprs(
+                            computed_df,
+                            append(expressions(), divide(col("dividend"), col("divisor"))),
+                        ) {
                             Err(_error) -> false;
                             Ok(result) ->
                                 let valid = height(result) == 3 and width(result) == 1;

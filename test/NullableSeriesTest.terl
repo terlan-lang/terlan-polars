@@ -6,7 +6,7 @@ import std.core.Result.{Err, Ok}.
 
 @test
 pub nullable_primitive_series_cross_native_boundary(): Bool ->
-    let {
+    when {
         Ok(strings) <- series_from_nullable_strings("text", [Some("a"), None, Some("c")]);
         Ok(ints) <- series_from_nullable_ints("integer", [Some(1), None, Some(3)]);
         Ok(floats) <- series_from_nullable_floats("float", [Some(1.5), None, Some(3.5)]);

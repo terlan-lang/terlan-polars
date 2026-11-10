@@ -9,7 +9,7 @@ pub rows_materializes_bounded_values_and_nulls(): Bool ->
         Err(_error) -> false;
         Ok(df) ->
             let values_are_valid =
-                (let {
+                (when {
     Ok(values) <- rows(df, 2);
     [[first_name, first_score], [second_name, second_score]] <- values
 } else {

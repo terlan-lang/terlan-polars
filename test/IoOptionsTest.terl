@@ -5,7 +5,7 @@ import std.core.Result.{Err, Ok}.
 
 @test
 pub csv_options_execute_through_native_boundary(): Bool ->
-    let {
+    when {
         Ok(options) <- csv_read_options(n_rows = 1, columns = ["name", "age"], rechunk = true);
         Ok(frame) <- read_csv_with("test/fixtures/people.csv", options)
     } else {

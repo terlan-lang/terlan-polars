@@ -8,7 +8,7 @@ import std.core.Result.{Err, Ok}.
 pub select_has_typed_result_surface(): Bool ->
     let columns = List.new[String]();
     columns.push("name");
-    let {
+    when {
         Ok(df) <- DataFrame.read_csv("test/fixtures/people.csv");
         Ok(selected) <- DataFrame.select(df, columns)
     } else {

@@ -19,7 +19,7 @@ pub typed_null_shape_and_row_operations_execute(): Bool ->
 
 @test
 pub split_and_column_insertion_are_immutable(): Bool ->
-    let {
+    when {
         Ok(dataframe) <- dataframe_full_null(["id"], ["Int64"], 2);
         Ok(series) <- series_from_ints("value", [10, 20]);
         Ok(inserted) <- dataframe_insert_column(dataframe, 1, series);
@@ -32,7 +32,7 @@ pub split_and_column_insertion_are_immutable(): Bool ->
 
 @test
 pub dataframe_serialization_round_trip_executes(): Bool ->
-    let {
+    when {
         Ok(dataframe) <- dataframe_full_null(["id"], ["Int64"], 2);
         Ok(bytes) <- dataframe_serialize(dataframe);
         Ok(restored) <- dataframe_deserialize(bytes)

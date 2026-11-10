@@ -106,7 +106,7 @@ pub typed_plot_options_cover_line_color_and_bar_facets(): Bool ->
     case read_csv("test/fixtures/people.csv") {
         Err(_error) -> false;
         Ok(df) ->
-            let {
+            when {
                 Ok(line_color) <- with_plot_color(plot_options(), "city");
                 Ok(line_title) <- with_plot_title(line_color, "Age by city");
                 Ok(line_size) <- with_plot_dimensions(line_title, 720, 480);

@@ -27,7 +27,7 @@ pub declarative_udf_substitutes_expression_arguments(): Bool ->
 
 @test
 pub declarative_udf_rejects_wrong_argument_count(): Bool ->
-    let {
+    when {
         Ok(parameter) <- udf_parameter(0);
         Ok(udf) <- define_udf(1, Int64, parameter);
         Err(_error) <- apply_udf(udf, no_arguments())
@@ -38,14 +38,14 @@ pub declarative_udf_rejects_wrong_argument_count(): Bool ->
 
 @test
 pub expression_trees_are_typed_and_declaratively_rewritable(): Bool ->
-    let {
+    when {
         Ok(parameter) <- udf_parameter(0);
         Ok(udf) <- define_udf(1, Int64, parameter)
     } else {
         _ -> false
     };
     (let expression = alias(add(col("value"), lit(1)), "total");
-(let {
+(when {
     Ok(rewritten) <- rewrite(expression, udf);
     Ok(mapped) <- map_children(expression, udf)
 } else {
@@ -59,7 +59,7 @@ meta_nodes(expression).length() == 4
 @test
 pub constant_integer_extraction_is_checked(): Bool ->
     let expression = subtract(lit(7), lit(2));
-    let {
+    when {
         Ok(signed) <- extract_i64(expression);
         Ok(unsigned) <- extract_usize(expression)
     } else {
@@ -81,7 +81,7 @@ pub expression_name_callbacks_have_declarative_transforms(): Bool ->
 
 @test
 pub option_bearing_expressions_cross_the_native_boundary(): Bool ->
-    let {
+    when {
         Ok(selector) <- into_selector(col("value"));
         Err(_error) <- try_into_selector(add(col("value"), lit(1)))
     } else {

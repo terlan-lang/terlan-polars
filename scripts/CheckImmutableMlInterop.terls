@@ -101,7 +101,7 @@ commit(repository: String, name: String): Command ->
     ).
 
 copy_package(source: String, repository: String): Bool ->
-    let {
+    when {
         Ok(Unit) <- directory_result(Directory.create_all(repository));
         Ok(Unit) <- file_result(File.copy(child(source, "terlan.toml"), child(repository, "terlan.toml")));
         Ok(Unit) <-
@@ -191,7 +191,7 @@ stage_consumer(
     revisions: Revisions,
 ): Bool ->
     let tests = child(consumer, "tests/interop");
-    let {
+    when {
         Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "src")));
         Ok(Unit) <- directory_result(Directory.create_all(tests));
         Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "data")));
@@ -262,7 +262,7 @@ snapshot_all(
     ndarray: String,
     pytorch: String,
 ): Option[Revisions] ->
-    let {
+    when {
         Some(polars_revision) <- snapshot_package(repositories, "polars", polars);
         Some(ndarray_revision) <- snapshot_package(repositories, "ndarray", ndarray);
         Some(pytorch_revision) <- snapshot_package(repositories, "pytorch", pytorch)
@@ -284,7 +284,9 @@ execute(
 ): Bool ->
     let repositories = child(temporary, "repositories");
     let consumer = child(temporary, "consumer");
-    let Some(revisions) <- snapshot_all(repositories, polars, ndarray, pytorch) else {
+    when {
+        Some(revisions) <- snapshot_all(repositories, polars, ndarray, pytorch)
+    } else {
         None -> false
     };
     if {

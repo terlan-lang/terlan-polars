@@ -49,7 +49,7 @@ pub sql_context_exposes_registered_table(): Bool ->
 
 @test
 pub sql_identifiers_preserve_schema_and_order(): Bool ->
-    let {
+    when {
         Ok(names) <- sql_table_identifiers("SELECT * FROM analytics.people JOIN events ON true", true, false);
         ["analytics.people", "events"] <- names
     } else {
@@ -59,7 +59,7 @@ pub sql_identifiers_preserve_schema_and_order(): Bool ->
 
 @test
 pub standalone_sql_expressions_validate_input(): Bool ->
-    let {
+    when {
         Ok(_expression) <- sql_expr("score + 1");
         Err(_error) <- sql_expr("")
     } else {

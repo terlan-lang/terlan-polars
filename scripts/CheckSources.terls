@@ -103,7 +103,9 @@ has_script(paths: List[String]): Bool ->
 
 check(context: Context): Bool ->
     let scripts = child(context.repository, "scripts");
-    let Ok(paths) <- files_recursive_excluding(scripts, [".git", "_build", "target"]) else {
+    when {
+        Ok(paths) <- files_recursive_excluding(scripts, [".git", "_build", "target"])
+    } else {
         Err(reason) -> failure(reason.message)
     };
     if {

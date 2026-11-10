@@ -7,7 +7,7 @@ import std.core.Result.{Err, Ok}.
 pub populated_wide_integer_series_are_lossless(): Bool ->
     let signed_values = ["-170141183460469231731687303715884105728", "0", "170141183460469231731687303715884105727"];
     let unsigned_values = ["0", "340282366920938463463374607431768211455"];
-    let {
+    when {
         Ok(signed) <- series_from_int128_strings("signed", signed_values);
         Ok(unsigned) <- series_from_uint128_strings("unsigned", unsigned_values)
     } else {

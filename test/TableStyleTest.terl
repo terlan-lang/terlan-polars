@@ -14,7 +14,7 @@ pub declarative_table_style_renders_through_helper(): Bool ->
     case read_csv("test/fixtures/people.csv") {
         Err(_error) -> false;
         Ok(df) ->
-            let {
+            when {
                 Ok(with_stub) <- tab_stub(gt(), "name");
                 Ok(with_labels) <- cols_label(with_stub, columns("age"), columns("Age <years>"));
                 Ok(with_header) <- tab_header(with_labels, "People <table>", "A & B");

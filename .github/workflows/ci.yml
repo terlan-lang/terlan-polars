@@ -31,11 +31,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Checkout pinned Terlan compiler
+      - name: Checkout latest Terlan compiler
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: terlan-lang/terlan
-          ref: 52b1458b53cf668a20d70e7969e0373b7166b763
+          ref: main
           path: _build/terlan
           persist-credentials: false
 
@@ -56,7 +56,7 @@ jobs:
           rustup toolchain install 1.96.0 --profile minimal --component rustfmt
           rustup default 1.96.0
 
-      - name: Build pinned Terlan compiler
+      - name: Build latest Terlan compiler
         run: |
           cargo build --locked --quiet \
             --manifest-path _build/terlan/Cargo.toml \

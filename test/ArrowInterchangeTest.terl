@@ -12,7 +12,7 @@ pub arrow_ipc_round_trip_preserves_dataframe_shape(): Bool ->
     case read_csv("test/fixtures/people.csv") {
         Err(_error) -> false;
         Ok(source) ->
-            let {
+            when {
                 Ok(value) <- to_arrow_ipc(source);
                 Ok(restored) <- from_arrow_ipc(value)
             } else {

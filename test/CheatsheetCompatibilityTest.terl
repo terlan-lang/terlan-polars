@@ -8,7 +8,7 @@ pub inspection_and_plan_diagnostics_cross_native_boundary(): Bool ->
     case read_csv("test/fixtures/people.csv") {
         Err(_error) -> false;
         Ok(df) ->
-            let {
+            when {
                 Ok(scanned) <- scan_csv("test/fixtures/people.csv", false);
                 Ok(overview) <- glimpse(df);
                 Ok(summary) <- describe(df);

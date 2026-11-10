@@ -102,7 +102,7 @@ stage_and_run(
 ): Bool ->
     let consumer = child(temporary, "consumer");
     let tests = child(consumer, "tests/interop");
-    let {
+    when {
         Ok(Unit) <- directory_result(Directory.create_all(child(consumer, "src")));
         Ok(Unit) <- directory_result(Directory.create_all(tests));
         Ok(Unit) <-

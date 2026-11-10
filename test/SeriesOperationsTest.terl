@@ -5,7 +5,7 @@ import std.core.Result.{Err, Ok}.
 
 @test
 pub series_name_and_shape_execute(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
         Ok(renamed) <- series_rename(input, "renamed");
         Ok(size_kb) <- series_estimated_size(input, "kb")
@@ -22,7 +22,7 @@ valid).
 
 @test
 pub series_stable_sort_executes(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
         Ok(sorted) <- series_sort(input, false, false, true)
     } else {
@@ -32,7 +32,7 @@ pub series_stable_sort_executes(): Bool ->
 
 @test
 pub series_dtype_preserving_sum_executes(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [3, 1, 1, 2]);
         Ok(sum) <- series_sum(input)
     } else {
@@ -56,7 +56,7 @@ pub series_invalid_fraction_is_rejected(): Bool ->
 
 @test
 pub series_value_wise_arithmetic_executes(): Bool ->
-    let {
+    when {
         Ok(left) <- series_from_ints("left", [1, 2, 3]);
         Ok(right) <- series_from_ints("right", [4, 5, 6]);
         Ok(sum) <- series_add(left, right)
@@ -67,7 +67,7 @@ pub series_value_wise_arithmetic_executes(): Bool ->
 
 @test
 pub series_value_wise_comparison_executes(): Bool ->
-    let {
+    when {
         Ok(left) <- series_from_ints("left", [1, 2, 3]);
         Ok(right) <- series_from_ints("right", [1, 0, 3]);
         Ok(equal) <- series_equal_values(left, right)
@@ -78,7 +78,7 @@ pub series_value_wise_comparison_executes(): Bool ->
 
 @test
 pub series_null_and_constant_operations_execute(): Bool ->
-    let {
+    when {
         Ok(nulls) <- series_full_null("missing", 2, Int64);
         Ok(values) <- series_from_ints("value", [1, 2]);
         Ok(extended) <- series_extend_int(values, 9, 2)
@@ -89,7 +89,7 @@ pub series_null_and_constant_operations_execute(): Bool ->
 
 @test
 pub series_metadata_and_zip_execute(): Bool ->
-    let {
+    when {
         Ok(left) <- series_from_ints("left", [1, 2, 3]);
         Ok(right) <- series_from_ints("right", [10, 20, 30]);
         Ok(mask) <- series_from_bools("mask", [true, false, true]);
@@ -102,7 +102,7 @@ pub series_metadata_and_zip_execute(): Bool ->
 
 @test
 pub series_serialization_round_trip_executes(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [1, 2, 3]);
         Ok(bytes) <- series_serialize(input);
         Ok(restored) <- series_deserialize(bytes)
@@ -113,7 +113,7 @@ pub series_serialization_round_trip_executes(): Bool ->
 
 @test
 pub typed_series_values_round_trip_without_text_rendering(): Bool ->
-    let {
+    when {
         Ok(integers) <- series_from_ints("integers", [-2, 0, 7]);
         Ok(integer_values) <- series_integer_values(integers);
         Ok(booleans) <- series_from_bools("booleans", [true, false]);
@@ -125,7 +125,7 @@ pub typed_series_values_round_trip_without_text_rendering(): Bool ->
 
 @test
 pub series_chunk_selection_and_float_conversion_execute(): Bool ->
-    let {
+    when {
         Ok(left) <- series_from_ints("value", [1, 2]);
         Ok(right) <- series_from_ints("value", [3, 4]);
         Ok(appended) <- series_append(left, right);
@@ -138,7 +138,7 @@ pub series_chunk_selection_and_float_conversion_execute(): Bool ->
 
 @test
 pub series_cast_options_preserve_overflow_mode(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [1, 300]);
         Ok(casted) <- series_cast_with_options(input, "UInt8", "overflowing")
     } else {
@@ -148,7 +148,7 @@ pub series_cast_options_preserve_overflow_mode(): Bool ->
 
 @test
 pub polars_2_eager_series_binning_executes(): Bool ->
-    let {
+    when {
         Ok(input) <- series_from_ints("value", [-2, -1, 0, 1, 2]);
         Ok(intervals) <- bin_intervals(input, [-1.0, 1.0], false, false);
         Ok(integer_intervals) <- bin_intervals_ints(input, [-1, 1], false, false);

@@ -5,11 +5,13 @@ import std.core.Result.{Err, Ok}.
 
 @test
 pub lazy_frame_sets_collect_owned_results(): Bool ->
-    let Ok(dataframe) <- dataframe_empty_with_height(2) else {
+    when {
+        Ok(dataframe) <- dataframe_empty_with_height(2)
+    } else {
         _ -> false
     };
     (let plan = lazy(dataframe);
-(let {
+(when {
     Ok(one) <- lazyframe_set_new(plan);
     Ok(two) <- lazyframe_set_append(one, plan);
     Ok(results) <- collect_all(two, false);
