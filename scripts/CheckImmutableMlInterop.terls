@@ -138,10 +138,47 @@ initialize_repository(repository: String, name: String): Bool ->
         true -> run_ok(commit(repository, name))
     }.
 
-snapshot_package(repositories: String, name: String, source: String): Option[String] ->
+/**
+ * Converts the workspace-only ndarray edge into the same immutable Git edge
+ * used by the consumer before committing the PyTorch snapshot.
+ */
+write_pinned_ndarray(path: String, source: String, repositories: String, pinned: String): Bool ->
+    let development = "ndarray = { path = \"../terlan-ndarray\" }";
+    let immutable =
+        String.concat(
+            ["ndarray = { git = \"", child(repositories, "ndarray"), "\", rev = \"", pinned, "\" }"],
+        );
+    if {
+        not String.contains(source, development) -> failure("PyTorch snapshot must declare the reviewed ndarray workspace dependency");
+        true -> case File.write_text(path, String.replace(source, development, immutable)) {
+            Err(reason) -> failure(reason.message);
+            Ok(Unit) -> true
+        }
+    }.
+
+read_and_pin_ndarray(repository: String, repositories: String, pinned: String): Bool ->
+    let path = child(repository, "terlan.toml");
+    case File.read_text(path) {
+        Err(reason) -> failure(reason.message);
+        Ok(source) -> write_pinned_ndarray(path, source, repositories, pinned)
+    }.
+
+pin_ndarray_dependency(repository: String, repositories: String, revision: Option[String]): Bool ->
+    case revision {
+        None -> true;
+        Some(pinned) -> read_and_pin_ndarray(repository, repositories, pinned)
+    }.
+
+snapshot_package(
+    repositories: String,
+    name: String,
+    source: String,
+    ndarray_revision: Option[String],
+): Option[String] ->
     let repository = child(repositories, name);
     if {
         not copy_package(source, repository) -> None;
+        not pin_ndarray_dependency(repository, repositories, ndarray_revision) -> None;
         not initialize_repository(repository, name) -> None;
         true -> case run_output(git(repository, ["rev-parse", "HEAD"])) {
             None -> None;
@@ -225,7 +262,7 @@ lockfile_valid(consumer: String): Bool ->
             if {
                 not String.contains(lockfile, "name = \"terlan-polars\"") -> failure("lockfile omits terlan-polars");
                 not String.contains(lockfile, "name = \"terlan-ndarray\"") -> failure("lockfile omits terlan-ndarray");
-                not String.contains(lockfile, "name = \"terlan-pytorch\"") -> failure("lockfile omits terlan-pytorch");
+                not String.contains(lockfile, "name = \"terlan-pytorch-cxx\"") -> failure("lockfile omits terlan-pytorch-cxx");
                 true -> true
             }
     }.
@@ -263,9 +300,9 @@ snapshot_all(
     pytorch: String,
 ): Option[Revisions] ->
     when {
-        Some(polars_revision) <- snapshot_package(repositories, "polars", polars);
-        Some(ndarray_revision) <- snapshot_package(repositories, "ndarray", ndarray);
-        Some(pytorch_revision) <- snapshot_package(repositories, "pytorch", pytorch)
+        Some(polars_revision) <- snapshot_package(repositories, "polars", polars, None);
+        Some(ndarray_revision) <- snapshot_package(repositories, "ndarray", ndarray, None);
+        Some(pytorch_revision) <- snapshot_package(repositories, "pytorch", pytorch, Some(ndarray_revision))
     } else {
         _ -> None
     };

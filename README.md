@@ -170,6 +170,11 @@ formatting. Numerical-stack integration is checked separately with
 `polars-pytorch-interop-check`, `polars-ndarray-pytorch-interop-check`, and
 `polars-immutable-ml-interop-check` when LibTorch is available.
 
+The immutable gate replaces PyTorch's workspace ndarray path with the same
+pinned Git snapshot used by the consumer, fetches the complete graph, and
+removes the source repositories before running tests from the package cache.
+The development manifests retain their local workspace dependencies.
+
 The integration runners live under `scripts/` and are registered in
 `terlan.toml`. Run `make scripts-check` to recursively type-check and lint
 the `.terls` runners, lint their Terlan fixtures, and check formatting without
