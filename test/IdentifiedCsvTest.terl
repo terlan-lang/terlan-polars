@@ -1,0 +1,34 @@
+module polars.IdentifiedCsvTest.
+
+import polars.DataFrame.
+import std.collections.List.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub identified_csv_returns_dates_digest_and_explicitly_owned_frame(): Bool ->
+    case DataFrame.read_csv_dates_identified("test/fixtures/identified_dates.csv") {
+        Err(_error) -> false;
+        Ok(identified) ->
+            let frame = identified.dataframe;
+            let date_column =
+                case DataFrame.schema(frame).first() {
+                    Some(column) -> column.name == "date" and column.data_type == "Date";
+                    None -> false
+                };
+            let valid =
+                date_column
+                    and DataFrame.height(frame) == 2
+                    and identified.sha256 == "a4d10fc37f0cb152b1b5ab0d423c3b1544e5d7bb33d9b7e35a9791e65a6b3521";
+            let _disposed = DataFrame.dispose(frame);
+            valid
+    }.
+
+@test
+pub missing_identified_csv_returns_error_without_an_owner(): Bool ->
+    case DataFrame.read_csv_dates_identified("test/fixtures/missing-identified.csv") {
+        Err(error) -> error.code == Atom["csv_read_error"];
+        Ok(identified) ->
+            let _disposed = DataFrame.dispose(identified.dataframe);
+            false
+    }.

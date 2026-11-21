@@ -19,6 +19,7 @@ pub mod data_types;
 pub mod database;
 pub mod dataframe_extended;
 pub mod expressions;
+mod identified_csv;
 pub mod interchange;
 pub mod io_options;
 pub mod lazyframe_extended;
@@ -29,6 +30,7 @@ pub mod series_extended;
 pub mod sql;
 pub mod table_style;
 mod tensor_interop;
+pub use identified_csv::{read_csv_dates_identified, TerlanPolarsIdentifiedDataFrame};
 pub mod udf;
 pub mod visualization;
 

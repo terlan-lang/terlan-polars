@@ -59,26 +59,27 @@ use terlan_polars_native::{
     plot_box_png, plot_box_svg, plot_histogram_html, plot_histogram_png, plot_histogram_svg,
     plot_line_html, plot_line_png, plot_line_svg, plot_options, plot_scatter_html,
     plot_scatter_png, plot_scatter_svg, plot_with_html, plot_with_png, plot_with_svg, read_csv,
-    read_csv_dates, read_csv_with_options, read_database_env, read_database_uri, read_ipc,
-    read_ipc_with_options, read_json, read_json_with_options, read_ndjson, read_parquet,
-    read_parquet_with_options, rechunk, remove_where, rename_columns, reverse_rows, row_hashes,
-    row_hashes_seeded, row_is_duplicated, row_is_unique, rows, sample_rows_fraction,
-    sample_rows_fraction_seeded, sample_rows_n, sample_rows_n_seeded, schema, select, select_exprs,
-    select_exprs_sequential, series_cast, series_data_type, series_empty, series_equal,
-    series_equal_missing, series_from_bools, series_from_dates, series_from_datetimes,
-    series_from_floats, series_from_ints, series_from_nullable_bools, series_from_nullable_dates,
-    series_from_nullable_datetimes, series_from_nullable_floats, series_from_nullable_ints,
-    series_from_nullable_strings, series_from_strings, series_len, series_name, series_null_count,
-    series_tensor_packet, series_to_frame, series_values, shift_and_fill_rows, shift_rows,
-    show_versions, slice_rows, sort_by, sort_rows_by, sql_context_execute, sql_context_new,
-    sql_context_register, sql_context_tables, sql_context_unregister, tab_header, tab_stub,
-    table_html, tail, to_lazy, top_rows_by, transpose, unique_rows, unnest_columns, unpivot,
-    update, upsample, width, with_columns_exprs, with_columns_sequential, with_plot_color,
-    with_plot_dimensions, with_plot_facet, with_plot_title, with_row_index, write_csv,
-    write_csv_with_options, write_ipc, write_ipc_with_options, write_json, write_ndjson,
-    write_parquet, write_parquet_with_options, TerlanPolarsColumnSchema, TerlanPolarsDataFrame,
-    TerlanPolarsError, TerlanPolarsFrameSet, TerlanPolarsLazyFrame, TerlanPolarsLazyFrameSet,
-    TerlanPolarsScalar, TerlanPolarsSeries, TerlanPolarsSqlContext,
+    read_csv_dates, read_csv_dates_identified, read_csv_with_options, read_database_env,
+    read_database_uri, read_ipc, read_ipc_with_options, read_json, read_json_with_options,
+    read_ndjson, read_parquet, read_parquet_with_options, rechunk, remove_where, rename_columns,
+    reverse_rows, row_hashes, row_hashes_seeded, row_is_duplicated, row_is_unique, rows,
+    sample_rows_fraction, sample_rows_fraction_seeded, sample_rows_n, sample_rows_n_seeded, schema,
+    select, select_exprs, select_exprs_sequential, series_cast, series_data_type, series_empty,
+    series_equal, series_equal_missing, series_from_bools, series_from_dates,
+    series_from_datetimes, series_from_floats, series_from_ints, series_from_nullable_bools,
+    series_from_nullable_dates, series_from_nullable_datetimes, series_from_nullable_floats,
+    series_from_nullable_ints, series_from_nullable_strings, series_from_strings, series_len,
+    series_name, series_null_count, series_tensor_packet, series_to_frame, series_values,
+    shift_and_fill_rows, shift_rows, show_versions, slice_rows, sort_by, sort_rows_by,
+    sql_context_execute, sql_context_new, sql_context_register, sql_context_tables,
+    sql_context_unregister, tab_header, tab_stub, table_html, tail, to_lazy, top_rows_by,
+    transpose, unique_rows, unnest_columns, unpivot, update, upsample, width, with_columns_exprs,
+    with_columns_sequential, with_plot_color, with_plot_dimensions, with_plot_facet,
+    with_plot_title, with_row_index, write_csv, write_csv_with_options, write_ipc,
+    write_ipc_with_options, write_json, write_ndjson, write_parquet, write_parquet_with_options,
+    TerlanPolarsColumnSchema, TerlanPolarsDataFrame, TerlanPolarsError, TerlanPolarsFrameSet,
+    TerlanPolarsLazyFrame, TerlanPolarsLazyFrameSet, TerlanPolarsScalar, TerlanPolarsSeries,
+    TerlanPolarsSqlContext,
 };
 
 const DATAFRAME_TYPE: &str = "polars.DataFrame.DataFrame";
@@ -133,6 +134,7 @@ struct Worker {
 struct FrameResource {
     generation: u64,
     dataframe: TerlanPolarsDataFrame,
+    sha256: Option<String>,
 }
 
 struct FrameSetResource {
@@ -228,6 +230,10 @@ impl Worker {
             }
             "polars.dataframe.read_csv" => self.read_csv(request.args),
             "polars.dataframe.read_csv_dates" => self.read_csv_dates(request.args),
+            "polars.dataframe.read_csv_dates_identified" => {
+                self.read_csv_dates_identified(request.args)
+            }
+            "polars.dataframe.identified_sha256" => self.identified_sha256(request.args),
             "polars.dataframe.write_csv" => self.write_csv(request.args),
             "polars.dataframe.read_parquet" => {
                 self.read_dataframe_path(request.args, "read_parquet", read_parquet)
@@ -2280,6 +2286,41 @@ impl Worker {
         match read_csv_dates(path) {
             Ok(dataframe) => self.store_result_dataframe(dataframe),
             Err(error) => adapter_result_error(error.code(), error.message()),
+        }
+    }
+
+    fn read_csv_dates_identified(&mut self, args: Vec<NativeArg>) -> String {
+        let [NativeArg::Text(path)] = args.as_slice() else {
+            return protocol_error(
+                "native_bad_args",
+                "read_csv_dates_identified expects one string path",
+            );
+        };
+        match read_csv_dates_identified(path) {
+            Ok(value) => {
+                self.store_result_dataframe_with_identity(value.dataframe, Some(value.sha256))
+            }
+            Err(error) => adapter_result_error(error.code(), error.message()),
+        }
+    }
+
+    fn identified_sha256(&self, args: Vec<NativeArg>) -> String {
+        let [NativeArg::Handle(handle)] = args.as_slice() else {
+            return protocol_error(
+                "native_bad_args",
+                "identified_sha256 expects one DataFrame handle",
+            );
+        };
+        if let Err(error) = self.frame(handle) {
+            return error;
+        }
+        match self
+            .frames
+            .get(&handle.id)
+            .and_then(|frame| frame.sha256.as_ref())
+        {
+            Some(digest) => format!("ok_string {}", STANDARD.encode(digest)),
+            None => protocol_error("native_bad_args", "DataFrame has no captured CSV identity"),
         }
     }
 
@@ -6426,6 +6467,14 @@ impl Worker {
     }
 
     fn store_result_dataframe(&mut self, dataframe: TerlanPolarsDataFrame) -> String {
+        self.store_result_dataframe_with_identity(dataframe, None)
+    }
+
+    fn store_result_dataframe_with_identity(
+        &mut self,
+        dataframe: TerlanPolarsDataFrame,
+        sha256: Option<String>,
+    ) -> String {
         self.next_id = self.next_id.saturating_add(1).max(1);
         let id = self.next_id;
         let generation = 1;
@@ -6434,6 +6483,7 @@ impl Worker {
             FrameResource {
                 generation,
                 dataframe,
+                sha256,
             },
         );
         format!(
@@ -8613,6 +8663,41 @@ mod tests {
             .join(name)
             .to_string_lossy()
             .into_owned()
+    }
+
+    #[cfg(feature = "real-polars")]
+    #[test]
+    fn identified_csv_metadata_shares_the_frame_lifetime_and_rejects_stale_owners() {
+        let mut worker = Worker::default();
+        let reply = worker.execute_line(&call_line(
+            "polars.dataframe.read_csv_dates_identified",
+            &[string_arg(&fixture_path("identified_dates.csv"))],
+        ));
+        let handle = parse_result_handle(&reply);
+        assert_eq!(worker.frames.len(), 1);
+        let digest = worker.execute_line(&call_line(
+            "polars.dataframe.identified_sha256",
+            &[handle_arg(&handle)],
+        ));
+        assert_eq!(
+            parse_string_reply(&digest, "ok_string"),
+            "a4d10fc37f0cb152b1b5ab0d423c3b1544e5d7bb33d9b7e35a9791e65a6b3521"
+        );
+        let foreign = Worker::default().identified_sha256(vec![NativeArg::Handle(handle.clone())]);
+        assert!(foreign.starts_with("err "));
+        let disposed = worker.execute_line(&call_line(
+            "polars.dataframe.dispose",
+            &[handle_arg(&handle)],
+        ));
+        assert_eq!(reply_payload(&disposed), "ok_unit");
+        assert!(worker.frames.is_empty());
+        let stale = worker.identified_sha256(vec![NativeArg::Handle(handle)]);
+        assert!(stale.starts_with("err "));
+        let failed = worker.read_csv_dates_identified(vec![NativeArg::Text(fixture_path(
+            "missing-identified.csv",
+        ))]);
+        assert!(failed.starts_with("result_err "));
+        assert!(worker.frames.is_empty());
     }
 
     #[test]

@@ -196,6 +196,37 @@ the functions without a module qualifier.
 alias of that handle; reuse and duplicate disposal fail with the stable
 `stale_native_handle` code.
 
+`read_csv_dates_identified(path)` returns
+`Result[IdentifiedDataFrame, Error]`. Its fields are `dataframe: DataFrame` and
+`sha256: String` (64 lowercase hexadecimal characters, without a prefix). It
+opens the source once, copies and hashes the exact bytes into a private native
+temporary file, and parses that same file with date inference. The digest
+includes raw headers, line endings, and every other captured byte.
+
+```terlan
+case DataFrame.read_csv_dates_identified(path) {
+    Err(error) -> Err(error);
+    Ok(snapshot) ->
+        let result = {DataFrame.height(snapshot.dataframe), snapshot.sha256};
+        let _disposed = DataFrame.dispose(snapshot.dataframe);
+        Ok(result)
+}
+```
+
+The capture buffer is fixed at 64 KiB. Temporary storage is proportional to the
+input size; configure a disk-backed OS temporary directory for large minute
+histories. Polars parses in low-memory mode, while the eager DataFrame itself
+still requires memory proportional to its contents. The temporary file is
+owned by the native reader and cleaned up on success or error. No CSV bytes
+cross the VM boundary. The digest metadata shares the DataFrame's lifetime;
+there is no additional native resource for the caller to release.
+
+Concurrent writes can affect the captured stream, so this is not a promise of
+an atomic filesystem version. It does guarantee that hashing and parsing use
+the same captured bytes, even if the source path is replaced or overwritten
+before parsing. Dispose `snapshot.dataframe` explicitly, just like any other
+DataFrame; copying the result does not create an independent frame owner.
+
 `LazyFrame` values are also helper-owned. Plans support local-file scans,
 expression projections and mutations, ordinary filters and null-preserving
 inverse filters, groups, single- and

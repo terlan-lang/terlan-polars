@@ -27,6 +27,16 @@ import type std.vm.Bytes.
 pub opaque type DataFrame.
 
 /**
+ * Owns the DataFrame parsed from the exact raw byte snapshot identified by sha256.
+ * sha256 is 64 lowercase hexadecimal characters, without a prefix. Dispose
+ * dataframe explicitly; copying this record does not clone its native owner.
+ */
+pub struct IdentifiedDataFrame {
+    dataframe: DataFrame,
+    sha256: String,
+}.
+
+/**
  * LazyFrame represents an opaque, unexecuted Polars query plan.
  *
  * Transformations return new plans. Call `collect()` to execute a plan and
@@ -4037,6 +4047,31 @@ pub read_csv(_path: String): Result[DataFrame, Error] ->
  */
 @compiler.native {polars.dataframe.read_csv_dates}
 pub read_csv_dates(_path: String): Result[DataFrame, Error] ->
+    native.
+
+/**
+ * Captures and hashes one native CSV byte stream, then parses only that private
+ * snapshot with date inference. Returns an independently owned DataFrame and
+ * its SHA-256 identity. Call dispose(value.dataframe) when finished.
+ * Capture uses a fixed 64 KiB buffer and O(file size) temporary storage. Parsing
+ * uses Polars' low-memory mode; the returned DataFrame still scales with rows.
+ * The digest identifies the captured bytes, not an atomic filesystem version
+ * if another writer changes the source during capture. No source reopen occurs.
+ */
+pub read_csv_dates_identified(path: String): Result[IdentifiedDataFrame, Error] ->
+    case read_csv_dates_identified_native(path) {
+        Err(error) -> Err(error);
+        Ok(frame) ->
+            let digest = identified_sha256(frame);
+            Ok(IdentifiedDataFrame {dataframe: frame, sha256: digest})
+    }.
+
+@compiler.native {polars.dataframe.read_csv_dates_identified}
+read_csv_dates_identified_native(path: String): Result[DataFrame, Error] ->
+    native.
+
+@compiler.native {polars.dataframe.identified_sha256}
+identified_sha256(frame: DataFrame): String ->
     native.
 
 /**

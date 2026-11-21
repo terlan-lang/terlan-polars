@@ -10,7 +10,7 @@ path = "src/lib.rs"
 
 [features]
 default = []
-real-polars = ["dep:polars", "dep:polars-plan", "dep:polars-parquet", "dep:chrono", "dep:connectorx", "dep:arrow", "dep:plotlars-core", "dep:plotlars-plotters", "dep:plotters"]
+real-polars = ["dep:sha2", "dep:tempfile", "dep:polars", "dep:polars-plan", "dep:polars-parquet", "dep:chrono", "dep:connectorx", "dep:arrow", "dep:plotlars-core", "dep:plotlars-plotters", "dep:plotters"]
 plotly-html = ["real-polars", "dep:plotlars-plotly"]
 plot-png = ["real-polars"]
 
@@ -19,6 +19,8 @@ base64 = "0.22"
 chrono = { version = "0.4", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sha2 = { version = "0.10.9", optional = true }
+tempfile = { version = "3.27", optional = true }
 polars = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true, features = ["lazy", "streaming", "cse", "meta", "sql", "csv", "parquet", "json", "ipc", "cloud", "http", "aws", "gcp", "azure", "strings", "string_encoding", "string_normalize", "string_pad", "string_reverse", "binary_encoding", "temporal", "range", "arg_where", "dtype-date", "dtype-datetime", "dtype-time", "month_start", "month_end", "offset_by", "dtype-i8", "dtype-i16", "dtype-u8", "dtype-i128", "dtype-u128", "dtype-f16", "dtype-array", "dtype-extension", "dtype-map", "array_count", "array_to_struct", "list_drop_nulls", "list_sample", "list_gather", "diff", "index_of", "search_sorted", "repeat_by", "pct_change", "abs", "list_to_struct", "list_count", "list_sets", "random", "row_hash", "bitwise", "hist", "propagate_nans", "trigonometry", "cum_agg", "rolling_window", "rolling_window_by", "moment", "mode", "log", "product", "is_close", "is_first_distinct", "is_last_distinct", "is_unique", "dtype-decimal", "dtype-categorical", "timezones", "round_series", "is_between", "is_in", "approx_unique", "dtype-struct", "unique_counts", "regex", "interpolate", "interpolate_by", "peaks", "rle", "ewma", "ewma_by", "concat_str", "rank", "top_k", "replace", "cutqcut", "semi_anti_join", "cross_join", "asof_join", "iejoin", "diagonal_concat", "pivot", "dynamic_group_by"] }
 polars-plan = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true }
 polars-parquet = { git = "https://github.com/pola-rs/polars", rev = "22a147de3d2bb2e44b97338a2510816c7105c9f2", optional = true }
