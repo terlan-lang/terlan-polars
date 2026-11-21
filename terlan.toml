@@ -5,7 +5,7 @@ namespace = "polars"
 description = "Polars DataFrame integration for Terlan"
 license = "MIT"
 repository = "https://github.com/terlan-lang/terlan-polars"
-compiler = ">= 0.0.7"
+compiler = ">= 0.0.10"
 links = ["https://terlan.org", "https://pola.rs"]
 
 [build]
