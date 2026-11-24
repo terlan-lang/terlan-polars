@@ -83,7 +83,7 @@ pub csv_next_batch(cursor: CsvBatchCursor): Result[Option[DataFrame], Error] ->
         Ok(frame) -> Ok(Some(frame));
         Err(error) ->
             if {
-                error.code == Atom["csv_end_of_stream"] -> Ok(None);
+                error.code == CsvEndOfStream -> Ok(None);
                 true -> Err(error)
             }
     }.
@@ -154,10 +154,34 @@ pub struct ColumnSchema {
 pub type Scalar = String | Int | Float | Bool.
 
 /**
+ * Invalid requested CSV batch row count.
+ */
+pub type CsvBatchSize = Atom["csv_batch_size"].
+
+/**
+ * A prior read failed and poisoned the CSV cursor.
+ */
+pub type CsvCursorFailed = Atom["csv_cursor_failed"].
+
+/**
+ * A CSV record exceeds the bounded parser limit.
+ */
+pub type CsvRecordLimit = Atom["csv_record_limit"].
+
+/**
+ * Internal cursor EOF code translated to Ok(None) by csv_next_batch.
+ */
+pub type CsvEndOfStream = Atom["csv_end_of_stream"].
+
+/**
  * Finite adapter-error vocabulary admitted to sealed AOT atom tables.
  */
 pub type NativeErrorCode =
-      Atom["arrow_ipc_error"]
+      CsvBatchSize
+    | CsvCursorFailed
+    | CsvRecordLimit
+    | CsvEndOfStream
+    | Atom["arrow_ipc_error"]
     | Atom["csv_read_error"]
     | Atom["csv_write_error"]
     | Atom["database_arrow_error"]

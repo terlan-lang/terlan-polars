@@ -1,0 +1,11 @@
+[package]
+name = "polars-csv-cursor-errors"
+version = "0.1.0"
+namespace = "cursor_errors"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }

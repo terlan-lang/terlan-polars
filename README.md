@@ -248,6 +248,12 @@ defines the schema, including date inference; incompatible later values fail
 and poison the cursor. A failed cursor must be disposed. Caller-retained batch
 frames still retain memory. Use a disk-backed temporary directory for histories.
 
+Cursor error atoms are declared as `CsvBatchSize`, `CsvCursorFailed`,
+`CsvRecordLimit`, and `CsvEndOfStream` in `NativeErrorCode`. This admits native
+error replies to sealed executable atom tables; the EOF code is translated to
+`Ok(None)` by `csv_next_batch`. `make cursor-native-errors-check` exercises all
+four paths in a standalone native consumer without redeclaring those atoms.
+
 `LazyFrame` values are also helper-owned. Plans support local-file scans,
 expression projections and mutations, ordinary filters and null-preserving
 inverse filters, groups, single- and

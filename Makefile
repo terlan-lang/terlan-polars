@@ -17,6 +17,13 @@ package-check: terlan-grouped-binding-check terlan-function-reference-check scri
 	TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH="$(POLARS_HELPER)" \
 		"$(TERLC)" test test
 
+# Exercise sealed native error decoding in an external executable consumer.
+.PHONY: cursor-native-errors-check
+cursor-native-errors-check:
+	cargo build --offline --manifest-path native/Cargo.toml --features real-polars --bin terlan-polars-native-boundary
+	TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH="$(POLARS_HELPER)" \
+		"$(TERLC)" run examples/polars_csv_cursor_errors --target terlan-vm
+
 scripts-check:
 	"$(TERLC)" run script check-sources -- "$(abspath $(TERLC))" "$(CURDIR)" scripts
 
@@ -37,7 +44,7 @@ visualization-feature-check:
 	cargo test --offline --manifest-path native/Cargo.toml \
 		--features real-polars,plotly-html,plot-png visualization::tests
 
-release-check: package-check parity-check strict-docs-check visualization-feature-check
+release-check: package-check cursor-native-errors-check parity-check strict-docs-check visualization-feature-check
 	"$(TERLC)" fmt --check src
 	"$(TERLC)" fmt --check test
 

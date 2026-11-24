@@ -1,6 +1,7 @@
 module polars.CsvCursorTest.
 
 import polars.DataFrame.
+import polars.DataFrame.CsvBatchSize.
 import std.core.Option.{None, Some}.
 import std.core.Result.{Err, Ok}.
 
@@ -35,7 +36,7 @@ pub csv_cursor_returns_owned_batches_and_canonical_identity(): Bool ->
 @test
 pub csv_cursor_rejects_invalid_batch_size(): Bool ->
     case DataFrame.open_csv_dates_identified("test/fixtures/identified_dates.csv", 0) {
-        Err(error) -> error.code == Atom["csv_batch_size"];
+        Err(error) -> error.code == CsvBatchSize;
         Ok(identified) ->
             let _closed = DataFrame.dispose_csv_cursor(identified.cursor);
             false

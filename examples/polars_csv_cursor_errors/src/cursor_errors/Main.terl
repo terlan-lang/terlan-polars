@@ -1,0 +1,96 @@
+/**
+ * Native executable regression: no cursor-error atom declarations in the consumer.
+ */
+module cursor_errors.Main.
+
+import polars.DataFrame.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{Atom, String}.
+import std.io.{Console, Directory, File}.
+import std.vm.Process.
+
+import type polars.DataFrame.CsvBatchCursor.
+
+large_record(text: String, remaining: Int): String ->
+    if {
+        remaining == 0 -> text;
+        true -> large_record(String.append(text, text), remaining - 1)
+    }.
+
+batch_error(cursor: CsvBatchCursor, expected: String): Bool ->
+    case DataFrame.csv_next_batch(cursor) {
+        Err(error) -> Atom.to_string(error.code) == expected;
+        Ok(None) -> false;
+        Ok(Some(frame)) ->
+            let _disposed = DataFrame.dispose(frame);
+            false
+    }.
+
+invalid_size(path: String): Bool ->
+    case DataFrame.open_csv_dates_identified(path, 0) {
+        Err(error) -> Atom.to_string(error.code) == "csv_batch_size";
+        Ok(value) ->
+            let _disposed = DataFrame.dispose_csv_cursor(value.cursor);
+            false
+    }.
+
+record_and_failed_errors(path: String): Bool ->
+    case DataFrame.open_csv_dates_identified(path, 1) {
+        Err(_error) -> false;
+        Ok(value) ->
+            let oversized = batch_error(value.cursor, "csv_record_limit");
+            let failed = batch_error(value.cursor, "csv_cursor_failed");
+            let _disposed = DataFrame.dispose_csv_cursor(value.cursor);
+            oversized and failed
+    }.
+
+end_of_stream(path: String): Bool ->
+    case DataFrame.open_csv_dates_identified(path, 1) {
+        Err(_error) -> false;
+        Ok(value) ->
+            let exhausted =
+                case DataFrame.csv_next_batch(value.cursor) {
+                    Ok(None) -> true;
+                    Ok(Some(frame)) ->
+                        let _disposed = DataFrame.dispose(frame);
+                        false;
+                    Err(_error) -> false
+                };
+            let _disposed = DataFrame.dispose_csv_cursor(value.cursor);
+            exhausted
+    }.
+
+exercise(directory: String): Bool ->
+    let path = String.append(directory, "/history.csv");
+    let size_valid = invalid_size(path);
+    let oversized = String.concat(["value\n", large_record("x", 20), "\n"]);
+    let record_valid =
+        case File.write_text(path, oversized) {
+            Ok(_unit) -> record_and_failed_errors(path);
+            Err(_error) -> false
+        };
+    let eof_valid =
+        case File.write_text(path, "value\n") {
+            Ok(_unit) -> end_of_stream(path);
+            Err(_error) -> false
+        };
+    size_valid and record_valid and eof_valid.
+
+pub main(): Unit ->
+    let valid =
+        case Directory.create_temporary("polars-cursor-errors-") {
+            Err(_error) -> false;
+            Ok(directory) ->
+                let result = exercise(directory);
+                let cleaned =
+                    case Directory.remove_all(directory) {
+                        Ok(_unit) -> true;
+                        Err(_error) -> false
+                    };
+                result and cleaned
+        };
+    if {
+        valid -> Console.println("POLARS_CURSOR_SEALED_ERRORS_OK");
+        true -> Process.fail(Process.exit_reason(1))
+    }.
