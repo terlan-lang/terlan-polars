@@ -1,0 +1,42 @@
+module polars.CsvCursorTest.
+
+import polars.DataFrame.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+
+@test
+pub csv_cursor_returns_owned_batches_and_canonical_identity(): Bool ->
+    case DataFrame.open_csv_dates_identified("test/fixtures/identified_dates.csv", 1) {
+        Err(_error) -> false;
+        Ok(identified) ->
+            let first = DataFrame.csv_next_batch(identified.cursor);
+            let second = DataFrame.csv_next_batch(identified.cursor);
+            let end = DataFrame.csv_next_batch(identified.cursor);
+            let _closed = DataFrame.dispose_csv_cursor(identified.cursor);
+            let batches_valid =
+                case {first, second} {
+                    {Ok(Some(left)), Ok(Some(right))} ->
+                        let valid = DataFrame.height(left) == 1 and DataFrame.height(right) == 1;
+                        let _left = DataFrame.dispose(left);
+                        let _right = DataFrame.dispose(right);
+                        valid;
+                    _ -> false
+                };
+            let exhausted =
+                case end {
+                    Ok(None) -> true;
+                    _ -> false
+                };
+            batches_valid
+                and exhausted
+                and identified.sha256 == "a4d10fc37f0cb152b1b5ab0d423c3b1544e5d7bb33d9b7e35a9791e65a6b3521"
+    }.
+
+@test
+pub csv_cursor_rejects_invalid_batch_size(): Bool ->
+    case DataFrame.open_csv_dates_identified("test/fixtures/identified_dates.csv", 0) {
+        Err(error) -> error.code == Atom["csv_batch_size"];
+        Ok(identified) ->
+            let _closed = DataFrame.dispose_csv_cursor(identified.cursor);
+            false
+    }.

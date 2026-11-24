@@ -232,6 +232,22 @@ the same captured bytes, even if the source path is replaced or overwritten
 before parsing. Dispose `snapshot.dataframe` explicitly, just like any other
 DataFrame; copying the result does not create an independent frame owner.
 
+For full histories, use `open_csv_dates_identified(path, batch_rows)` instead.
+It returns `Result[IdentifiedCsvCursor, Error]` with `cursor` and `sha256` fields.
+Call `csv_next_batch(cursor)` to obtain `Result[Option[DataFrame], Error]`:
+`Ok(Some(frame))` owns one batch, and `Ok(None)` marks EOF. Dispose each frame
+after processing and call `dispose_csv_cursor(cursor)` on every exit path.
+Closing the cursor does not invalidate frames already returned.
+
+The cursor retains no eager full-history frame. Capture uses 64 KiB RAM and
+O(input size) private temporary disk storage. Parsing retains bounded CSV
+buffers and one batch; requested batch sizes are 1–10,000 records, further
+limited to 1 MiB of raw CSV. Headers and individual records over 1 MiB are
+rejected. Quoted newlines and escaped quotes are preserved. The first batch
+defines the schema, including date inference; incompatible later values fail
+and poison the cursor. A failed cursor must be disposed. Caller-retained batch
+frames still retain memory. Use a disk-backed temporary directory for histories.
+
 `LazyFrame` values are also helper-owned. Plans support local-file scans,
 expression projections and mutations, ordinary filters and null-preserving
 inverse filters, groups, single- and
@@ -251,6 +267,8 @@ package tests.
 results can be inspected without exposing Polars values through the native
 boundary. Nulls render as `"null"`; negative limits and limits above 10,000
 return stable errors.
+Requests and replies, including `StringRows`, use correlated chunked transport
+above the 1 MiB physical-frame boundary, subject to the adapter transfer bound.
 
 ## Official Polars getting-started examples
 

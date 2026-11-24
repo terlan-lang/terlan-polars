@@ -15,6 +15,7 @@
 //!   crate and executes the first DataFrame operations.
 
 pub mod bridge;
+pub mod csv_cursor;
 pub mod data_types;
 pub mod database;
 pub mod dataframe_extended;

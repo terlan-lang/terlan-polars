@@ -105,22 +105,52 @@ fn main() -> ExitCode {
     run_loop(io::stdin().lock(), io::stdout())
 }
 
-fn run_loop(input: impl BufRead, mut output: impl Write) -> ExitCode {
+#[path = "terlan_polars_native_boundary/transport.rs"]
+mod transport;
+
+const TRANSPORT_LIMITS: transport::Limits = transport::Limits {
+    frame: 1_048_576,
+    transfer: 16_777_216,
+};
+
+fn run_loop(mut input: impl BufRead, mut output: impl Write) -> ExitCode {
     let mut worker = Worker::default();
-    for line in input.lines() {
-        let reply = match line {
-            Ok(line) => worker.execute_line(line.trim_end()),
-            Err(error) => protocol_error("native_boundary_read_error", &error.to_string()),
+    loop {
+        let line = match transport::read_message(
+            &mut input,
+            transport::Direction::Call,
+            None,
+            TRANSPORT_LIMITS,
+        ) {
+            Ok(Some(line)) => line,
+            Ok(None) => return ExitCode::SUCCESS,
+            Err(_) => return ExitCode::from(1),
         };
-        if writeln!(output, "{reply}").is_err() {
-            return ExitCode::SUCCESS;
+        let id = line
+            .split_whitespace()
+            .nth(1)
+            .and_then(|id| id.parse().ok())
+            .unwrap_or(0);
+        let reply = worker.execute_line(&line);
+        if transport::write_message(
+            &mut output,
+            &reply,
+            id,
+            transport::Direction::Reply,
+            TRANSPORT_LIMITS,
+        )
+        .is_err()
+        {
+            return ExitCode::from(1);
         }
-        let _ = output.flush();
     }
-    ExitCode::SUCCESS
 }
 
+#[path = "terlan_polars_native_boundary/csv_cursor_worker.rs"]
+mod csv_cursor_worker;
+
 struct Worker {
+    csv_cursors: HashMap<u64, terlan_polars_native::csv_cursor::IdentifiedCsvCursor>,
     owner: String,
     next_id: u64,
     frames: HashMap<u64, FrameResource>,
@@ -177,6 +207,7 @@ impl Default for Worker {
         Self {
             owner: format!("polars:{}:{sequence}", std::process::id()),
             next_id: 0,
+            csv_cursors: HashMap::new(),
             frames: HashMap::new(),
             frame_sets: HashMap::new(),
             lazy_frames: HashMap::new(),
@@ -228,6 +259,10 @@ impl Worker {
                     protocol_error("native_bad_args", "show_versions expects no arguments")
                 }
             }
+            "polars.csv_cursor.open" => self.csv_cursor_open(request.args),
+            "polars.csv_cursor.next" => self.csv_cursor_next(request.args),
+            "polars.csv_cursor.sha256" => self.csv_cursor_sha256(request.args),
+            "polars.csv_cursor.dispose" => self.csv_cursor_dispose(request.args),
             "polars.dataframe.read_csv" => self.read_csv(request.args),
             "polars.dataframe.read_csv_dates" => self.read_csv_dates(request.args),
             "polars.dataframe.read_csv_dates_identified" => {
@@ -9204,6 +9239,7 @@ mod tests {
         assert!(reply.starts_with(&format!("reply 42 {CREDIT_WINDOW} result_err ")));
     }
 
+    #[cfg(feature = "real-polars")]
     #[test]
     fn worker_dispatches_replacement_and_numeric_binning_expressions() {
         let mut worker = Worker::default();
@@ -10227,3 +10263,7 @@ mod tests {
         std::fs::remove_file(path).expect("remove SQLite fixture");
     }
 }
+
+#[cfg(test)]
+#[path = "terlan_polars_native_boundary/csv_transport_test.rs"]
+mod csv_transport_test;

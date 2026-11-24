@@ -9,6 +9,7 @@
 module polars.DataFrame.
 
 import std.collections.List.
+import std.core.Option.{None, Some}.
 import std.core.Result.{Err, Ok}.
 
 import type std.collections.List.
@@ -35,6 +36,68 @@ pub struct IdentifiedDataFrame {
     dataframe: DataFrame,
     sha256: String,
 }.
+
+/**
+ * Owns a private CSV snapshot. Dispose independently of returned batches.
+ */
+pub opaque type CsvBatchCursor.
+
+/**
+ * A batch cursor and the canonical SHA-256 of the exact captured CSV bytes.
+ */
+pub struct IdentifiedCsvCursor {
+    cursor: CsvBatchCursor,
+    sha256: String,
+}.
+
+/**
+ * Captures the source once using bounded RAM and O(file size) private temporary
+ * disk storage, then returns a cursor without retaining an eager full frame.
+ * batch_rows must be 1..10000. Each raw batch and record is capped at 1 MiB;
+ * oversized records fail. Schema is inferred from the first batch and enforced
+ * thereafter, including date inference. Later incompatible values return Err.
+ * The digest identifies captured bytes, not an atomic version of a changing file.
+ * Dispose each returned frame and call dispose_csv_cursor on every exit path.
+ */
+pub open_csv_dates_identified(path: String, batch_rows: Int): Result[IdentifiedCsvCursor, Error] ->
+    case open_csv_cursor_native(path, batch_rows) {
+        Err(error) -> Err(error);
+        Ok(cursor) -> Ok(IdentifiedCsvCursor {cursor: cursor, sha256: csv_cursor_sha256(cursor)})
+    }.
+
+@compiler.native {polars.csv_cursor.open}
+open_csv_cursor_native(path: String, batch_rows: Int): Result[CsvBatchCursor, Error] ->
+    native.
+
+@compiler.native {polars.csv_cursor.sha256}
+csv_cursor_sha256(cursor: CsvBatchCursor): String ->
+    native.
+
+/**
+ * Returns the next independently owned batch, or Ok(None) at EOF.
+ * A parse error poisons the cursor; dispose it instead of retrying.
+ * Batches remain valid after cursor disposal. Retaining batches retains memory.
+ */
+pub csv_next_batch(cursor: CsvBatchCursor): Result[Option[DataFrame], Error] ->
+    case csv_next_batch_native(cursor) {
+        Ok(frame) -> Ok(Some(frame));
+        Err(error) ->
+            if {
+                error.code == Atom["csv_end_of_stream"] -> Ok(None);
+                true -> Err(error)
+            }
+    }.
+
+@compiler.native {polars.csv_cursor.next}
+csv_next_batch_native(cursor: CsvBatchCursor): Result[DataFrame, Error] ->
+    native.
+
+/**
+ * Closes the private snapshot; does not dispose caller-owned batch frames.
+ */
+@compiler.native {polars.csv_cursor.dispose}
+pub dispose_csv_cursor(cursor: CsvBatchCursor): Unit ->
+    native.
 
 /**
  * LazyFrame represents an opaque, unexecuted Polars query plan.

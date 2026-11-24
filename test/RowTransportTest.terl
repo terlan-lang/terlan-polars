@@ -1,0 +1,25 @@
+module polars.RowTransportTest.
+
+import polars.DataFrame.
+import std.core.Result.{Err, Ok}.
+import std.core.String.
+
+double_text(value: String, remaining: Int): String ->
+    if {
+        remaining == 0 -> value;
+        true -> double_text(String.append(value, value), remaining - 1)
+    }.
+
+@test
+pub large_string_rows_cross_chunked_request_and_reply_boundaries(): Bool ->
+    let text = double_text("abc", 18);
+    case DataFrame.from_rows(["value"], [[text]]) {
+        Err(_error) -> false;
+        Ok(frame) ->
+            let observed = DataFrame.rows(frame, 1);
+            let _disposed = DataFrame.dispose(frame);
+            case observed {
+                Ok([[actual]]) -> actual == text;
+                _ -> false
+            }
+    }.

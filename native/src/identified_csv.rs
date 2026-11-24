@@ -43,13 +43,13 @@ pub fn read_csv_dates_identified(
 const CAPTURE_BUFFER_BYTES: usize = 64 * 1024;
 
 #[cfg(feature = "real-polars")]
-struct Snapshot {
-    file: std::fs::File,
-    sha256: String,
+pub(crate) struct Snapshot {
+    pub(crate) file: std::fs::File,
+    pub(crate) sha256: String,
 }
 
 #[cfg(feature = "real-polars")]
-fn capture(mut source: impl std::io::Read) -> std::io::Result<Snapshot> {
+pub(crate) fn capture(mut source: impl std::io::Read) -> std::io::Result<Snapshot> {
     use sha2::{Digest, Sha256};
     use std::io::{Seek, Write};
 
