@@ -1,0 +1,103 @@
+/**
+ * Native consumer regression for bounded row conversions and owned CSV batches.
+ */
+module row_budget.Main.
+
+import polars.DataFrame.
+import std.collections.List.
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String}.
+import std.io.{Console, Directory, File}.
+import std.vm.Process.
+
+import type std.collections.List.
+
+csv_rows(start: Int, count: Int, suffix: String): String ->
+    if {
+        count == 0 -> "";
+        count == 1 -> String.concat([Int.to_string(start), suffix, "\n"]);
+        true -> let half = count / 2;
+        String.append(csv_rows(start, half, suffix), csv_rows(start + half, count - half, suffix))
+    }.
+
+ordered(values: List[List[String]], next: Int, end: Int, width: Int): Bool ->
+    case values {
+        [] -> next == end;
+        [row | rest] ->
+            case row {
+                [first | _cells] ->
+                    if {
+                        first == Int.to_string(next) and List.length(row) == width -> ordered(rest, next + 1, end, width);
+                        true -> false
+                    };
+                _ -> false
+            }
+    }.
+
+exercise(path: String, header: String, suffix: String, count: Int, width: Int): Bool ->
+    when {
+        Ok(_written) <- File.write_text(path, String.append(header, csv_rows(0, count, suffix)));
+        Ok(identified) <- DataFrame.open_csv_dates_identified(path, 10_000)
+    } else {
+        _ -> false
+    };
+    (let first = DataFrame.csv_next_batch(identified.cursor);
+let eof =
+    case DataFrame.csv_next_batch(identified.cursor) {
+        Ok(None) -> true;
+        _ -> false
+    };
+let _closed = DataFrame.dispose_csv_cursor(identified.cursor);
+case first {
+    Ok(Some(frame)) ->
+        let materialized = DataFrame.rows(frame, 10_000);
+        let empty = DataFrame.rows(frame, 0) == Ok([]);
+        let negative =
+            case DataFrame.rows(frame, -1) {
+                Err(_error) -> true;
+                _ -> false
+            };
+        let excessive =
+            case DataFrame.rows(frame, 10_001) {
+                Err(_error) -> true;
+                _ -> false
+            };
+        let retained = DataFrame.height(frame) == count;
+        let _disposed = DataFrame.dispose(frame);
+        case materialized {
+            Ok(values) ->
+                ordered(values, 0, count, width)
+                    and eof
+                    and empty
+                    and negative
+                    and excessive
+                    and retained;
+            Err(_error) -> false
+        };
+    _ -> false
+}).
+
+run_cases(path: String): Bool ->
+    let six = exercise(path, "i,a,b,c,d,e\n", ",1,2,3,4,5", 10_000, 6);
+    let exact = exercise(path, "i,a,b,c,d,e,f,g,h,j,k\n", ",1,2,3,4,5,6,7,8,9,10", 5_041, 11);
+    let split = exercise(path, "i,a,b,c,d,e,f,g,h,j,k\n", ",1,2,3,4,5,6,7,8,9,10", 5_042, 11);
+    six and exact and split.
+
+pub main(): Unit ->
+    let valid =
+        case Directory.create_temporary("polars-row-budget-") {
+            Err(_error) -> false;
+            Ok(directory) ->
+                let result = run_cases(String.append(directory, "/history.csv"));
+                let cleaned =
+                    case Directory.remove_all(directory) {
+                        Ok(_unit) -> true;
+                        _ -> false
+                    };
+                result and cleaned
+        };
+    if {
+        valid -> Console.println("POLARS_ROW_BUDGET_OK");
+        true -> Process.fail(Process.exit_reason(1))
+    }.

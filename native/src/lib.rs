@@ -1083,6 +1083,7 @@ pub fn rows(
     limit: usize,
 ) -> Result<Vec<Vec<String>>, TerlanPolarsError> {
     validate_rows_limit(limit)?;
+    validate_rows_managed_budget(df.inner.height().min(limit), df.inner.width())?;
     (0..df.inner.height().min(limit))
         .map(|index| {
             let row = df.inner.get_row(index)?;
@@ -1099,6 +1100,24 @@ fn display_value(value: polars::prelude::AnyValue<'_>) -> String {
         polars::prelude::AnyValue::Null => "null".to_string(),
         value => value.to_string(),
     }
+}
+
+/// Checks the VM's public conversion work budget before allocating row strings.
+/// Result, its payload reference, and the outer list cost three values; each
+/// row costs a reference and list plus one field for every string cell.
+#[cfg(feature = "real-polars")]
+fn validate_rows_managed_budget(rows: usize, columns: usize) -> Result<(), TerlanPolarsError> {
+    let cost = columns
+        .checked_add(2)
+        .and_then(|width| rows.checked_mul(width))
+        .and_then(|cells| cells.checked_add(3));
+    if cost.is_none_or(|cost| cost > 65_536) {
+        return Err(TerlanPolarsError::new(
+            "row_limit_too_large",
+            "row reply exceeds the VM managed-value budget; materialize smaller slices",
+        ));
+    }
+    Ok(())
 }
 
 fn validate_rows_limit(limit: usize) -> Result<(), TerlanPolarsError> {
@@ -5888,6 +5907,41 @@ pub fn concat_vertical_relaxed(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[cfg(feature = "real-polars")]
+    fn large_row_replies_require_slices_and_preserve_order() {
+        let columns = (0..6).map(|i| format!("c{i}")).collect::<Vec<_>>();
+        let input = (0..10000)
+            .map(|i| vec![i.to_string(); 6])
+            .collect::<Vec<_>>();
+        let frame = from_rows(&columns, &input).unwrap();
+        assert_eq!(
+            rows(&frame, 10000).unwrap_err().code(),
+            "row_limit_too_large"
+        );
+        let left = slice_rows(&frame, 0, 5000).unwrap();
+        let right = slice_rows(&frame, 5000, 5000).unwrap();
+        let mut actual = rows(&left, 5000).unwrap();
+        actual.extend(rows(&right, 5000).unwrap());
+        assert_eq!(actual, input);
+        assert_eq!(height(&frame), 10000);
+        assert!(rows(&frame, 0).unwrap().is_empty());
+    }
+
+    #[test]
+    #[cfg(feature = "real-polars")]
+    fn row_conversion_budget_counts_envelope_rows_and_cells() {
+        // Exactly 65,536 values, then one row beyond the conversion budget.
+        assert!(validate_rows_managed_budget(5041, 11).is_ok());
+        assert!(validate_rows_managed_budget(5042, 11).is_err());
+        assert!(validate_rows_managed_budget(10000, 6).is_err());
+        assert!(validate_rows_managed_budget(5000, 6).is_ok());
+        assert!(validate_rows_managed_budget(1, 65531).is_ok());
+        assert!(validate_rows_managed_budget(1, 65532).is_err());
+        assert!(validate_rows_managed_budget(usize::MAX, 6).is_err());
+        assert!(validate_rows_managed_budget(1, usize::MAX).is_err());
+    }
 
     #[test]
     #[cfg(feature = "real-polars")]

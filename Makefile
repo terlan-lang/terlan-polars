@@ -44,7 +44,7 @@ visualization-feature-check:
 	cargo test --offline --manifest-path native/Cargo.toml \
 		--features real-polars,plotly-html,plot-png visualization::tests
 
-release-check: package-check cursor-native-errors-check parity-check strict-docs-check visualization-feature-check
+release-check: package-check row-budget-check cursor-native-errors-check parity-check strict-docs-check visualization-feature-check
 	"$(TERLC)" fmt --check src
 	"$(TERLC)" fmt --check test
 
@@ -86,3 +86,10 @@ polars-immutable-ml-interop-check:
 	"$(TERLC)" run script check-immutable-ml-interop -- \
 		"$(abspath $(TERLC))" "$(CURDIR)" "$(abspath $(NDARRAY))" \
 		"$(abspath $(PYTORCH))" "$(abspath $(LIBTORCH))" "$(IRIS)"
+
+# Preserve the 10,000-row API without exceeding public managed conversion limits.
+.PHONY: row-budget-check
+row-budget-check:
+	cargo build --offline --manifest-path native/Cargo.toml --features real-polars --bin terlan-polars-native-boundary
+	TERLAN_POLARS_NATIVE_BOUNDARY_HELPER_PATH="$(POLARS_HELPER)" \
+		"$(TERLC)" run examples/polars_row_budget --target terlan-vm

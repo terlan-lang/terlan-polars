@@ -156,22 +156,22 @@ pub type Scalar = String | Int | Float | Bool.
 /**
  * Invalid requested CSV batch row count.
  */
-pub type CsvBatchSize = Atom["csv_batch_size"].
+pub type CsvBatchSize.
 
 /**
  * A prior read failed and poisoned the CSV cursor.
  */
-pub type CsvCursorFailed = Atom["csv_cursor_failed"].
+pub type CsvCursorFailed.
 
 /**
  * A CSV record exceeds the bounded parser limit.
  */
-pub type CsvRecordLimit = Atom["csv_record_limit"].
+pub type CsvRecordLimit.
 
 /**
  * Internal cursor EOF code translated to Ok(None) by csv_next_batch.
  */
-pub type CsvEndOfStream = Atom["csv_end_of_stream"].
+pub type CsvEndOfStream.
 
 /**
  * Finite adapter-error vocabulary admitted to sealed AOT atom tables.
@@ -4644,9 +4644,58 @@ pub (_df: DataFrame) columns(): List[String] ->
  * Input: a DataFrame receiver and non-negative maximum row count up to 10,000.
  * Output: `Ok(List[List[String]])` in column order, with Polars values rendered
  * as text and null values rendered as `"null"`; otherwise `Err(Error)`.
+ * Native replies are split by managed-value capacity and joined inside the VM.
+ * The returned list still retains up to 10,000 rows; for incremental consumption,
+ * use slice_rows followed by rows and dispose each slice.
  */
+pub (df: DataFrame) rows(limit: Int): Result[List[List[String]], Error] ->
+    if {
+        limit < 0 or limit > 10_000 -> rows_native(df, limit);
+        true -> let count =
+            if {
+                height(df) < limit -> height(df);
+                true -> limit
+            };
+        let capacity = 65_533 / (width(df) + 2);
+        if {
+            count <= capacity or capacity == 0 -> rows_native(df, limit);
+            true -> rows_window(df, 0, count, capacity)
+        }
+    }.
+
+/**
+ * Bounds each native conversion to 65,536 managed values: three envelope
+ * values plus two list/reference values per row and one per string cell.
+ * Concatenation is a VM list intrinsic, so it does not reconvert the full graph.
+ * Temporary slices are disposed before recursion; the caller retains df.
+ */
+rows_window(
+    df: DataFrame,
+    offset: Int,
+    count: Int,
+    capacity: Int,
+): Result[List[List[String]], Error] ->
+    if {
+        count <= capacity -> case slice_rows(df, offset, count) {
+            Err(error) -> Err(error);
+            Ok(window) ->
+                let result = rows_native(window, count);
+                let _disposed = dispose(window);
+                result
+        };
+        true -> let half = count / 2;
+        case rows_window(df, offset, half, capacity) {
+            Err(error) -> Err(error);
+            Ok(left) ->
+                case rows_window(df, offset + half, count - half, capacity) {
+                    Err(error) -> Err(error);
+                    Ok(right) -> Ok(List.concat(left, right))
+                }
+        }
+    }.
+
 @compiler.native {polars.dataframe.rows}
-pub (_df: DataFrame) rows(_limit: Int): Result[List[List[String]], Error] ->
+rows_native(_df: DataFrame, _limit: Int): Result[List[List[String]], Error] ->
     native.
 
 /**

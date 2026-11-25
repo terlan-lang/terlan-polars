@@ -272,7 +272,23 @@ package tests.
 `rows(df, limit)` materializes at most `limit` rows as display strings so
 results can be inspected without exposing Polars values through the native
 boundary. Nulls render as `"null"`; negative limits and limits above 10,000
-return stable errors.
+return stable errors. The API preserves the 10,000-row limit by splitting wide
+results into temporary slices and joining the returned lists inside the VM.
+Each native reply fits the VM's unchanged 65,536-value conversion budget:
+`3 + row_count * (column_count + 2)`. The native adapter checks this bound
+before allocating row strings. A single row wider than that budget returns
+`row_limit_too_large`. Temporary slices are disposed on success and failure;
+the original frame remains caller-owned.
+
+The final list still retains the requested rows. For incremental consumption,
+call `slice_rows` and `rows` on bounded windows, disposing each window, or
+materialize one identified CSV cursor batch at a time. Byte transfer limits
+remain independent of the managed-value limit: a cell or slice containing
+excessive text may still exceed the adapter transfer bound.
+`make row-budget-check` runs an external native consumer covering 10,000 × 6
+rows, exact ordering, the exact managed-value boundary and the next row,
+cursor EOF, frame ownership after cursor disposal, and invalid limits.
+
 Requests and replies, including `StringRows`, use correlated chunked transport
 above the 1 MiB physical-frame boundary, subject to the adapter transfer bound.
 

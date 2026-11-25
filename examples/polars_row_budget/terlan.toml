@@ -1,0 +1,11 @@
+[package]
+name = "polars-row-budget"
+version = "0.1.0"
+namespace = "row_budget"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+terlan-polars = { path = "../.." }
