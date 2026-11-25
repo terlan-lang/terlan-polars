@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-26",
+  "package": "terlan-polars",
+  "source_commit": "49032f7ef56e2ca1885fc9c466290b277451b23b",
+  "compiler": {
+    "version": "0.0.10",
+    "source_revision": "8b40bcca5a47",
+    "target": "x86_64-unknown-linux-gnu",
+    "distribution": "https://github.com/terlan-lang/terlan/releases/tag/v0.0.10",
+    "archive_sha256": "f251afd1ffdb7aa6704df6786a9c4800daec6ac2c6485e7e7342defc286e3547",
+    "terlc_sha256": "2bc491fd8ff5b599c25a038f026ce6bb9ca87d83e8101b00853870ca7f07e75d"
+  },
+  "scope": "CPU native VM tests; real package native helper; forced uncached test execution",
+  "environment": {
+    "TERLAN_TEST_FORCE_RERUN": "1"
+  },
+  "results": [
+    {
+      "command": "terlc test test",
+      "exit_code": 0,
+      "tests_passed": 82,
+      "tests_failed": 0,
+      "log_sha256": "afc8ff2a8964bc38c38decf54dba9c1f722c100163926a44cd7dfcc1ae59c6f5",
+      "success_marker": null
+    },
+    {
+      "command": "terlc run examples/polars_row_budget --target terlan-vm",
+      "exit_code": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "log_sha256": "f95ed511b3423914aeb93b2e256aff28a2a6ab408f50d84cca6a9eda7bc79f75",
+      "success_marker": "POLARS_ROW_BUDGET_OK"
+    },
+    {
+      "command": "terlc run examples/polars_csv_cursor_errors --target terlan-vm",
+      "exit_code": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "log_sha256": "b7535d12ee95924d3660c7f049673b7e929d00123a28683fd390adea31bfa0ed",
+      "success_marker": "POLARS_CURSOR_SEALED_ERRORS_OK"
+    }
+  ]
+}
